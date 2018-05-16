@@ -5,13 +5,17 @@ import android.support.annotation.ColorRes
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.dede.sonimei.net.GlideApp
 
 /**
  * Created by hsh on 2018/5/15.
  */
 fun ImageView.load(url: String?) {
-    Glide.with(this).load(url).into(this)
+    GlideApp.with(this)
+            .load(url)
+            .transition(withCrossFade())
+            .into(this)
 }
 
 fun Context.color(@ColorRes res: Int) = ContextCompat.getColor(this, res)

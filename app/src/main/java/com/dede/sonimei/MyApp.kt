@@ -9,7 +9,7 @@ import com.squareup.leakcanary.LeakCanary
 /**
  * Created by hsh on 2018/5/14.
  */
-class App : Application() {
+class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -19,7 +19,6 @@ class App : Application() {
         }
 
         HttpUtil.init(this)
-
     }
 
     /**
@@ -37,6 +36,5 @@ class App : Application() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 }

@@ -42,6 +42,12 @@ class HttpUtil private constructor() {
                         HttpLoggingInterceptor.Level.NONE
             val httpClient = OkHttpClient.Builder()
                     .addInterceptor(interceptor)
+                    .addInterceptor {
+                        it.proceed(it.request()
+                                .newBuilder()
+                                .addHeader("X-Requested-With", "XMLHttpRequest")
+                                .build())
+                    }
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .writeTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(15, TimeUnit.SECONDS)
@@ -49,7 +55,7 @@ class HttpUtil private constructor() {
 
             retrofit = Retrofit.Builder()
                     .client(httpClient)
-                    .baseUrl("http://music.163.com/")
+                    .baseUrl("http://music.sonimei.cn/")
                     .addConverterFactory(StringConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()

@@ -31,6 +31,8 @@
   **[] $VALUES;
   public *;
 }
+# for DexGuard only
+# -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 
 # Retain generic type information for use by reflection by converters and adapters.
 -keepattributes Signature

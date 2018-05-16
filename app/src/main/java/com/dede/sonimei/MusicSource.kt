@@ -25,26 +25,26 @@ const val KG: Int = 14// 全民k歌
 @IntDef(NETEASE, _1TING, BAIDU, KUGOU, KUWO, QQ, XIAMI, _5SINGYC, _5SINGFC, MIGU, LIZHI, QINGTING, XIMALAYA, KG)
 annotation class MusicSource
 
-private val sourceArray by lazy {
-    val array = SparseArray<String>()
-    array.put(NETEASE, "网易")
-    array.put(QQ, "QQ")
-    array.put(KUGOU, "酷狗")
-    array.put(KUWO, "酷我")
-    array.put(XIAMI, "虾米")
-    array.put(BAIDU, "百度")
-    array.put(_1TING, "一听")
-    array.put(MIGU, "咪咕")
-    array.put(LIZHI, "荔枝")
-    array.put(QINGTING, "蜻蜓")
-    array.put(XIMALAYA, "喜马拉雅")
-    array.put(KG, "全民K歌")
-    array.put(_5SINGYC, "5sing原创")
-    array.put(_5SINGFC, "5sing翻唱")
+private val sourceMap by lazy {
+    val array = SparseArray<Pair<String, String>>()
+    array.put(NETEASE, "网易" to "netease")
+    array.put(QQ, "QQ" to "qq")
+    array.put(KUGOU, "酷狗" to "kugou")
+    array.put(KUWO, "酷我" to "kuwo")
+    array.put(XIAMI, "虾米" to "xiami")
+    array.put(BAIDU, "百度" to "baidu")
+    array.put(_1TING, "一听" to "1ting")
+    array.put(MIGU, "咪咕" to "migu")
+    array.put(LIZHI, "荔枝" to "lizhi")
+    array.put(QINGTING, "蜻蜓" to "qingting")
+    array.put(XIMALAYA, "喜马拉雅" to "ximalaya")
+    array.put(KG, "全民K歌" to "kg")
+    array.put(_5SINGYC, "5sing原创" to "5singyc")
+    array.put(_5SINGFC, "5sing翻唱" to "5singfc")
     return@lazy array
 }
 
-val sourceKey: ArrayList<Int> by lazy {
+val sourceArray: ArrayList<Int> by lazy {
     arrayListOf(
             NETEASE,
             QQ,
@@ -63,5 +63,6 @@ val sourceKey: ArrayList<Int> by lazy {
     )
 }
 
-fun sourceName(@MusicSource key: Int): String = sourceArray[key]
+fun sourceName(@MusicSource key: Int): String = sourceMap[key].first
+fun sourceKey(@MusicSource key: Int): String = sourceMap[key].second
 

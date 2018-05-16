@@ -3,7 +3,7 @@ package com.dede.sonimei.module.home
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import com.dede.sonimei.sourceKey
+import com.dede.sonimei.sourceArray
 import com.dede.sonimei.sourceName
 
 /**
@@ -12,12 +12,12 @@ import com.dede.sonimei.sourceName
 class MusicSourceAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return SearchResultFragment.newInstance(sourceKey[position])
+        return SearchResultFragment.newInstance(sourceArray[position])
     }
 
-    override fun getCount() = sourceKey.size
+    override fun getCount() = sourceArray.size
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return sourceName(sourceKey[position])
+        return sourceName(sourceArray[position])
     }
 }

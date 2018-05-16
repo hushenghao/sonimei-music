@@ -6,4 +6,7 @@
     <color name="indicatorColor">#f1f1f1</color>
     <color name="white">@android:color/white</color>
     <color name="tabTextColor">#ededed</color>
+    <color name="text1">#333</color>
+    <color name="text2">#666</color>
+    <color name="line">#e5e5e5</color>
 </resources>

@@ -2,14 +2,17 @@ package com.dede.sonimei.module.home
 
 import android.os.Bundle
 import android.util.SparseArray
+import android.widget.ImageView
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.MusicSource
 import com.dede.sonimei.NETEASE
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
-import com.dede.sonimei.data.search.SearchData
-import com.dede.sonimei.module.home.presenter.PresenterHelper
+import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.sourceName
 import com.dede.sonimei.util.extends.isNull
+import com.dede.sonimei.util.extends.load
 import com.dede.sonimei.util.extends.notNull
 import com.trello.rxlifecycle2.LifecycleProvider
 import kotlinx.android.synthetic.main.fragment_search_result.*
@@ -52,7 +55,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         swipe_refresh.isRefreshing = false
     }
 
-    override fun loadSuccess(isLoadMore: Boolean, list: List<SearchData>) {
+    override fun loadSuccess(isLoadMore: Boolean, list: List<SearchSong>) {
         if (isLoadMore) {
             adapter.addData(list)
             if (list.size >= presenter.pagerSize()) {
@@ -62,6 +65,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             }
         } else {
             adapter.setNewData(list)
+            if (list.size < presenter.pagerSize()) {
+                adapter.loadMoreEnd()
+            }
         }
     }
 
@@ -70,8 +76,8 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             adapter.loadMoreFail()
         } else {
             hideLoading()
-            toast(msg ?: "网络错误")
         }
+        toast(msg ?: "网络错误")
     }
 
     override fun provider(): LifecycleProvider<*> = this
@@ -79,10 +85,18 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     @MusicSource
     private val source by lazy { arguments?.getInt(BUNDLE_SOURCE_KEY) ?: NETEASE }
 
-    private val presenter by lazy {
-        PresenterHelper.instancePresenter(source, this)
+    private val presenter by lazy { SearchPresenter(this, source) }
+
+    // 列表适配器
+    private val adapter by lazy {
+        object : BaseQuickAdapter<SearchSong, BaseViewHolder>(R.layout.item_search_result) {
+            override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
+                helper?.setText(R.id.tv_name, item?.title)
+                helper?.getView<ImageView>(R.id.iv_album_img)?.load(item?.pic)
+                helper?.setText(R.id.tv_singer_album, item?.author)
+            }
+        }
     }
-    private lateinit var adapter: SearchResultAdapter
 
     override fun getLayoutId() = R.layout.fragment_search_result
 
@@ -94,7 +108,6 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             else
                 hideLoading()
         }
-        adapter = SearchResultAdapter()
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
         recycler_view.adapter = adapter
     }

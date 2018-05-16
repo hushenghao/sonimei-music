@@ -1,6 +1,6 @@
 package com.dede.sonimei.module.home
 
-import com.dede.sonimei.data.search.SearchData
+import com.dede.sonimei.data.search.SearchSong
 import com.trello.rxlifecycle2.LifecycleProvider
 
 /**
@@ -12,7 +12,7 @@ interface ISearchView {
 
     fun hideLoading()
 
-    fun loadSuccess(isLoadMore: Boolean, list: List<SearchData>)
+    fun loadSuccess(isLoadMore: Boolean, list: List<SearchSong>)
 
     fun loadError(isLoadMore: Boolean, msg: String? = null)
 

@@ -8,14 +8,14 @@ import android.view.Menu
 import android.view.MenuItem
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseActivity
-import com.dede.sonimei.sourceKey
+import com.dede.sonimei.sourceArray
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         searchText = query
-        val fragment = SearchResultFragment.newInstance(sourceKey[view_pager.currentItem])
+        val fragment = SearchResultFragment.newInstance(sourceArray[view_pager.currentItem])
         fragment.search(query)
         return false
     }
