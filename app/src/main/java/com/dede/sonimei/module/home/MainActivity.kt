@@ -1,5 +1,6 @@
 package com.dede.sonimei.module.home
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,7 +10,9 @@ import android.view.MenuItem
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.sourceArray
+import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
@@ -31,6 +34,17 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         supportActionBar?.elevation = 0f
         view_pager.adapter = MusicSourceAdapter(supportFragmentManager)
         tab_layout.setupWithViewPager(view_pager)
+    }
+
+    private val rxPermissions by lazy { RxPermissions(this) }
+
+    override fun onResume() {
+        super.onResume()
+        rxPermissions
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                .filter { !it }
+                .subscribe { toast("读取SD卡权限被拒绝") }
     }
 
     private var searchView: SearchView? = null
