@@ -20,12 +20,12 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         searchText = query
         val fragment = SearchResultFragment.newInstance(sourceArray[view_pager.currentItem])
         fragment.search(query)
-        return false
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
         searchText = newText
-        return false
+        return true
     }
 
     override fun getLayoutId() = R.layout.activity_main
@@ -56,7 +56,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView? ?: return true
         searchView?.isIconified = false
         searchView?.setOnQueryTextListener(this)
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

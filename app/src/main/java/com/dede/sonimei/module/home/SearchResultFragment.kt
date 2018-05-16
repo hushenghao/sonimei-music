@@ -130,6 +130,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
     fun search(search: String?) {
         if (search.isNull()) return
+        if (!userVisibleHint || !isVisible) return
 
         this.searchText = search
         info(sourceName(source) + " 搜索： " + this.searchText)

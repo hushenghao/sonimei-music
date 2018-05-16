@@ -21,8 +21,8 @@
 #-renamesourcefileattribute SourceFile
 
 # data bean
--dontwarn come.dede.sonimei.data.**
-
+-keep class com.dede.sonimei.data.** { *; }
+-keep public class android.support.v7.widget.SearchView { *; }
 
 # glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
