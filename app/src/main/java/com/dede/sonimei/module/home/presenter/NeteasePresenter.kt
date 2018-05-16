@@ -25,11 +25,11 @@ class NeteasePresenter(view: ISearchView) : BaseSearchPresenter(view, NETEASE) {
     }
 
     private fun load() {
-        val isLoadMore = page != 0
+        val isLoadMore = page > 1
         HttpUtil.Builder()
                 .params("s", search)
                 .params("type", "1")
-                .params("offset", (page * pageSize - pageSize).toString())
+                .params("offset", ((page - 1) * pageSize).toString())// 偏移量
                 .params("limit", pageSize.toString())
                 .url("/api/cloudsearch/pc")
                 .post()

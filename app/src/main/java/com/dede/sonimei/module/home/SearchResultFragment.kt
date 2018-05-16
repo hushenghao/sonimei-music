@@ -10,6 +10,7 @@ import com.dede.sonimei.data.search.SearchData
 import com.dede.sonimei.module.home.presenter.PresenterHelper
 import com.dede.sonimei.sourceName
 import com.dede.sonimei.util.extends.isNull
+import com.dede.sonimei.util.extends.notNull
 import com.trello.rxlifecycle2.LifecycleProvider
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.info
@@ -34,6 +35,13 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 fragment
             }
         }
+    }
+
+    private fun getSearchText(): String? {
+        if (activity is MainActivity) {
+            return (activity as MainActivity).searchText
+        }
+        return null
     }
 
     override fun showLoading() {
@@ -68,7 +76,6 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
     override fun provider(): LifecycleProvider<*> = this
 
-
     @MusicSource
     private val source by lazy { arguments?.getInt(BUNDLE_SOURCE_KEY) ?: NETEASE }
 
@@ -80,32 +87,32 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     override fun getLayoutId() = R.layout.fragment_search_result
 
     override fun initView(savedInstanceState: Bundle?) {
-        swipe_refresh.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
+        swipe_refresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent)
         swipe_refresh.setOnRefreshListener {
-            if (searchText.isNull()) return@setOnRefreshListener
-            presenter.search(searchText!!)
+            if (searchText.notNull())
+                presenter.search(searchText!!)
+            else
+                hideLoading()
         }
         adapter = SearchResultAdapter()
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
         recycler_view.adapter = adapter
-
     }
 
-    override fun loadData() {
-        searchText = arguments?.getString("searchKey")
-        if (!searchText.isNull())
+    override fun everyLoad() {
+        val searchText = getSearchText()
+        if (searchText != this.searchText && searchText.notNull())
             search(searchText)
     }
 
     private var searchText: String? = null
 
     fun search(search: String?) {
-        this.searchText = search
         if (search.isNull()) return
-        if (!isVisible || !userVisibleHint) return
 
-        info(sourceName(source) + " 搜索： " + search)
-        presenter.search(search!!)
+        this.searchText = search
+        info(sourceName(source) + " 搜索： " + this.searchText)
+        presenter.search(this.searchText!!)
     }
 
 }

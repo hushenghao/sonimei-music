@@ -11,7 +11,19 @@ import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.sourceKey
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        searchText = query
+        val fragment = SearchResultFragment.newInstance(sourceKey[view_pager.currentItem])
+        fragment.search(query)
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?) :Boolean {
+        searchText = newText
+        return false
+    }
 
     override fun getLayoutId() = R.layout.activity_main
 
@@ -23,24 +35,13 @@ class MainActivity : BaseActivity() {
 
     private var searchView: SearchView? = null
 
-    private var searchText: String? = null
+    var searchText: String? = null
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
         searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView? ?: return true
         searchView?.isIconified = false
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                searchText = query
-                val fragment = SearchResultFragment.newInstance(sourceKey[view_pager.currentItem])
-                fragment.search(query)
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-        })
+        searchView?.setOnQueryTextListener(this)
         return true
     }
 

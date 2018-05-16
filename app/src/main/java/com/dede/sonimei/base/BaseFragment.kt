@@ -14,14 +14,14 @@ import org.jetbrains.anko.AnkoLogger
 abstract class BaseFragment : RxFragment(), AnkoLogger {
 
     private var contentView: View? = null
-    private var viewCreated = false
+    private var viewFirstCreated = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (contentView == null) {
-            viewCreated = true
+            viewFirstCreated = true
             contentView = inflater.inflate(getLayoutId(), container, false)
         } else {
-            viewCreated = false
+            viewFirstCreated = false
             val parent = contentView!!.parent
             if (parent != null) {
                 (parent as ViewGroup).removeView(contentView)
@@ -35,29 +35,43 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewCreated)
+        if (viewFirstCreated)
             initView(savedInstanceState)
     }
 
     open fun initView(savedInstanceState: Bundle?) {}
 
+    /**
+     * Fragment第一次可见的时候调用
+     */
     open fun loadData() {}
+
+    /**
+     * Fragment每次可见的时候调用
+     */
+    open fun everyLoad() {}
 
     private var isLoaded = false
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (isVisible && userVisibleHint && !isLoaded) {
-            loadData()
-            isLoaded = true
+        if (isVisible && userVisibleHint) {
+            if (!isLoaded) {
+                loadData()
+                isLoaded = true
+            }
+            everyLoad()
         }
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser && isVisible && !isLoaded) {
-            loadData()
-            isLoaded = true
+        if (isVisibleToUser && isVisible) {
+            if (!isLoaded) {
+                loadData()
+                isLoaded = true
+            }
+            everyLoad()
         }
     }
 }
