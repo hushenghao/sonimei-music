@@ -1,8 +1,9 @@
-# sonimei music
+# Sonimei
 音乐搜索器 - 多站合一音乐搜索安卓解决方案
 [网页版](https://music.2333.me/)
 
-##说明
+## 说明
+
 感谢[麦葱 https://github.com/maicong/music](https://github.com/maicong/music)提供的接口。
 
 支持搜索试听以下网站音乐：
