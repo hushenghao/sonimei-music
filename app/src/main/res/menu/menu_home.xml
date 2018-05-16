@@ -10,6 +10,10 @@
         app:showAsAction="always|collapseActionView" />
 
     <item
+        android:id="@+id/menu_github"
+        android:title="GitHub"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_webview"
         android:title="网页版"
         app:showAsAction="never" />

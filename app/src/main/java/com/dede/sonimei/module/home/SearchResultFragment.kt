@@ -1,5 +1,8 @@
 package com.dede.sonimei.module.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.util.SparseArray
 import android.widget.ImageView
@@ -108,8 +111,13 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             else
                 hideLoading()
         }
+        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
         recycler_view.adapter = adapter
+        adapter.setOnItemClickListener { _, _, position ->
+            toast("功能正在开发中...，下载链接已复制！！！")
+            manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
+        }
     }
 
     override fun everyLoad() {

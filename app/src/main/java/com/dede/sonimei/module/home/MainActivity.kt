@@ -20,7 +20,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         return false
     }
 
-    override fun onQueryTextChange(newText: String?) :Boolean {
+    override fun onQueryTextChange(newText: String?): Boolean {
         searchText = newText
         return false
     }
@@ -48,6 +48,10 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_about -> {
+                true
+            }
+            R.id.menu_github -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/hushenghao/music")))
                 true
             }
             R.id.menu_webview -> {
