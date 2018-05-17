@@ -13,21 +13,8 @@ import org.jetbrains.anko.AnkoLogger
  */
 abstract class BaseFragment : RxFragment(), AnkoLogger {
 
-    private var contentView: View? = null
-    private var viewFirstCreated = false
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (contentView == null) {
-            viewFirstCreated = true
-            contentView = inflater.inflate(getLayoutId(), container, false)
-        } else {
-            viewFirstCreated = false
-            val parent = contentView!!.parent
-            if (parent != null) {
-                (parent as ViewGroup).removeView(contentView)
-            }
-        }
-        return contentView
+        return inflater.inflate(getLayoutId(), container, false)
     }
 
     @LayoutRes
@@ -35,8 +22,7 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewFirstCreated)
-            initView(savedInstanceState)
+        initView(savedInstanceState)
     }
 
     open fun initView(savedInstanceState: Bundle?) {}

@@ -41,6 +41,15 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 fragment
             }
         }
+
+        fun destoryInstacne(@MusicSource search: Int) {
+            fragments.remove(search)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        destoryInstacne(source)
     }
 
     private fun getSearchText(): String? {
