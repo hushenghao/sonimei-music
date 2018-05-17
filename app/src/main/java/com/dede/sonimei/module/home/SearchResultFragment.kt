@@ -1,9 +1,10 @@
 package com.dede.sonimei.module.home
 
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.app.DownloadManager
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.SparseArray
 import android.widget.ImageView
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -120,14 +121,25 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             else
                 hideLoading()
         }
-        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+//        manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
         recycler_view.adapter = adapter
         adapter.setOnItemClickListener { _, _, position ->
-            toast("功能正在开发中...，下载链接已复制！！！")
-            manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
+            if (position >= adapter.data.size) return@setOnItemClickListener
+            val song = adapter.data[position]
+            val request = DownloadManager.Request(Uri.parse(song.url))
+            request.setTitle(song.getName())
+            request.setMimeType("audio/mpeg")
+            request.setDescription(getString(R.string.app_name))
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/sonimei/" + song.getName() + ".mp3")
+            downloadManager.enqueue(request)
         }
+        adapter.setEmptyView(R.layout.layout_search_empty)
     }
+
+    private val downloadManager by lazy { context!!.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager }
 
     override fun everyLoad() {
         val searchText = getSearchText()

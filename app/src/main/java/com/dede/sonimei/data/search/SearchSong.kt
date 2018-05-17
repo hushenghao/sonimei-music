@@ -10,4 +10,8 @@ data class SearchSong(val type: String?,
                       val author: String?,
                       val url: String?,
                       val pic: String?
-)
+) {
+    fun getName(): String {
+        return "$title - $author"
+    }
+}

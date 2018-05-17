@@ -36,7 +36,7 @@ class SearchPresenter(val view: ISearchView, @MusicSource source: Int) : AnkoLog
 
     private fun loadList(isLoadMore: Boolean, search: String) {
         HttpUtil.Builder()
-                .url("")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .params("input", search)
                 .params("type", type)
                 .params("filter", "name")

@@ -42,15 +42,9 @@ class HttpUtil private constructor() {
                         HttpLoggingInterceptor.Level.NONE
             val httpClient = OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .addInterceptor {
-                        it.proceed(it.request()
-                                .newBuilder()
-                                .addHeader("X-Requested-With", "XMLHttpRequest")
-                                .build())
-                    }
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .writeTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
                     .build()
 
             retrofit = Retrofit.Builder()
@@ -66,6 +60,7 @@ class HttpUtil private constructor() {
     class Builder {
 
         private val params: ArrayMap<String, String> = ArrayMap()
+        private val headers: ArrayMap<String, String> = ArrayMap()
         private var url: String = ""
 
         fun params(key: String, value: String?): Builder {
@@ -75,17 +70,26 @@ class HttpUtil private constructor() {
             return this
         }
 
-        fun url(url: String): Builder {
+        fun header(key: String, value: String?): Builder {
+            if (value == null)
+                return this
+            headers[key] = value
+            return this
+        }
+
+        fun url(url: String?): Builder {
+            if (url == null)
+                return this
             this.url = url
             return this
         }
 
         fun get(): Observable<String?> {
-            return apiService.get(this.url, params)
+            return apiService.get(this.url, headers, params)
         }
 
         fun post(): Observable<String?> {
-            return apiService.post(this.url, params)
+            return apiService.post(this.url, headers, params)
         }
     }
 
