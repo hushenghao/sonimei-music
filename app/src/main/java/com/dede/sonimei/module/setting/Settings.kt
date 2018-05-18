@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.Preference
@@ -14,16 +13,18 @@ import com.dede.sonimei.defaultDownloadPath
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.info
-
+import org.jetbrains.anko.startActivityForResult
 
 /**
  * Created by hsh on 2018/5/17.
  */
 const val KEY_CUSTOM_PATH = "custom_path"
 const val KEY_WIFI_DOWNLOAD = "wifi_download"
-const val KEY_JOIN_QQ_GROUP = "join_qq_group"
+const val KEY_EDIT_SOURCE = "edit_source"
 
-class SettingFragment : PreferenceFragment(),
+const val EDIT_SOURCE_CODE = 2
+
+class Settings : PreferenceFragment(),
         AnkoLogger,
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
@@ -45,9 +46,8 @@ class SettingFragment : PreferenceFragment(),
                 }
                 true
             }
-            KEY_JOIN_QQ_GROUP -> {
-                startActivity(Intent(Intent.ACTION_VIEW)
-                        .setData(Uri.parse("https://jq.qq.com/?_wv=1027&k=50DXboo")))
+            KEY_EDIT_SOURCE -> {
+                activity.startActivityForResult<EditSourceActivity>(EDIT_SOURCE_CODE)
                 true
             }
             else -> false
@@ -80,7 +80,7 @@ class SettingFragment : PreferenceFragment(),
             customPath.summary = defaultSharedPreferences
                     .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
         }
-        findPreference(KEY_JOIN_QQ_GROUP).onPreferenceClickListener = this
+        findPreference(KEY_EDIT_SOURCE).onPreferenceClickListener = this
     }
 
     override fun onResume() {

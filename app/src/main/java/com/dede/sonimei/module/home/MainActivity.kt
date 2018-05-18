@@ -1,6 +1,7 @@
 package com.dede.sonimei.module.home
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,11 +10,12 @@ import android.view.Menu
 import android.view.MenuItem
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseActivity
+import com.dede.sonimei.module.setting.EDIT_SOURCE_CODE
 import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.sourceArray
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
@@ -32,9 +34,12 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun getLayoutId() = R.layout.activity_main
 
+    private lateinit var adapter: MusicSourceAdapter
+
     override fun initView(savedInstanceState: Bundle?) {
         supportActionBar?.elevation = 0f
-        view_pager.adapter = MusicSourceAdapter(supportFragmentManager)
+        adapter = MusicSourceAdapter(this, supportFragmentManager)
+        view_pager.adapter = adapter
         tab_layout.setupWithViewPager(view_pager)
     }
 
@@ -63,8 +68,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.menu_setting->{
-                startActivity<SettingActivity>()
+            R.id.menu_setting -> {
+                startActivityForResult<SettingActivity>(EDIT_SOURCE_CODE)
                 true
             }
             R.id.menu_about -> {
@@ -80,5 +85,11 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == EDIT_SOURCE_CODE)
+            adapter.notifyDataSetChanged()
     }
 }

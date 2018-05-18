@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">搜你妹</string>
     <string name="setting_label">设置</string>
+    <string name="edit_source_label">编辑来源</string>
 </resources>

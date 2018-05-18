@@ -27,7 +27,10 @@
         <activity
             android:name=".module.setting.SettingActivity"
             android:label="@string/setting_label"
-            android:parentActivityName=".module.home.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".module.setting.EditSourceActivity"
+            android:label="@string/edit_source_label"
             android:screenOrientation="portrait" />
     </application>
 

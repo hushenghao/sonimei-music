@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:persistent="true"
+    android:title="@string/setting_label">
+
+    <PreferenceCategory android:title="音乐">
+
+        <Preference
+            android:key="edit_source"
+            android:summary="修改搜索页的来源显示"
+            android:title="@string/edit_source_label" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="下载选项">
 
         <CheckBoxPreference
@@ -14,10 +26,13 @@
 
     <PreferenceCategory android:title="其他">
 
-        <Preference
-            android:key="join_qq_group"
+        <PreferenceScreen
             android:summary="296513604"
-            android:title="加入QQ群" />
+            android:title="加入QQ群">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://jq.qq.com/?_wv=1027&amp;k=50DXboo" />
+        </PreferenceScreen>
 
         <Preference
             android:summary="如有bug，欢迎反馈"

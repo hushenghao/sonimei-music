@@ -148,7 +148,11 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     }
 
     override fun onDestroyView() {
-        searchText = null
+        /**
+         * 在网络请求被取消时，SwipeRefreshLayout是加载中的状态，
+         * 在Fragment重新createView的后状态没有恢复，会无法下拉。在这里恢复状态
+         */
+        hideLoading()
         super.onDestroyView()
     }
 
