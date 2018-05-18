@@ -69,4 +69,4 @@ fun sourceName(@MusicSource key: Int): String = sourceMap[key].first
 fun sourceKey(@MusicSource key: Int): String = sourceMap[key].second
 
 // 默认下载路径
-val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"sonimei")
+val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),"sonimei")

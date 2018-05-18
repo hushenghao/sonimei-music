@@ -4,7 +4,7 @@
 
 ## 说明
 
-感谢[麦葱 https://github.com/maicong/music](https://github.com/maicong/music)提供的接口。
+####感谢[麦葱](https://github.com/maicong/music)提供的网页版、接口和服务器支持。
 
 支持搜索试听以下网站音乐：
 
@@ -27,7 +27,11 @@
 | filter | name/id/url（与input类型对应）|
 | page | 页码数量（搜索音乐名时有效）|
 
-备注①：type音乐来源支持（netease，qq，kugou，kuwo，xiami，baidu，1ting，migu，lizhi，qingting，ximalaya，kg，5singyc，5singfc）
+> 备注：
+
+```
+1、type 音乐来源 支持平台（netease，qq，kugou，kuwo，xiami，baidu，1ting，migu，lizhi，qingting，ximalaya，kg，5singyc，5singfc）
+```
 
 
 ## 免责声明
