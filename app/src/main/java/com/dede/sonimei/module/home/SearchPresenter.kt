@@ -5,7 +5,7 @@ import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
 import com.dede.sonimei.sourceKey
-import com.dede.sonimei.util.extends.applyLifecycle
+import com.dede.sonimei.util.extends.applyFragmentLifecycle
 import com.dede.sonimei.util.extends.kson.fromJson
 import org.jetbrains.anko.AnkoLogger
 
@@ -42,11 +42,11 @@ class SearchPresenter(val view: ISearchView, @MusicSource source: Int) : AnkoLog
                 .params("filter", "name")
                 .params("page", page.toString())
                 .post()
-                .applyLifecycle(view.provider())
+                .applyFragmentLifecycle(view.provider())
                 .map { BaseData(it) }
                 .filter {
                     if (!it.trueStatus()) {
-                        this.page--
+                        if (isLoadMore) this.page--
                         view.hideLoading()
                         view.loadError(isLoadMore, it.error)
                     }

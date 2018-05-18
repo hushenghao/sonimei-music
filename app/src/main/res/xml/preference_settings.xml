@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="下载选项">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="wifi_download"
+            android:title="仅在Wi-Fi下下载" />
+
+        <Preference
+            android:key="custom_path"
+            android:title="自定义下载路径" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="其他">
+
+        <Preference
+            android:key="join_qq_group"
+            android:summary="296513604"
+            android:title="加入QQ群" />
+
+        <Preference
+            android:summary="如有bug，欢迎反馈"
+            android:title="正在开发中..." />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,10 +1,6 @@
 package com.dede.sonimei.module.home
 
-import android.app.DownloadManager
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.SparseArray
 import android.widget.ImageView
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -14,11 +10,11 @@ import com.dede.sonimei.NETEASE
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.sourceName
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.load
 import com.dede.sonimei.util.extends.notNull
-import com.trello.rxlifecycle2.LifecycleProvider
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
@@ -93,7 +89,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         toast(msg ?: "网络错误")
     }
 
-    override fun provider(): LifecycleProvider<*> = this
+    override fun provider() = this
 
     @MusicSource
     private val source by lazy { arguments?.getInt(BUNDLE_SOURCE_KEY) ?: NETEASE }
@@ -101,15 +97,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     private val presenter by lazy { SearchPresenter(this, source) }
 
     // 列表适配器
-    private val adapter by lazy {
-        object : BaseQuickAdapter<SearchSong, BaseViewHolder>(R.layout.item_search_result) {
-            override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
-                helper?.setText(R.id.tv_name, item?.title)
-                helper?.getView<ImageView>(R.id.iv_album_img)?.load(item?.pic)
-                helper?.setText(R.id.tv_singer_album, item?.author)
-            }
-        }
-    }
+    private lateinit var adapter: BaseQuickAdapter<SearchSong, BaseViewHolder>
 
     override fun getLayoutId() = R.layout.fragment_search_result
 
@@ -123,23 +111,24 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         }
 //        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 //        manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
+        adapter = object : BaseQuickAdapter<SearchSong, BaseViewHolder>(R.layout.item_search_result) {
+            override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
+                helper?.setText(R.id.tv_name, item?.title)
+                helper?.getView<ImageView>(R.id.iv_album_img)?.load(item?.pic)
+                helper?.setText(R.id.tv_singer_album, item?.author)
+            }
+        }
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
         recycler_view.adapter = adapter
         adapter.setOnItemClickListener { _, _, position ->
             if (position >= adapter.data.size) return@setOnItemClickListener
-            val song = adapter.data[position]
-            val request = DownloadManager.Request(Uri.parse(song.url))
-            request.setTitle(song.getName())
-            request.setMimeType("audio/mpeg")
-            request.setDescription(getString(R.string.app_name))
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/sonimei/" + song.getName() + ".mp3")
-            downloadManager.enqueue(request)
+            val song = adapter.data[position] ?: return@setOnItemClickListener
+            DownloadHelper.getInstance(context!!)
+                    .download(song)
         }
         adapter.setEmptyView(R.layout.layout_search_empty)
     }
 
-    private val downloadManager by lazy { context!!.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager }
 
     override fun everyLoad() {
         val searchText = getSearchText()
@@ -156,6 +145,11 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         this.searchText = search
         info(sourceName(source) + " 搜索： " + this.searchText)
         presenter.search(this.searchText!!)
+    }
+
+    override fun onDestroyView() {
+        searchText = null
+        super.onDestroyView()
     }
 
 }

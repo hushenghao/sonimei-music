@@ -9,9 +9,11 @@ import android.view.Menu
 import android.view.MenuItem
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseActivity
+import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.sourceArray
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
@@ -61,6 +63,10 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
+            R.id.menu_setting->{
+                startActivity<SettingActivity>()
+                true
+            }
             R.id.menu_about -> {
                 true
             }

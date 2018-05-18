@@ -1,7 +1,9 @@
 package com.dede.sonimei
 
+import android.os.Environment
 import android.support.annotation.IntDef
 import android.util.SparseArray
+import java.io.File
 
 /**
  * Created by hsh on 2018/5/15.
@@ -66,3 +68,5 @@ val sourceArray: ArrayList<Int> by lazy {
 fun sourceName(@MusicSource key: Int): String = sourceMap[key].first
 fun sourceKey(@MusicSource key: Int): String = sourceMap[key].second
 
+// 默认下载路径
+val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"sonimei")
