@@ -13,16 +13,12 @@ import com.dede.sonimei.defaultDownloadPath
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.info
-import org.jetbrains.anko.startActivityForResult
 
 /**
  * Created by hsh on 2018/5/17.
  */
 const val KEY_CUSTOM_PATH = "custom_path"
 const val KEY_WIFI_DOWNLOAD = "wifi_download"
-const val KEY_EDIT_SOURCE = "edit_source"
-
-const val EDIT_SOURCE_CODE = 2
 
 class Settings : PreferenceFragment(),
         AnkoLogger,
@@ -44,10 +40,6 @@ class Settings : PreferenceFragment(),
                 } catch (e: ActivityNotFoundException) {
                     e.printStackTrace()
                 }
-                true
-            }
-            KEY_EDIT_SOURCE -> {
-                activity.startActivityForResult<EditSourceActivity>(EDIT_SOURCE_CODE)
                 true
             }
             else -> false
@@ -80,7 +72,6 @@ class Settings : PreferenceFragment(),
             customPath.summary = defaultSharedPreferences
                     .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
         }
-        findPreference(KEY_EDIT_SOURCE).onPreferenceClickListener = this
     }
 
     override fun onResume() {

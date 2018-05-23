@@ -9,4 +9,6 @@
     <color name="text1">#333</color>
     <color name="text2">#666</color>
     <color name="line">#e5e5e5</color>
+    <color name="search_bar_tint">#737373</color>
+    <color name="icon_tint">#939393</color>
 </resources>

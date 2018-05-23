@@ -20,6 +20,7 @@
         android:layout_marginBottom="6dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="12dp"
+        android:layout_toLeftOf="@id/iv_download"
         android:layout_toRightOf="@id/iv_album_img"
         android:ellipsize="end"
         android:maxLines="1"
@@ -34,12 +35,24 @@
         android:layout_below="@id/tv_name"
         android:layout_marginBottom="12dp"
         android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/iv_download"
         android:layout_toRightOf="@id/iv_album_img"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/text2"
         android:textSize="11sp"
         tools:text="陈奕迅 - 不想放手" />
+
+    <ImageView
+        android:id="@+id/iv_download"
+        android:layout_width="30dp"
+        android:padding="6dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_music_download"
+        android:tint="@color/icon_tint" />
 
     <View
         android:layout_width="match_parent"

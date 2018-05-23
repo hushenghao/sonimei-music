@@ -1,6 +1,7 @@
 package com.dede.sonimei.module.home
 
 import com.dede.sonimei.MusicSource
+import com.dede.sonimei.NETEASE
 import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
@@ -12,19 +13,20 @@ import org.jetbrains.anko.AnkoLogger
 /**
  * Created by hsh on 2018/5/15.
  */
-class SearchPresenter(val view: ISearchView, @MusicSource source: Int) : AnkoLogger {
-
-    private val type = sourceKey(source)
+class SearchPresenter(val view: ISearchView) : AnkoLogger {
 
     private var page = 1
     private var pageSize = 10
     private var search = ""
+    @MusicSource
+    private var source = NETEASE
 
     fun pagerSize() = this.pageSize
 
-    fun search(search: String) {
+    fun search(search: String, @MusicSource source: Int) {
         this.search = search
         this.page = 1
+        this.source = source
         view.showLoading()
         loadList(false, this.search)
     }
@@ -38,7 +40,7 @@ class SearchPresenter(val view: ISearchView, @MusicSource source: Int) : AnkoLog
         HttpUtil.Builder()
                 .header("X-Requested-With", "XMLHttpRequest")
                 .params("input", search)
-                .params("type", type)
+                .params("type", sourceKey(source))
                 .params("filter", "name")
                 .params("page", page.toString())
                 .post()

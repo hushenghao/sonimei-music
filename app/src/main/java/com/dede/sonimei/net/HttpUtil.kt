@@ -42,9 +42,9 @@ class HttpUtil private constructor() {
                         HttpLoggingInterceptor.Level.NONE
             val httpClient = OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .connectTimeout(15, TimeUnit.SECONDS)
-                    .writeTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(20, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(20, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
                     .build()
 
             retrofit = Retrofit.Builder()

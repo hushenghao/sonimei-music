@@ -13,5 +13,10 @@
         <item name="overlapAnchor">false</item>
     </style>
 
+    <dimen name="search_list_bottom_margin">55dp</dimen>
 
+    <style name="seekBar" parent="Widget.AppCompat.SeekBar">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
 </resources>

@@ -1,31 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".module.home.MainActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/search_bar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/colorPrimary"
-            app:tabIndicatorColor="@color/indicatorColor"
-            app:tabIndicatorHeight="2dp"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/tabTextColor" />
+            android:layout_height="53dp"
+            android:layout_marginTop="25dp"
+            app:floatingSearch_actionMenuOverflowColor="@color/search_bar_tint"
+            app:floatingSearch_clearBtnColor="@color/search_bar_tint"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
+            app:floatingSearch_dimBackground="false"
+            app:floatingSearch_leftActionColor="@color/search_bar_tint"
+            app:floatingSearch_leftActionMode="showSearch"
+            app:floatingSearch_menu="@menu/menu_home"
+            app:floatingSearch_menuItemIconColor="@color/search_bar_tint"
+            app:floatingSearch_searchBarMarginLeft="10dp"
+            app:floatingSearch_searchBarMarginRight="10dp"
+            app:floatingSearch_searchBarMarginTop="0dp"
+            app:floatingSearch_searchHint="搜索..."
+            app:floatingSearch_searchInputTextSize="5.0dp"
+            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_suggestionRightIconColor="@color/search_bar_tint"
+            app:floatingSearch_suggestionsListAnimDuration="80"
+            app:floatingSearch_viewTextColor="@color/text2"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+        <LinearLayout
+            android:id="@+id/ll_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_menu_source"
+                android:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_source_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                tools:text="来源" />
+        </LinearLayout>
+
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
+    <fragment
+        android:id="@+id/search_list"
+        android:name="com.dede.sonimei.module.home.SearchResultFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-</LinearLayout>
+
+    <com.dede.sonimei.component.BottomSheetLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="5dp"
+        android:background="#eeffffff"
+        app:behavior_peekHeight="@dimen/search_list_bottom_margin"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <fragment
+            android:id="@+id/play_fragment"
+            android:name="com.dede.sonimei.module.play.PlayFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.dede.sonimei.component.BottomSheetLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/float_action_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_arrow_up"
+        app:backgroundTint="@color/white"
+        app:elevation="6dp"
+        app:fabCustomSize="22dp"
+        app:layout_anchor="@id/bottom_sheet"
+        app:layout_anchorGravity="center_horizontal"
+        app:rippleColor="@color/colorAccent" />
+
+</android.support.design.widget.CoordinatorLayout>

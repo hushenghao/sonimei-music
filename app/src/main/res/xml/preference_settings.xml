@@ -3,15 +3,6 @@
     android:persistent="true"
     android:title="@string/setting_label">
 
-    <PreferenceCategory android:title="音乐">
-
-        <Preference
-            android:key="edit_source"
-            android:summary="修改搜索页的来源显示"
-            android:title="@string/edit_source_label" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="下载选项">
 
         <CheckBoxPreference

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_bottom_play"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/search_list_bottom_margin"
+    android:background="@color/white"
+    tools:showIn="@layout/fragment_play">
+
+    <ImageView
+        android:id="@+id/iv_album_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp"
+        android:scaleType="center" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/iv_download"
+        android:layout_toRightOf="@id/iv_album_img"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text1"
+            android:textSize="12sp"
+            tools:text="不要说话" />
+
+        <TextView
+            android:id="@+id/tv_lrc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text2"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="陈奕迅 - 不想放手" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_play"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/ic_pause_status"
+        android:tint="@color/icon_tint" />
+
+</RelativeLayout>
