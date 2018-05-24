@@ -196,14 +196,14 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
             toggleBottomSheet()
         }
         // 隐藏mini play control
-        float_action_bt.gone()
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+//        float_action_bt.gone()
+//        behavior.state = BottomSheetBehavior.STATE_HIDDEN
 //        behavior.peekHeight = 0
     }
 
     fun playSong(song: SearchSong) {
-        behavior.isHideable = false
-        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+//        behavior.isHideable = false
+//        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         playFragment.playSong(song)
     }
 
