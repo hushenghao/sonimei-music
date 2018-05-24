@@ -48,6 +48,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
         iv_play_bottom.setOnClickListener(playClick)
 
         iv_play.isClickable = false
+        iv_play_bottom.isClickable = false
+        sb_progress.isEnabled = false
 
         val volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
@@ -96,6 +98,11 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
     fun playSong(song: SearchSong) {
         // bottomSheet mini control
         iv_play.isClickable = false
+        iv_play_bottom.isClickable = false
+        sb_progress.max = 1000// 提高精度
+        sb_progress.progress = 0
+        sb_progress.secondaryProgress = 0
+        sb_progress.isEnabled = false
         iv_album_img.load(song.pic)
         tv_name.text = song.getName()
 
@@ -115,7 +122,12 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         }
         mediaPlayer.setDataSource(song.url)
-        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
+            if (percent >= 100) {
+                mp.setOnBufferingUpdateListener(null)
+            }
+            sb_progress.secondaryProgress = percent * 10
+        }
         // 准备完成后播放
         mediaPlayer.setOnPreparedListener(this)
         // 播放完回调
@@ -123,13 +135,11 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
             iv_play.setImageResource(R.drawable.ic_pause_status)
             iv_play_bottom.setImageResource(R.drawable.ic_pause_status)
         }
-        mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
-
-        }
         mediaPlayer.setOnErrorListener { _, what, extra ->
             toast("在线播放错误")
             false
         }
+        mediaPlayer.prepareAsync()// 异步准备
     }
 
     /**
@@ -138,33 +148,50 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
     override fun onPrepared(mp: MediaPlayer) {
         val duration = mp.duration
         tv_all_time.text = duration.toTime()
-        sb_progress.max = duration
-
+        iv_play_bottom.isClickable = true
+        sb_progress.isEnabled = true
         iv_play.isClickable = true
         iv_play.setImageResource(R.drawable.ic_play_status)
         iv_play_bottom.setImageResource(R.drawable.ic_play_status)
 
+        var isTouch = false// 控制SeekBar触摸时不根据时间改变进度
         disposable?.dispose()
         disposable = Observable.interval(0L, 1L, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .filter { !mediaPlayer.isPlaying }
                 .subscribe {
-                    if (it > duration) {
+                    val currentPosition = mediaPlayer.currentPosition
+                    if (currentPosition >= duration) {
                         disposable?.dispose()
                         disposable = null
                         return@subscribe
                     }
-                    sb_progress.progress = mediaPlayer.currentPosition
-                    tv_now_time.text = mediaPlayer.currentPosition.toTime()
+                    if (!isTouch) {
+                        val progress = (currentPosition.toFloat() / duration * 1000 + .5).toInt()
+                        sb_progress.progress = progress
+                    }
                 }
 
-        mp.start()
         sb_progress.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//                tv_now_time.text = progress.toTime()
+                val time = (progress / 1000f * duration + .5).toInt()
+                tv_now_time.text = time.toTime()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isTouch = true
+            }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                isTouch = false
                 val progress = seekBar!!.progress
-                if (progress <= mediaPlayer.duration)
-                    mediaPlayer.seekTo(progress)
+                val time = (progress / 1000f * duration + .5).toInt()
+                if (time <= mediaPlayer.duration)
+                    mediaPlayer.seekTo(time)
             }
         })
+
+        mp.start()// 准备就绪那就开始播放
     }
 
     override fun onDestroy() {

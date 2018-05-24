@@ -76,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="5dp"
-        android:background="#eeffffff"
+        android:background="#d6dedede"
         app:behavior_peekHeight="@dimen/search_list_bottom_margin"
         app:layout_behavior="@string/bottom_sheet_behavior">
 

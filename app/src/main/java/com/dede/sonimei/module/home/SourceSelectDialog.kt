@@ -3,8 +3,8 @@ package com.dede.sonimei.module.home
 import android.content.Context
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -16,23 +16,24 @@ import com.dede.sonimei.data.Source
 import com.dede.sonimei.sourceList
 import com.dede.sonimei.util.extends.color
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.find
 
 /**
  * Created by hsh on 2018/5/23.
  */
 class SourceSelectDialog(context: Context, @MusicSource val source: Int) : BottomSheetDialog(context) {
 
-    private val recyclerView: RecyclerView = RecyclerView(context)
+    private val recyclerView: RecyclerView
     private val adapter: Adapter
     private val list = sourceList
 
     init {
-        recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_select_source, null, false)
+        recyclerView = view.find(R.id.source_list)
         adapter = Adapter(list)
         recyclerView.adapter = adapter
 
-        setContentView(recyclerView, FrameLayout.LayoutParams(-1, context.dip(300)))
+        setContentView(view, FrameLayout.LayoutParams(-1, context.dip(300)))
 
         val behavior = BottomSheetBehavior
                 .from(this.delegate.findViewById<View>(android.support.design.R.id.design_bottom_sheet))

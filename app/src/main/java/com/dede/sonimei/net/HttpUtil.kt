@@ -42,7 +42,7 @@ class HttpUtil private constructor() {
                         HttpLoggingInterceptor.Level.NONE
             val httpClient = OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build()

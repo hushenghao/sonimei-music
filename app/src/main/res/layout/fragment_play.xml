@@ -37,14 +37,14 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:layout_marginLeft="20dp"
                 android:src="@drawable/ic_volume" />
 
             <SeekBar
                 android:id="@+id/sb_volume"
-                style="@style/seekBar"
+                style="@style/volumeSeekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
@@ -74,7 +74,7 @@
 
             <SeekBar
                 android:id="@+id/sb_progress"
-                style="@style/seekBar"
+                style="@style/mediaSeekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
