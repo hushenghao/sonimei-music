@@ -1,5 +1,6 @@
 package com.dede.sonimei.module.setting
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.preference.Preference
+import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
 import com.dede.sonimei.R
 import com.dede.sonimei.defaultDownloadPath
@@ -18,6 +20,7 @@ import org.jetbrains.anko.info
  * Created by hsh on 2018/5/17.
  */
 const val KEY_CUSTOM_PATH = "custom_path"
+const val KEY_DOWNLOAD_SETTING = "download_setting"
 const val KEY_WIFI_DOWNLOAD = "wifi_download"
 
 class Settings : PreferenceFragment(),
@@ -27,11 +30,12 @@ class Settings : PreferenceFragment(),
 
     private val selectPathCode = 1
 
+    @SuppressLint("InlinedApi")
     override fun onPreferenceClick(preference: Preference?): Boolean {
         return when (preference?.key) {
             KEY_CUSTOM_PATH -> {
                 if (!isLollipop) {
-                    false
+                    return false
                 }
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 try {
@@ -66,7 +70,8 @@ class Settings : PreferenceFragment(),
 
         val customPath = findPreference(KEY_CUSTOM_PATH)
         if (!isLollipop) {
-            preferenceScreen.removePreference(customPath)
+            (findPreference(KEY_DOWNLOAD_SETTING) as PreferenceCategory)
+                    .removePreference(customPath)
         } else {
             customPath.onPreferenceClickListener = this
             customPath.summary = defaultSharedPreferences

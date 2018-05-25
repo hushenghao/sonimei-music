@@ -2,18 +2,20 @@
 <resources>
     <color name="colorPrimary">#3b7aff</color>
     <color name="colorPrimaryDark">#3b7aff</color>
-    <color name="colorAccent">#f16896</color>
-    <color name="indicatorColor">#f1f1f1</color>
+    <color name="colorAccent">#6395ff</color>
+
     <color name="white">@android:color/white</color>
-    <color name="tabTextColor">#ededed</color>
     <color name="text1">#333</color>
     <color name="text2">#666</color>
     <color name="line">#e5e5e5</color>
+
     <color name="search_bar_tint">#696969</color>
-    <color name="icon_tint">#6e6e6e</color>
+    <color name="icon_tint">#7e7e7e</color>
 
+    <color name="play_icon_tint">#e7e7e7</color>
+    <color name="play_text2">#dcdcdc</color>
 
-    <color name="seek_bar_bg">#a7a7a7</color>
-    <color name="seek_bar_second_pb">#cccccc</color>
-    <color name="seek_bar_pb">#f2f2f2</color>
+    <color name="seek_bar_bg">#787878</color>
+    <color name="seek_bar_second_pb">#acacac</color>
+    <color name="seek_bar_pb">#f5f5f5</color>
 </resources>

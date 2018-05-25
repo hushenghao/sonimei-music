@@ -4,6 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.LayerDrawable
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -11,11 +15,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.SeekBarChangeListener
 import com.dede.sonimei.data.search.SearchSong
-import com.dede.sonimei.util.extends.load
+import com.dede.sonimei.net.GlideApp
+import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.extends.toTime
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -103,9 +110,19 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
         sb_progress.progress = 0
         sb_progress.secondaryProgress = 0
         sb_progress.isEnabled = false
-        iv_album_img.load(song.pic)
         tv_name.text = song.getName()
-
+        GlideApp.with(this)
+                .asBitmap()
+                .load(song.pic)
+                .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        iv_album_img.setImageBitmap(resource)
+                        val colorDrawable = ColorDrawable(0x55000000)
+                        val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
+                        val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable, colorDrawable))
+                        ll_play_content.background = layerDrawable
+                    }
+                })
         // control
         tv_title.text = song.title
         tv_singer.text = song.author
@@ -156,8 +173,9 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
 
         var isTouch = false// 控制SeekBar触摸时不根据时间改变进度
         disposable?.dispose()
-        disposable = Observable.interval(0L, 1L, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                .filter { !mediaPlayer.isPlaying }
+        disposable = Observable.interval(0, 300L,
+                TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .filter { mediaPlayer.isPlaying }
                 .subscribe {
                     val currentPosition = mediaPlayer.currentPosition
                     if (currentPosition >= duration) {
@@ -196,8 +214,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mediaPlayer.isPlaying)
-            mediaPlayer.release()
+        mediaPlayer.setOnPreparedListener(null)
+        mediaPlayer.release()
         disposable?.dispose()
         context!!.unregisterReceiver(volumeChangeReceiver)
     }

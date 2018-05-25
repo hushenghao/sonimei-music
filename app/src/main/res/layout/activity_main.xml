@@ -36,7 +36,7 @@
             app:layout_scrollFlags="scroll|enterAlways" />
 
         <LinearLayout
-            android:id="@+id/ll_bottom_bar"
+            android:id="@+id/ll_source_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
@@ -63,20 +63,27 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/search_list"
-        android:name="com.dede.sonimei.module.home.SearchResultFragment"
+    <!--搜索结果列表-->
+    <FrameLayout
+        android:id="@+id/fl_search_result"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <fragment
+            android:id="@+id/search_list"
+            android:name="com.dede.sonimei.module.home.SearchResultFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
+    <!--自定义FrameLayout 在Bottom Sheet 打开时拦截所有触摸事件-->
     <com.dede.sonimei.component.BottomSheetLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#cd2e2b2b"
         android:elevation="5dp"
-        android:background="#d6dedede"
         app:behavior_peekHeight="@dimen/search_list_bottom_margin"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -86,18 +93,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </com.dede.sonimei.component.BottomSheetLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/float_action_bt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:src="@drawable/ic_arrow_up"
-        app:backgroundTint="@color/white"
-        app:elevation="6dp"
-        app:fabCustomSize="22dp"
-        app:layout_anchor="@id/bottom_sheet"
-        app:layout_anchorGravity="center_horizontal"
-        app:rippleColor="@color/colorAccent" />
 
 </android.support.design.widget.CoordinatorLayout>

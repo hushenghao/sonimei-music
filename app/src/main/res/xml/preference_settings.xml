@@ -3,7 +3,9 @@
     android:persistent="true"
     android:title="@string/setting_label">
 
-    <PreferenceCategory android:title="下载选项">
+    <PreferenceCategory
+        android:key="download_setting"
+        android:title="下载选项">
 
         <CheckBoxPreference
             android:defaultValue="false"

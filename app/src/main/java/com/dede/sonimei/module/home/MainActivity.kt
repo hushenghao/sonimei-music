@@ -1,18 +1,12 @@
 package com.dede.sonimei.module.home
 
 import android.Manifest
-import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.renderscript.Allocation
-import android.renderscript.Element
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
 import android.support.design.widget.BottomSheetBehavior
 import android.view.MenuItem
 import android.view.View
@@ -27,11 +21,13 @@ import com.dede.sonimei.component.CircularRevealDrawable
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
-import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.extends.color
+import com.dede.sonimei.util.extends.hide
+import com.dede.sonimei.util.extends.notNull
+import com.dede.sonimei.util.extends.show
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
-import org.jetbrains.anko.dip
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -49,7 +45,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                             tv_source_name.text = sourceName(source)
                             val query = search_bar.query
                             if (query.notNull()) {
-                                fragment.search(query, source)
+                                searchResultFragment.search(query, source)
                             }
                             drawable.play(it.color)
                         }
@@ -73,31 +69,10 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
 
     private lateinit var behavior: BottomSheetBehavior<FrameLayout>
     private lateinit var drawable: CircularRevealDrawable
-    private lateinit var fragment: SearchResultFragment
+    private lateinit var searchResultFragment: SearchResultFragment
     private lateinit var playFragment: PlayFragment
     @MusicSource
     private var source: Int = NETEASE
-
-    fun getBg(): Bitmap {
-        val inB = Bitmap.createBitmap(dip(50), dip(50), Bitmap.Config.ARGB_4444)
-        val canvas = Canvas(inB)
-        canvas.drawColor(0x99ffffff.toInt())
-
-        val bitmap = Bitmap.createBitmap(dip(50), dip(50), Bitmap.Config.ARGB_4444)
-
-        val script = RenderScript.create(this)
-        val input = Allocation.createFromBitmap(script, inB, Allocation.MipmapControl.MIPMAP_NONE,
-                Allocation.USAGE_SCRIPT)
-        val output = Allocation.createTyped(script, input.type)
-        val blur = ScriptIntrinsicBlur.create(script, Element.U8_4(script))
-        blur.setInput(input)
-        blur.setRadius(3f)
-        blur.forEach(output)
-        output.copyTo(bitmap)
-        script.destroy()
-        blur.destroy()
-        return bitmap
-    }
 
     override fun initView(savedInstanceState: Bundle?) {
         supportActionBar?.hide()
@@ -110,7 +85,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 
-        fragment = supportFragmentManager.findFragmentById(R.id.search_list) as SearchResultFragment
+        searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_list) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
         drawable = CircularRevealDrawable(color(R.color.colorPrimary))
@@ -120,19 +95,18 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
             drawable.play(color)
         }, 200)
         tv_source_name.text = sourceName(source)
-//        bottom_sheet.background = BitmapDrawable(getBg())
 
         app_bar.addOnOffsetChangedListener { _, verticalOffset ->
             val topMargin = (search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
             val h = search_bar.height + topMargin
             val a = 1f - Math.abs(verticalOffset).toFloat() / h
-            ll_bottom_bar.alpha = a
+            ll_source_bar.alpha = a
         }
 
         search_bar.setOnMenuItemClickListener(this)
         search_bar.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
             override fun onSearchAction(currentQuery: String?) {
-                fragment.search(currentQuery, source)
+                searchResultFragment.search(currentQuery, source)
             }
 
             override fun onSuggestionClicked(searchSuggestion: SearchSuggestion?) {
@@ -142,11 +116,13 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
 
         behavior = BottomSheetBehavior.from(bottom_sheet)
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            var isBlackBar = false
+            private var isBlackBar = false
+            // private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            private val isM = false
+            @SuppressLint("InlinedApi")
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
                 if (slideOffset > 0.85f) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (isM) {
                         if (!isBlackBar) {
                             // 状态栏黑色字体
                             window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
@@ -158,7 +134,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                     rl_bottom_play.hide()
                     bottom_sheet.open = true
                 } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (isM) {
                         if (isBlackBar) {
                             // 状态栏白色字体
                             window.decorView.systemUiVisibility = window.decorView.systemUiVisibility xor
@@ -174,63 +150,48 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                 var a = 1 - slideOffset * 1.4f
                 if (a < 0f) a = 0f
                 search_bar.alpha = a
-                rl_bottom_play.alpha = a
+                var b = 1 - slideOffset * 2f
+                if (b < 0f) b = 0f
+                rl_bottom_play.alpha = b
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        if (!arrowIsTop) {
-                            arrow2up()
-                        }
-                    }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        if (arrowIsTop) {
-                            arrow2Bottom()
-                        }
-                    }
-                }
+//                when (newState) {
+//                    BottomSheetBehavior.STATE_COLLAPSED -> {
+//                    }
+//                    BottomSheetBehavior.STATE_EXPANDED -> {
+//                    }
+//                }
             }
         })
-        float_action_bt.onClick {
+        rl_bottom_play.onClick {
             toggleBottomSheet()
         }
         // 隐藏mini play control
-//        float_action_bt.gone()
-//        behavior.state = BottomSheetBehavior.STATE_HIDDEN
-//        behavior.peekHeight = 0
+        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        behavior.peekHeight = 0
     }
 
+    /**
+     * 播放音乐
+     */
     fun playSong(song: SearchSong) {
-//        behavior.isHideable = false
-//        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        // 显示 mini play control
+        behavior.isHideable = false
+        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        val bottomDimens = resources.getDimensionPixelSize(R.dimen.search_list_bottom_margin)
+        behavior.peekHeight = bottomDimens
+        fl_search_result.setPadding(0, 0, 0, bottomDimens)
+
         playFragment.playSong(song)
     }
-
-    private var arrowIsTop = true
 
     private fun toggleBottomSheet() {
         if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            arrow2Bottom()
         } else {
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            arrow2up()
         }
-    }
-
-    private fun arrow2up() {
-        arrowIsTop = true
-        ObjectAnimator.ofFloat(float_action_bt, "rotation", -180f, 0f)
-                .setDuration(200)
-                .start()
-    }
-
-    private fun arrow2Bottom() {
-        arrowIsTop = false
-        ObjectAnimator.ofFloat(float_action_bt, "rotation", 0f, 180f)
-                .setDuration(200)
-                .start()
     }
 
     private val rxPermissions by lazy { RxPermissions(this) }

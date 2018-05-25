@@ -54,7 +54,7 @@
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="20dp"
         android:src="@drawable/ic_pause_status"
         android:tint="@color/icon_tint" />
 

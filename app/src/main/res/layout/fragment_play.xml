@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/ll_play_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -15,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
-            android:textColor="@color/text1"
+            android:textColor="@color/white"
             android:textSize="14sp"
             tools:text="不要说话" />
 
@@ -26,7 +27,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="25dp"
             android:layout_marginTop="3dp"
-            android:textColor="@color/text2"
+            android:textColor="@color/play_icon_tint"
             android:textSize="10sp"
             tools:text="陈奕迅" />
 
@@ -39,7 +40,8 @@
             <ImageView
                 android:layout_width="15dp"
                 android:layout_height="15dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="30dp"
+                android:tint="@color/play_icon_tint"
                 android:src="@drawable/ic_volume" />
 
             <SeekBar
@@ -47,7 +49,7 @@
                 style="@style/volumeSeekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="30dp"
                 android:layout_weight="1" />
         </LinearLayout>
 
@@ -69,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:text="00:00"
-                android:textColor="@color/text2"
+                android:textColor="@color/play_text2"
                 android:textSize="10sp" />
 
             <SeekBar
@@ -85,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp"
                 android:text="--:--"
-                android:textColor="@color/text2"
+                android:textColor="@color/play_text2"
                 android:textSize="10sp" />
 
         </LinearLayout>
@@ -104,7 +106,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_toLeftOf="@id/iv_play_bottom"
                 android:src="@drawable/ic_skip_previous"
-                android:tint="@color/icon_tint" />
+                android:tint="@color/play_icon_tint" />
 
             <ImageView
                 android:id="@+id/iv_play_bottom"
@@ -112,7 +114,7 @@
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/ic_pause_status"
-                android:tint="@color/icon_tint" />
+                android:tint="@color/play_icon_tint" />
 
             <ImageView
                 android:id="@+id/iv_play_next"
@@ -122,7 +124,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_toRightOf="@id/iv_play_bottom"
                 android:src="@drawable/ic_skip_next"
-                android:tint="@color/icon_tint" />
+                android:tint="@color/play_icon_tint" />
 
         </RelativeLayout>
 

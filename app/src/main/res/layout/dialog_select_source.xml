@@ -15,6 +15,7 @@
         android:drawableLeft="@drawable/ic_menu_source"
         android:drawablePadding="8dp"
         android:drawableTint="@color/icon_tint"
+        android:gravity="center_vertical"
         android:text="选择搜索来源"
         android:textColor="@color/text1"
         android:textSize="15sp" />
