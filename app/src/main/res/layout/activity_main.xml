@@ -28,7 +28,7 @@
             app:floatingSearch_searchBarMarginRight="10dp"
             app:floatingSearch_searchBarMarginTop="0dp"
             app:floatingSearch_searchHint="搜索..."
-            app:floatingSearch_searchInputTextSize="5.0dp"
+            app:floatingSearch_searchInputTextSize="5.5dp"
             app:floatingSearch_showSearchKey="false"
             app:floatingSearch_suggestionRightIconColor="@color/search_bar_tint"
             app:floatingSearch_suggestionsListAnimDuration="80"
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/white"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 tools:text="来源" />
         </LinearLayout>
 

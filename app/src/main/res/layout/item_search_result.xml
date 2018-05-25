@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp">
+    android:paddingLeft="15dp">
 
     <ImageView
         android:id="@+id/iv_album_img"
@@ -25,7 +25,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/text1"
-        android:textSize="14sp"
+        android:textSize="15sp"
         tools:text="不要说话" />
 
     <TextView
@@ -40,17 +40,17 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/text2"
-        android:textSize="11sp"
+        android:textSize="12sp"
         tools:text="陈奕迅 - 不想放手" />
 
     <ImageView
         android:id="@+id/iv_download"
         android:layout_width="30dp"
-        android:padding="6dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
+        android:padding="6dp"
         android:src="@drawable/ic_music_download"
         android:tint="@color/icon_tint" />
 

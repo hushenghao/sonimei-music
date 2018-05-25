@@ -93,7 +93,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
         app_bar.postDelayed({
             val color = sourceColor(source)
             drawable.play(color)
-        }, 200)
+        }, 500)
         tv_source_name.text = sourceName(source)
 
         app_bar.addOnOffsetChangedListener { _, verticalOffset ->
@@ -119,6 +119,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
             private var isBlackBar = false
             // private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
             private val isM = false
+
             @SuppressLint("InlinedApi")
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 if (slideOffset > 0.85f) {
@@ -203,6 +204,11 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                 .filter { !it }
                 .subscribe { toast("读取SD卡权限被拒绝") }
+    }
+
+    override fun onPause() {
+        search_bar.clearSearchFocus()
+        super.onPause()
     }
 
     override fun onBackPressed() {

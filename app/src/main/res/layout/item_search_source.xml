@@ -11,7 +11,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="12dp"
         android:textColor="@color/text2"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <View
         android:layout_width="match_parent"

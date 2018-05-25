@@ -15,9 +15,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="25dp"
             android:textColor="@color/white"
-            android:textSize="14sp"
+            android:textSize="15sp"
             tools:text="不要说话" />
 
         <TextView
@@ -25,10 +25,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="3dp"
             android:textColor="@color/play_icon_tint"
-            android:textSize="10sp"
+            android:textSize="12sp"
             tools:text="陈奕迅" />
 
         <LinearLayout
@@ -96,22 +96,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="20dp">
 
             <ImageView
                 android:id="@+id/iv_play_previous"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="25dp"
                 android:layout_toLeftOf="@id/iv_play_bottom"
                 android:src="@drawable/ic_skip_previous"
                 android:tint="@color/play_icon_tint" />
 
             <ImageView
                 android:id="@+id/iv_play_bottom"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/ic_pause_status"
                 android:tint="@color/play_icon_tint" />
@@ -121,7 +121,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="25dp"
                 android:layout_toRightOf="@id/iv_play_bottom"
                 android:src="@drawable/ic_skip_next"
                 android:tint="@color/play_icon_tint" />
