@@ -15,9 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".module.home.MainActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".module.home.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,8 +24,7 @@
         </activity>
         <activity
             android:name=".module.setting.SettingActivity"
-            android:label="@string/setting_label"
-            android:screenOrientation="portrait" />
+            android:label="@string/setting_label" />
         <activity
             android:name=".module.setting.EditSourceActivity"
             android:label="@string/edit_source_label"

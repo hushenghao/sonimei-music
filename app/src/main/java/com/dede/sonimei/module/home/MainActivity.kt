@@ -43,7 +43,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                         .onItemSelect {
                             source = it.source
                             tv_source_name.text = sourceName(source)
-                            val query = search_bar.query
+                            val query = fsv_search_bar.query
                             if (query.notNull()) {
                                 searchResultFragment.search(query, source)
                             }
@@ -85,7 +85,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 
-        searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_list) as SearchResultFragment
+        searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
         drawable = CircularRevealDrawable(color(R.color.colorPrimary))
@@ -97,14 +97,14 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
         tv_source_name.text = sourceName(source)
 
         app_bar.addOnOffsetChangedListener { _, verticalOffset ->
-            val topMargin = (search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
-            val h = search_bar.height + topMargin
+            val topMargin = (fsv_search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
+            val h = fsv_search_bar.height + topMargin
             val a = 1f - Math.abs(verticalOffset).toFloat() / h
             ll_source_bar.alpha = a
         }
 
-        search_bar.setOnMenuItemClickListener(this)
-        search_bar.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
+        fsv_search_bar.setOnMenuItemClickListener(this)
+        fsv_search_bar.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
             override fun onSearchAction(currentQuery: String?) {
                 searchResultFragment.search(currentQuery, source)
             }
@@ -131,7 +131,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                             isBlackBar = true
                         }
                     }
-                    search_bar.hide()
+                    fsv_search_bar.hide()
                     rl_bottom_play.hide()
                     bottom_sheet.open = true
                 } else {
@@ -143,14 +143,14 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                             isBlackBar = false
                         }
                     }
-                    search_bar.show()
+                    fsv_search_bar.show()
                     rl_bottom_play.show()
                     bottom_sheet.open = false
                 }
 
                 var a = 1 - slideOffset * 1.4f
                 if (a < 0f) a = 0f
-                search_bar.alpha = a
+                fsv_search_bar.alpha = a
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
                 rl_bottom_play.alpha = b
@@ -207,7 +207,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
     }
 
     override fun onPause() {
-        search_bar.clearSearchFocus()
+        fsv_search_bar.clearSearchFocus()
         super.onPause()
     }
 

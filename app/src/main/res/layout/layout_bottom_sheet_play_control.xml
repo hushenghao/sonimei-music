@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@id/iv_download"
+        android:layout_toLeftOf="@id/iv_play"
         android:layout_toRightOf="@id/iv_album_img"
         android:gravity="center_vertical"
         android:orientation="vertical">

@@ -88,8 +88,8 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 helper?.getView<ImageView>(R.id.iv_album_img)?.load(item?.pic)
             }
         }
-        adapter.setOnLoadMoreListener({ presenter.loadMore() }, recycler_view)
-        recycler_view.adapter = adapter
+        adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
+        rv_search_list.adapter = adapter
         adapter.setOnItemChildClickListener { _, view, position ->
             if (position >= adapter.data.size) return@setOnItemChildClickListener
             val song = adapter.data[position] ?: return@setOnItemChildClickListener
