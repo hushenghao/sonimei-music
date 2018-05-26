@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/ll_play_content"
@@ -54,15 +55,26 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <Space
+        <!--和父View有滑动冲突，内部重写了onTouchEvent方法-->
+        <com.dede.sonimei.component.MyLrcView
+            android:id="@+id/lrc_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_marginTop="15dp"
+            android:layout_weight="1"
+            app:lrcAnimationDuration="220"
+            app:lrcCurrentTextColor="@color/white"
+            app:lrcDividerHeight="15dp"
+            app:lrcLabel="暂无歌词"
+            app:lrcNormalTextColor="#b5b5b5"
+            app:lrcPadding="20dp"
+            app:lrcTextSize="15sp"
+            app:lrcTimeTextSize="10sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -109,7 +121,7 @@
             <ImageView
                 android:id="@+id/iv_play_previous"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="32dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_skip_previous"
@@ -118,7 +130,7 @@
             <ImageView
                 android:id="@+id/iv_play_bottom"
                 android:layout_width="0dp"
-                android:layout_height="45dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_pause_status"
@@ -127,7 +139,7 @@
             <ImageView
                 android:id="@+id/iv_play_next"
                 android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_height="32dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_skip_next"

@@ -60,4 +60,6 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     // search bar
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+    // lrcview
+    implementation 'me.wcy:lrcview:2.0.1'
 }

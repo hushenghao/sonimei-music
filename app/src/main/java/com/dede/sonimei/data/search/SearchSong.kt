@@ -9,6 +9,7 @@ data class SearchSong(val type: String?,
                       val title: String?,
                       val author: String?,
                       val url: String?,
+                      val lrc: String?,
                       val pic: String?
 ) {
     fun getName(): String {
