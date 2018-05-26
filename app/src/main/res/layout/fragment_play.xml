@@ -69,7 +69,7 @@
             app:lrcNormalTextColor="#b5b5b5"
             app:lrcPadding="20dp"
             app:lrcTextSize="15sp"
-            app:lrcTimeTextSize="10sp" />
+            app:lrcTimeTextSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"

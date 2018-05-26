@@ -103,6 +103,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
 
     fun playSong(song: SearchSong) {
         // bottomSheet mini control
+        handler.removeCallbacks(this)
+
         iv_play.isClickable = false
         iv_play_bottom.isClickable = false
         sb_progress.max = 1000// 提高精度
