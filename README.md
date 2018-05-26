@@ -4,7 +4,7 @@
 
 ## 说明
 
-####感谢[麦葱](https://github.com/maicong/music)提供的网页版、接口和服务器支持。
+#### 感谢[麦葱](https://github.com/maicong/music)提供的网页版、接口和服务器支持。
 
 支持搜索试听以下网站音乐：
 
@@ -19,9 +19,9 @@
 | --- | --- |
 |url|http://music.sonimei.cn/ |
 |method|post|
-||请求头（必传）|
+|请求头|Ajex请求（必传）|
 |X-Requested-With|XMLHttpRequest|
-||参数列表|
+|参数列表||
 | input | 搜索内容（音乐名称/音乐id/音乐地址） |
 | type  | 音乐来源① |
 | filter | name/id/url（与input类型对应）|
