@@ -13,7 +13,7 @@ class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-//        makeActionOverflowMenuShown()
+        makeActionOverflowMenuShown()
         if (!LeakCanary.isInAnalyzerProcess(this)) {
             LeakCanary.install(this)
         }

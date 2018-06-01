@@ -22,7 +22,7 @@
 
 # data bean
 -keep class com.dede.sonimei.data.** { *; }
-# -keep public class android.support.v7.widget.SearchView { *; }
+-keep public class android.support.v7.widget.SearchView { *; }
 
 # glide
 -keep public class * implements com.bumptech.glide.module.GlideModule

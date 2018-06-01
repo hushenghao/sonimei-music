@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".module.home.MainActivity">
+        <activity
+            android:name=".module.home.MainActivity"
+            android:theme="@style/NoActonBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,10 +27,6 @@
         <activity
             android:name=".module.setting.SettingActivity"
             android:label="@string/setting_label" />
-        <activity
-            android:name=".module.setting.EditSourceActivity"
-            android:label="@string/edit_source_label"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

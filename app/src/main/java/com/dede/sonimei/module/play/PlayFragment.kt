@@ -233,6 +233,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
             mediaPlayer.seekTo(it.toInt())
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
+                iv_play.setImageResource(R.drawable.ic_play_status)
+                iv_play_bottom.setImageResource(R.drawable.ic_play_status)
                 handler.post(this)
             }
             true

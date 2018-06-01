@@ -9,58 +9,55 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
 
-        <com.arlib.floatingsearchview.FloatingSearchView
-            android:id="@+id/fsv_search_bar"
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:layout_marginTop="25dp"
-            app:floatingSearch_actionMenuOverflowColor="@color/search_bar_tint"
-            app:floatingSearch_clearBtnColor="@color/search_bar_tint"
-            app:floatingSearch_close_search_on_keyboard_dismiss="true"
-            app:floatingSearch_dimBackground="false"
-            app:floatingSearch_leftActionColor="@color/search_bar_tint"
-            app:floatingSearch_leftActionMode="showSearch"
-            app:floatingSearch_menu="@menu/menu_home"
-            app:floatingSearch_menuItemIconColor="@color/search_bar_tint"
-            app:floatingSearch_searchBarMarginLeft="10dp"
-            app:floatingSearch_searchBarMarginRight="10dp"
-            app:floatingSearch_searchBarMarginTop="0dp"
-            app:floatingSearch_searchHint="搜索..."
-            app:floatingSearch_searchInputTextSize="5.5dp"
-            app:floatingSearch_showSearchKey="false"
-            app:floatingSearch_suggestionRightIconColor="@color/search_bar_tint"
-            app:floatingSearch_suggestionsListAnimDuration="80"
-            app:floatingSearch_viewTextColor="@color/text2"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@android:color/transparent"
+            app:titleEnabled="false"
+            app:toolbarId="@id/tool_bar">
 
-        <LinearLayout
-            android:id="@+id/ll_source_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_menu_source"
-                android:tint="@color/white" />
-
-            <TextView
-                android:id="@+id/tv_source_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/ll_source_bar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:textColor="@color/white"
-                android:textSize="13sp"
-                tools:text="来源" />
-        </LinearLayout>
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="?android:attr/actionBarSize"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier=".5">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_menu_source"
+                    android:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tv_source_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    tools:text="来源" />
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/actionBarPop"
+                app:title=" " />
+        </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <!--搜索结果列表-->

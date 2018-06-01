@@ -8,13 +8,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v7.widget.SearchView
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
-import com.arlib.floatingsearchview.FloatingSearchView
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.dede.sonimei.*
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CircularRevealDrawable
@@ -32,37 +32,14 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
-class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener {
+class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        searchResultFragment.search(query, source)
+        return false
+    }
 
-    override fun onActionMenuItemSelected(item: MenuItem?) {
-        when (item?.itemId) {
-            R.id.menu_search -> {
-            }
-            R.id.menu_source -> {
-                SourceSelectDialog(this, source)
-                        .onItemSelect {
-                            source = it.source
-                            tv_source_name.text = sourceName(source)
-                            val query = fsv_search_bar.query
-                            if (query.notNull()) {
-                                searchResultFragment.search(query, source)
-                            }
-                            drawable.play(it.color)
-                        }
-                        .show()
-            }
-            R.id.menu_setting -> {
-                startActivity<SettingActivity>()
-            }
-            R.id.menu_about -> {
-            }
-            R.id.menu_github -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/hushenghao/music")))
-            }
-            R.id.menu_webview -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://music.sonimei.cn/")))
-            }
-        }
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
     }
 
     override fun getLayoutId() = R.layout.activity_main
@@ -75,7 +52,6 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
     private var source: Int = NETEASE
 
     override fun initView(savedInstanceState: Bundle?) {
-        supportActionBar?.hide()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // 全透明状态栏
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
@@ -84,6 +60,7 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
+        setSupportActionBar(tool_bar)
 
         searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
@@ -97,22 +74,11 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
         tv_source_name.text = sourceName(source)
 
         app_bar.addOnOffsetChangedListener { _, verticalOffset ->
-            val topMargin = (fsv_search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
-            val h = fsv_search_bar.height + topMargin
-            val a = 1f - Math.abs(verticalOffset).toFloat() / h
-            ll_source_bar.alpha = a
+            //            val topMargin = (fsv_search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
+//            val h = fsv_search_bar.height + topMargin
+//            val a = 1f - Math.abs(verticalOffset).toFloat() / h
+//            ll_source_bar.alpha = a
         }
-
-        fsv_search_bar.setOnMenuItemClickListener(this)
-        fsv_search_bar.setOnSearchListener(object : FloatingSearchView.OnSearchListener {
-            override fun onSearchAction(currentQuery: String?) {
-                searchResultFragment.search(currentQuery, source)
-            }
-
-            override fun onSuggestionClicked(searchSuggestion: SearchSuggestion?) {
-            }
-        })
-
 
         behavior = BottomSheetBehavior.from(bottom_sheet)
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -131,7 +97,6 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                             isBlackBar = true
                         }
                     }
-                    fsv_search_bar.hide()
                     rl_bottom_play.hide()
                     bottom_sheet.open = true
                 } else {
@@ -143,14 +108,13 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                             isBlackBar = false
                         }
                     }
-                    fsv_search_bar.show()
                     rl_bottom_play.show()
                     bottom_sheet.open = false
                 }
 
                 var a = 1 - slideOffset * 1.4f
                 if (a < 0f) a = 0f
-                fsv_search_bar.alpha = a
+//                fsv_search_bar.alpha = a
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
                 rl_bottom_play.alpha = b
@@ -206,9 +170,50 @@ class MainActivity : BaseActivity(), FloatingSearchView.OnMenuItemClickListener 
                 .subscribe { toast("读取SD卡权限被拒绝") }
     }
 
-    override fun onPause() {
-        fsv_search_bar.clearSearchFocus()
-        super.onPause()
+    private var searchView: SearchView? = null
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_home, menu)
+        searchView = (menu?.findItem(R.id.menu_search)?.actionView ?: return false) as SearchView
+        searchView?.queryHint = "音乐名称/ID/链接"
+        searchView?.imeOptions = EditorInfo.IME_ACTION_SEARCH
+        searchView?.setOnQueryTextListener(this)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.menu_source -> {
+                SourceSelectDialog(this, source)
+                        .onItemSelect {
+                            source = it.source
+                            tv_source_name.text = sourceName(source)
+                            val query = searchView?.query?.toString()
+                            if (query.notNull()) {
+                                searchResultFragment.search(query, source)
+                            }
+                            drawable.play(it.color)
+                        }
+                        .show()
+                true
+            }
+            R.id.menu_setting -> {
+                startActivity<SettingActivity>()
+                true
+            }
+            R.id.menu_about -> {
+                true
+            }
+            R.id.menu_github -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/hushenghao/music")))
+                true
+            }
+            R.id.menu_webview -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://music.sonimei.cn/")))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onBackPressed() {

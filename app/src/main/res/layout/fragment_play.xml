@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/ll_play_content"
@@ -125,7 +125,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_skip_previous"
-                android:tint="@color/play_icon_tint" />
+                android:tint="@color/play_icon_tint"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/iv_play_bottom"
@@ -143,7 +144,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_skip_next"
-                android:tint="@color/play_icon_tint" />
+                android:tint="@color/play_icon_tint"
+                android:visibility="gone" />
 
             <Space
                 android:layout_width="0dp"

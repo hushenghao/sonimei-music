@@ -9,6 +9,11 @@
         <item name="actionBarPopupTheme">@style/actionBarPop</item>
     </style>
 
+    <style name="NoActonBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="actionBarPop" parent="ThemeOverlay.AppCompat.Light">
         <item name="overlapAnchor">false</item>
     </style>
