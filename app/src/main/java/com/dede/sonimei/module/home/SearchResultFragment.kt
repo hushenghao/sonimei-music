@@ -106,8 +106,8 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         }
         adapter.setEmptyView(R.layout.layout_search_empty)
 
-        adapter.setNewData(json.fromJson())
-        adapter.loadMoreEnd()
+//        adapter.setNewData(json.fromJson())
+//        adapter.loadMoreEnd()
     }
 
     val json = "[{\n" +

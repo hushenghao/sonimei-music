@@ -20,20 +20,19 @@
 
     <dimen name="search_list_bottom_margin">55dp</dimen>
 
-    <style name="seekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:paddingLeft">10dp</item>
-        <item name="android:paddingRight">10dp</item>
-    </style>
-
-    <style name="volumeSeekBar" parent="seekBar">
+    <style name="volumeSeekBar" parent="Widget.AppCompat.SeekBar">
         <item name="android:thumb">@drawable/shape_volume_seek_thumb</item>
         <item name="android:progressDrawable">@drawable/layer_volume_seek_bg</item>
         <item name="android:maxHeight">2dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
-    <style name="mediaSeekBar" parent="seekBar">
+    <style name="mediaSeekBar" parent="Widget.AppCompat.SeekBar">
         <item name="android:maxHeight">2dp</item>
         <item name="android:thumb">@drawable/shape_media_seek_thumb</item>
         <item name="android:progressDrawable">@drawable/layer_media_seek_bg</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
     </style>
 </resources>

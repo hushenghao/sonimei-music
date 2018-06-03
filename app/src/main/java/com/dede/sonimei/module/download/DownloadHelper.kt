@@ -49,7 +49,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                     val path = Uri.parse(uriStr).path// 文件路径
                     val file = File(path)
                     if (file.exists()) {
-                        toast("文件已下载")
+                        toast("文件已经下载过了...")
                         cancel = true
                         break
                     }
@@ -64,7 +64,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             while (runningCursor.moveToNext()) {
                 val url = runningCursor.getString(runningCursor.getColumnIndex(DownloadManager.COLUMN_URI))
                 if (url == downloadUrl) {
-                    toast("正在下载中...")
+                    toast("已经正在下载了...")
                     cancel = true
                 }
             }
@@ -76,7 +76,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             while (pendingCursor.moveToNext()) {
                 val url = pendingCursor.getString(pendingCursor.getColumnIndex(DownloadManager.COLUMN_URI))
                 if (url == downloadUrl) {
-                    toast("已经在下载队列了")
+                    toast("已经在下载队列了...")
                     cancel = true
                 }
             }
@@ -107,7 +107,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             val wifiDownload = context.defaultSharedPreferences.getBoolean(KEY_WIFI_DOWNLOAD, false)
             if (wifiDownload) {
                 if (!isWifiConnected(context)) {
-                    toast("已开启仅Wi-Fi下载")
+                    toast("已开启仅Wi-Fi下载...")
                 }
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
             }
@@ -120,6 +120,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             }
             request.setDestinationUri(Uri.fromFile(File(file, song.getName() + ".mp3")))
             val id = downloadManager.enqueue(request)
+            toast("开始下载 " + song.getName())
             info("id:" + id)
         })
     }

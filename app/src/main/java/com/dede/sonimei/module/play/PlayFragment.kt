@@ -22,11 +22,14 @@ import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.SeekBarChangeListener
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.module.download.DownloadHelper
+import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -69,6 +72,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
                         AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)
             }
         })
+
+        iv_close.onClick { (activity as MainActivity?)?.toggleBottomSheet() }
     }
 
     private val audioManager by lazy { context!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
@@ -102,9 +107,9 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
     }
 
     fun playSong(song: SearchSong) {
-        // bottomSheet mini control
         handler.removeCallbacks(this)
 
+        // bottomSheet mini control
         iv_play.isClickable = false
         iv_play_bottom.isClickable = false
         sb_progress.max = 1000// 提高精度
@@ -112,13 +117,14 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         sb_progress.secondaryProgress = 0
         sb_progress.isEnabled = false
         tv_name.text = song.getName()
+        tv_name.isSelected = true
         GlideApp.with(this)
                 .asBitmap()
                 .load(song.pic)
                 .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                         iv_album_img.setImageBitmap(resource)
-                        val colorDrawable = ColorDrawable(0x55000000)
+                        val colorDrawable = ColorDrawable(0x66000000)
                         val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
                         val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable, colorDrawable))
                         ll_play_content.background = layerDrawable
@@ -126,39 +132,51 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
                 })
         // control
         tv_title.text = song.title
+        tv_title.isSelected = true
         tv_singer.text = song.author
 
         lrc_view.loadLrc(song.lrc)
 
-        mediaPlayer.reset()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaPlayer.setAudioAttributes(
-                    AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .setLegacyStreamType(AudioManager.STREAM_MUSIC)
-                            .build())
-        } else {
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        iv_download.onClick {
+            DownloadHelper.getInstance(getContext()!!)
+                    .download(song)
         }
-        mediaPlayer.setDataSource(song.url)
-        mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
-            if (percent >= 100) {
-                mp.setOnBufferingUpdateListener(null)
+
+        try {
+            mediaPlayer.reset()
+            mediaPlayer.isLooping = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mediaPlayer.setAudioAttributes(
+                        AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                                .build())
+            } else {
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             }
-            sb_progress.secondaryProgress = percent * 10// 更新缓冲进度条
-        }
-        // 准备完成后播放
-        mediaPlayer.setOnPreparedListener(this)
-        // 播放完回调
-        mediaPlayer.setOnCompletionListener {
-            iv_play.setImageResource(R.drawable.ic_pause_status)
-            iv_play_bottom.setImageResource(R.drawable.ic_pause_status)
-        }
-        mediaPlayer.setOnErrorListener { _, what, extra ->
+            mediaPlayer.setDataSource(song.url)
+            mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
+                if (percent >= 100) {
+                    mp.setOnBufferingUpdateListener(null)
+                }
+                sb_progress.secondaryProgress = percent * 10// 更新缓冲进度条
+            }
+            // 准备完成后播放
+            mediaPlayer.setOnPreparedListener(this)
+            // 播放完回调
+            mediaPlayer.setOnCompletionListener {
+                iv_play.setImageResource(R.drawable.ic_pause_status)
+                iv_play_bottom.setImageResource(R.drawable.ic_pause_status)
+            }
+            mediaPlayer.setOnErrorListener { _, what, extra ->
+                toast("在线播放错误($what:$extra)")
+                false
+            }
+            mediaPlayer.prepareAsync()// 异步准备
+        } catch (e: Exception) {
+            e.printStackTrace()
             toast("在线播放错误")
-            false
         }
-        mediaPlayer.prepareAsync()// 异步准备
     }
 
     /**
@@ -246,7 +264,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.setOnPreparedListener(null)
+        mediaPlayer.setOnPreparedListener(null)// fix leak
         mediaPlayer.release()
         handler.removeCallbacks(this)
         context!!.unregisterReceiver(volumeChangeReceiver)

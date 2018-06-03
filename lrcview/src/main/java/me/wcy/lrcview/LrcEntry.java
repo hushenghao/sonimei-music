@@ -108,26 +108,30 @@ class LrcEntry implements Comparable<LrcEntry> {
         return entryList;
     }
 
+    private static Pattern linePattern = Pattern.compile("((\\[\\d\\d:\\d\\d(\\.\\d{2,3})?\\])+)(.+)");
+    private static Pattern timePattern = Pattern.compile("\\[(\\d\\d):(\\d\\d)(\\.(\\d){2,3})?\\]");
+
     private static List<LrcEntry> parseLine(String line) {
         if (TextUtils.isEmpty(line)) {
             return null;
         }
 
         line = line.trim();
-        Matcher lineMatcher = Pattern.compile("((\\[\\d\\d:\\d\\d\\.\\d{2,3}\\])+)(.+)").matcher(line);
+        Matcher lineMatcher = linePattern.matcher(line);
         if (!lineMatcher.matches()) {
             return null;
         }
 
         String times = lineMatcher.group(1);
-        String text = lineMatcher.group(3);
+        String text = lineMatcher.group(4);
         List<LrcEntry> entryList = new ArrayList<>();
 
-        Matcher timeMatcher = Pattern.compile("\\[(\\d\\d):(\\d\\d)\\.(\\d){2,3}\\]").matcher(times);
+        Matcher timeMatcher = timePattern.matcher(times);
         while (timeMatcher.find()) {
             long min = Long.parseLong(timeMatcher.group(1));
             long sec = Long.parseLong(timeMatcher.group(2));
-            long mil = Long.parseLong(timeMatcher.group(3));
+            String millStr = timeMatcher.group(4);
+            long mil = TextUtils.isEmpty(millStr) ? 0L : Long.parseLong(millStr);
             long time = min * DateUtils.MINUTE_IN_MILLIS + sec * DateUtils.SECOND_IN_MILLIS + (mil >= 100L ? mil : mil * 10);
             entryList.add(new LrcEntry(time, text));
         }

@@ -13,12 +13,17 @@
         android:id="@+id/menu_source"
         android:icon="@drawable/ic_menu_source"
         android:title="音乐来源"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_setting"
         android:icon="@drawable/ic_menu_settings"
         android:title="设置"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_ape"
+        android:title="无损音乐下载"
         app:showAsAction="never" />
 
     <item

@@ -25,13 +25,13 @@
                 android:id="@+id/ll_source_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingTop="?android:attr/actionBarSize"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier=".5">
+                app:layout_collapseMode="parallax">
 
                 <ImageView
                     android:layout_width="20dp"

@@ -9,8 +9,7 @@
     <color name="text2">#666</color>
     <color name="line">#e5e5e5</color>
 
-    <color name="search_bar_tint">#696969</color>
-    <color name="icon_tint">#7e7e7e</color>
+    <color name="icon_tint">#626262</color>
 
     <color name="play_icon_tint">#e7e7e7</color>
     <color name="play_text2">#dcdcdc</color>

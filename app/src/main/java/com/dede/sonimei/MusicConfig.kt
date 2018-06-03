@@ -9,6 +9,13 @@ import java.io.File
 /**
  * Created by hsh on 2018/5/15.
  */
+
+/** 一些链接 */
+const val APE_LINK = "http://music.sonimei.cn/ape/"
+const val GITHUB_LINK = "https://github.com/hushenghao/music/"
+const val WEB_LINK = "http://music.sonimei.cn/"
+
+/** 音乐来源 */
 const val NETEASE: Int = 1// 网易云
 const val _1TING: Int = 2// 一听
 const val BAIDU: Int = 3
@@ -24,6 +31,9 @@ const val QINGTING: Int = 12// 蜻蜓
 const val XIMALAYA: Int = 13// 喜马拉雅
 const val KG: Int = 14// 全民k歌
 
+/**
+ * 音乐来源枚举
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @IntDef(NETEASE, _1TING, BAIDU, KUGOU, KUWO, QQ, XIAMI, _5SINGYC, _5SINGFC, MIGU, LIZHI, QINGTING, XIMALAYA, KG)
 annotation class MusicSource
@@ -74,5 +84,5 @@ fun sourceName(@MusicSource key: Int): String = sourceMap[key].name
 fun sourceKey(@MusicSource key: Int): String = sourceMap[key].key
 fun sourceColor(@MusicSource key: Int): Int = sourceMap[key].color
 
-// 默认下载路径
+/** 默认下载路径 */
 val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei")

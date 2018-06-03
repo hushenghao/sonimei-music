@@ -69,6 +69,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
         if (ex == null || mApplicationContext == null) {
             return false
         }
+        ex.printStackTrace()
         //收集设备参数信息
         collectDeviceInfo(mApplicationContext!!)
 

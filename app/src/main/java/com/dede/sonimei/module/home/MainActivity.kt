@@ -151,7 +151,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         playFragment.playSong(song)
     }
 
-    private fun toggleBottomSheet() {
+    fun toggleBottomSheet() {
         if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         } else {
@@ -175,7 +175,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
         searchView = (menu?.findItem(R.id.menu_search)?.actionView ?: return false) as SearchView
-        searchView?.queryHint = "音乐名称/ID/链接"
+//        searchView?.queryHint = "音乐名称/ID/链接"
+        searchView?.queryHint = "音乐名称"
         searchView?.imeOptions = EditorInfo.IME_ACTION_SEARCH
         searchView?.setOnQueryTextListener(this)
         return super.onCreateOptionsMenu(menu)
@@ -201,26 +202,38 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 startActivity<SettingActivity>()
                 true
             }
+            R.id.menu_ape -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(APE_LINK)))
+                true
+            }
             R.id.menu_about -> {
                 true
             }
             R.id.menu_github -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/hushenghao/music")))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_LINK)))
                 true
             }
             R.id.menu_webview -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://music.sonimei.cn/")))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(WEB_LINK)))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private var lastTime = 0L
+
     override fun onBackPressed() {
         if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             toggleBottomSheet()
             return
         }
-        super.onBackPressed()
+        val millis = System.currentTimeMillis()
+        if (lastTime + 2000L < millis) {
+            toast("再按一次退出")
+            lastTime = millis
+        } else {
+            super.onBackPressed()
+        }
     }
 }
