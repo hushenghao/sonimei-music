@@ -27,6 +27,9 @@
         <activity
             android:name=".module.setting.SettingActivity"
             android:label="@string/setting_label" />
+        <activity
+            android:name=".module.setting.SelectSourceActivity"
+            android:label="@string/select_source_label" />
     </application>
 
 </manifest>

@@ -3,6 +3,12 @@
     android:persistent="true"
     android:title="@string/setting_label">
 
+    <PreferenceCategory android:title="搜索">
+        <Preference
+            android:key="default_search_source"
+            android:title="默认搜索来源" />
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:key="download_setting"
         android:title="下载选项">

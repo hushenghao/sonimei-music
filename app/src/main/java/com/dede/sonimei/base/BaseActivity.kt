@@ -14,11 +14,19 @@ abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         setContentView(getLayoutId())
 
         initView(savedInstanceState)
 
         loadData()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     open fun loadData() {}

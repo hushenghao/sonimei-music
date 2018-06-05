@@ -10,8 +10,7 @@ import android.os.Looper
 import com.dede.sonimei.R
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
-import com.dede.sonimei.module.setting.KEY_CUSTOM_PATH
-import com.dede.sonimei.module.setting.KEY_WIFI_DOWNLOAD
+import com.dede.sonimei.module.setting.Settings
 import org.jetbrains.anko.*
 import java.io.File
 
@@ -104,7 +103,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             val request = DownloadManager.Request(Uri.parse(song.url))
             request.setTitle(song.getName())
             request.setMimeType("audio/mpeg")
-            val wifiDownload = context.defaultSharedPreferences.getBoolean(KEY_WIFI_DOWNLOAD, false)
+            val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
             if (wifiDownload) {
                 if (!isWifiConnected(context)) {
                     toast("已开启仅Wi-Fi下载...")
@@ -113,7 +112,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             }
             request.setDescription(context.resources.getString(R.string.app_name))
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            val path = context.defaultSharedPreferences.getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
+            val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
             val file = File(path)
             if (!file.exists()) {
                 file.mkdirs()

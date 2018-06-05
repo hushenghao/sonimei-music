@@ -10,29 +10,41 @@ import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
+import com.dede.sonimei.NETEASE
 import com.dede.sonimei.R
+import com.dede.sonimei.data.Source
 import com.dede.sonimei.defaultDownloadPath
+import com.dede.sonimei.sourceName
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.info
+import org.jetbrains.anko.startActivityForResult
 
 /**
  * Created by hsh on 2018/5/17.
  */
-const val KEY_CUSTOM_PATH = "custom_path"
-const val KEY_DOWNLOAD_SETTING = "download_setting"
-const val KEY_WIFI_DOWNLOAD = "wifi_download"
-
 class Settings : PreferenceFragment(),
         AnkoLogger,
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
+    companion object {
+        const val KEY_CUSTOM_PATH = "custom_path"
+        const val KEY_DOWNLOAD_SETTING = "download_setting"
+        const val KEY_WIFI_DOWNLOAD = "wifi_download"
+        const val KEY_DEFAULT_SEARCH_SOURCE = "default_search_source"
+    }
+
     private val selectPathCode = 1
+    private val selectSourceCode = 2
 
     @SuppressLint("InlinedApi")
     override fun onPreferenceClick(preference: Preference?): Boolean {
         return when (preference?.key) {
+            KEY_DEFAULT_SEARCH_SOURCE -> {
+                startActivityForResult<SelectSourceActivity>(selectSourceCode)
+                true
+            }
             KEY_CUSTOM_PATH -> {
                 if (!isLollipop) {
                     return false
@@ -64,11 +76,18 @@ class Settings : PreferenceFragment(),
 
     private val isLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
 
+    private lateinit var defaultSearchSource: Preference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preference_settings)
 
-        val customPath = findPreference(KEY_CUSTOM_PATH)
+        defaultSearchSource = findPreference(KEY_DEFAULT_SEARCH_SOURCE)// 默认搜索来源
+        val source = defaultSharedPreferences.getInt(KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
+        defaultSearchSource.summary = sourceName(source)
+        defaultSearchSource.onPreferenceClickListener = this
+
+        val customPath = findPreference(KEY_CUSTOM_PATH)// 自定义下载路径，5.0一下不可用，隐藏设置项
         if (!isLollipop) {
             (findPreference(KEY_DOWNLOAD_SETTING) as PreferenceCategory)
                     .removePreference(customPath)
@@ -92,6 +111,15 @@ class Settings : PreferenceFragment(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
+            selectSourceCode -> {
+                val source = data.getSerializableExtra("result") as Source?
+                if (source != null) {
+                    defaultSearchSource.summary = source.name
+                    defaultSharedPreferences.edit()
+                            .putInt(KEY_DEFAULT_SEARCH_SOURCE, source.source)
+                            .apply()
+                }
+            }
             selectPathCode -> {
                 val uri = data.data
                 info(uri.toString())

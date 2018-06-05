@@ -1,17 +1,13 @@
 package com.dede.sonimei.module.setting
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.dede.sonimei.R
+import com.dede.sonimei.base.BaseActivity
 
 /**
  * Created by hsh on 2018/5/17.
  */
-class SettingActivity : AppCompatActivity() {
+class SettingActivity : BaseActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setting)
-    }
+    override fun getLayoutId() = R.layout.activity_setting
 
 }

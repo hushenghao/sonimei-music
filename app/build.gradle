@@ -9,8 +9,8 @@ android {
         applicationId "com.dede.sonimei"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 4
-        versionName "0.2"
+        versionCode 5
+        versionName "0.3"
     }
     buildTypes {
         release {
@@ -59,7 +59,7 @@ dependencies {
     // base adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     // search bar
-    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+//    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     // lrcview
     //    implementation 'me.wcy:lrcview:2.0.1'
     implementation project(':lrcview')

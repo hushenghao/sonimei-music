@@ -21,6 +21,7 @@ import com.dede.sonimei.component.CircularRevealDrawable
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
+import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.util.extends.color
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.notNull
@@ -28,6 +29,7 @@ import com.dede.sonimei.util.extends.show
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -62,6 +64,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         }
         setSupportActionBar(tool_bar)
 
+        source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, source)
+
         searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
@@ -72,13 +76,6 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             drawable.play(color)
         }, 500)
         tv_source_name.text = sourceName(source)
-
-        app_bar.addOnOffsetChangedListener { _, verticalOffset ->
-            //            val topMargin = (fsv_search_bar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
-//            val h = fsv_search_bar.height + topMargin
-//            val a = 1f - Math.abs(verticalOffset).toFloat() / h
-//            ll_source_bar.alpha = a
-        }
 
         behavior = BottomSheetBehavior.from(bottom_sheet)
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -112,21 +109,12 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     bottom_sheet.open = false
                 }
 
-                var a = 1 - slideOffset * 1.4f
-                if (a < 0f) a = 0f
-//                fsv_search_bar.alpha = a
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
                 rl_bottom_play.alpha = b
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-//                when (newState) {
-//                    BottomSheetBehavior.STATE_COLLAPSED -> {
-//                    }
-//                    BottomSheetBehavior.STATE_EXPANDED -> {
-//                    }
-//                }
             }
         })
         rl_bottom_play.onClick {
