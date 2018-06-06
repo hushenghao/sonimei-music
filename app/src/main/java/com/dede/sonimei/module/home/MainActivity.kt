@@ -35,13 +35,15 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
+
     override fun onQueryTextSubmit(query: String?): Boolean {
+        searchView?.clearFocus()
         searchResultFragment.search(query, source)
-        return false
+        return false// 关闭键盘
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        return false
+        return true
     }
 
     override fun getLayoutId() = R.layout.activity_main
@@ -167,6 +169,15 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         searchView?.queryHint = "音乐名称"
         searchView?.imeOptions = EditorInfo.IME_ACTION_SEARCH
         searchView?.setOnQueryTextListener(this)
+//        searchView?.suggestionsAdapter = object :CursorAdapter(this,null,false){
+//            override fun newView(context: Context?, cursor: Cursor?, parent: ViewGroup?): View {
+//                return View(context)
+//            }
+//
+//            override fun bindView(view: View?, context: Context?, cursor: Cursor?) {
+//            }
+//
+//        }
         return super.onCreateOptionsMenu(menu)
     }
 

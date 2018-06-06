@@ -26,6 +26,9 @@ import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
+import com.dede.sonimei.util.ScreenHelper
+import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
@@ -107,6 +110,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
     }
 
     fun playSong(song: SearchSong) {
+        ll_play_content.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
+
         handler.removeCallbacks(this)
 
         // bottomSheet mini control
@@ -118,6 +123,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         sb_progress.isEnabled = false
         tv_name.text = song.getName()
         tv_name.isSelected = true
+        tv_lrc.gone()
         GlideApp.with(this)
                 .asBitmap()
                 .load(song.pic)
@@ -136,6 +142,10 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         tv_singer.text = song.author
 
         lrc_view.loadLrc(song.lrc)
+        lrc_view.setOnLineChangeListener { _, lineStr, _ ->
+            tv_lrc.show()
+            tv_lrc.text = lineStr// update mini control lrc text
+        }
 
         iv_download.onClick {
             DownloadHelper.getInstance(getContext()!!)

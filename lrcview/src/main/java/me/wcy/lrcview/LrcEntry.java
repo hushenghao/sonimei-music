@@ -58,6 +58,10 @@ class LrcEntry implements Comparable<LrcEntry> {
         this.offset = offset;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     public int compareTo(LrcEntry entry) {
         if (entry == null) {

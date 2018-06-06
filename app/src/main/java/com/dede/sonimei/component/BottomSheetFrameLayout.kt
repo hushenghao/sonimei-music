@@ -9,7 +9,7 @@ import android.widget.FrameLayout
 /**
  * Created by hsh on 2018/5/23.
  */
-class BottomSheetLayout : FrameLayout {
+class BottomSheetFrameLayout : FrameLayout {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)

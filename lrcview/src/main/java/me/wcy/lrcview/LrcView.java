@@ -51,6 +51,7 @@ public class LrcView extends View {
     private String mDefaultLabel;
     private float mLrcPadding;
     private OnPlayClickListener mOnPlayClickListener;
+    private OnLineChangeListener mOnLineChangeListener;
     private ValueAnimator mAnimator;
     private GestureDetector mGestureDetector;
     private Scroller mScroller;
@@ -71,6 +72,13 @@ public class LrcView extends View {
          * @return 是否成功消费该事件，如果成功消费，则会更新UI
          */
         boolean onPlayClick(long time);
+    }
+
+    /**
+     * 歌词改变监听
+     */
+    public interface OnLineChangeListener {
+        void onChange(int line, String lineStr, long time);
     }
 
     public LrcView(Context context) {
@@ -158,6 +166,10 @@ public class LrcView extends View {
      */
     public void setOnPlayClickListener(OnPlayClickListener onPlayClickListener) {
         mOnPlayClickListener = onPlayClickListener;
+    }
+
+    public void setOnLineChangeListener(OnLineChangeListener onLineChangeListener) {
+        mOnLineChangeListener = onLineChangeListener;
     }
 
     /**
@@ -258,6 +270,9 @@ public class LrcView extends View {
                 int line = findShowLine(time);
                 if (line != mCurrentLine) {
                     mCurrentLine = line;
+                    if (mOnLineChangeListener != null) {
+                        mOnLineChangeListener.onChange(mCurrentLine, mLrcEntryList.get(mCurrentLine).getText(), time);
+                    }
                     if (!isShowTimeline) {
                         scrollTo(line);
                     } else {

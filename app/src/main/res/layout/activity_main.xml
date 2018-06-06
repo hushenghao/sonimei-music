@@ -75,7 +75,7 @@
     </FrameLayout>
 
     <!--自定义FrameLayout 在Bottom Sheet 打开时拦截所有触摸事件-->
-    <com.dede.sonimei.component.BottomSheetLayout
+    <com.dede.sonimei.component.BottomSheetFrameLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -88,6 +88,6 @@
             android:name="com.dede.sonimei.module.play.PlayFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </com.dede.sonimei.component.BottomSheetLayout>
+    </com.dede.sonimei.component.BottomSheetFrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>
