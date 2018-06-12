@@ -18,6 +18,10 @@
         <item name="overlapAnchor">false</item>
     </style>
 
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <dimen name="search_list_bottom_margin">55dp</dimen>
 
     <style name="volumeSeekBar" parent="Widget.AppCompat.SeekBar">

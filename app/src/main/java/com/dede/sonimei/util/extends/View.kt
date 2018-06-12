@@ -22,14 +22,17 @@ fun ImageView.load(url: String?) {
 fun Context.color(@ColorRes res: Int) = ContextCompat.getColor(this, res)
 fun Fragment.color(@ColorRes res: Int) = ContextCompat.getColor(this.context!!, res)
 
-fun View.gone() {
+fun View?.gone() {
+    if (this == null) return
     this.visibility = View.GONE
 }
 
-fun View.show() {
+fun View?.show() {
+    if (this == null) return
     this.visibility = View.VISIBLE
 }
 
-fun View.hide() {
+fun View?.hide() {
+    if (this == null) return
     this.visibility = View.INVISIBLE
 }

@@ -4,14 +4,23 @@
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/tv_source"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:id="@+id/tv_source"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="12dp"
         android:textColor="@color/text2"
         android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/iv_done"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="15dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_done_black" />
 
     <View
         android:layout_width="match_parent"

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".module.home.MainActivity">
 
     <item
         android:id="@+id/menu_search"
@@ -10,9 +12,9 @@
         app:showAsAction="always|collapseActionView" />
 
     <item
-        android:id="@+id/menu_source"
+        android:id="@+id/menu_source_type"
         android:icon="@drawable/ic_menu_source"
-        android:title="音乐来源"
+        android:title="搜索来源和类型"
         app:showAsAction="ifRoom" />
 
     <item

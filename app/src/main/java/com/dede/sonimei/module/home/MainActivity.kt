@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import com.dede.sonimei.*
 import com.dede.sonimei.base.BaseActivity
@@ -38,7 +37,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         searchView?.clearFocus()
-        searchResultFragment.search(query, source)
+        searchResultFragment.search(query)
         return false// 关闭键盘
     }
 
@@ -66,7 +65,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         }
         setSupportActionBar(tool_bar)
 
-        source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, source)
+        source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
 
         searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
@@ -164,35 +163,29 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
-        searchView = (menu?.findItem(R.id.menu_search)?.actionView ?: return false) as SearchView
-//        searchView?.queryHint = "音乐名称/ID/链接"
-        searchView?.queryHint = "音乐名称"
-        searchView?.imeOptions = EditorInfo.IME_ACTION_SEARCH
+        searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView?
+        val searchType = searchType(SEARCH_NAME)
+        tv_search_type.text = searchType
+        searchView?.queryHint = searchType
         searchView?.setOnQueryTextListener(this)
-//        searchView?.suggestionsAdapter = object :CursorAdapter(this,null,false){
-//            override fun newView(context: Context?, cursor: Cursor?, parent: ViewGroup?): View {
-//                return View(context)
-//            }
-//
-//            override fun bindView(view: View?, context: Context?, cursor: Cursor?) {
-//            }
-//
-//        }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.menu_source -> {
-                SourceSelectDialog(this, source)
-                        .onItemSelect {
-                            source = it.source
+            R.id.menu_source_type -> {
+                SourceTypeDialog(this, source to SEARCH_NAME)
+                        .callback {
+                            source = it.first
                             tv_source_name.text = sourceName(source)
+                            val searchType = searchType(it.second)
+                            searchView?.queryHint = searchType
+                            tv_search_type.text = searchType
                             val query = searchView?.query?.toString()
                             if (query.notNull()) {
-                                searchResultFragment.search(query, source)
+                                searchResultFragment.search(query, it)
                             }
-                            drawable.play(it.color)
+                            drawable.play(sourceColor(source))
                         }
                         .show()
                 true
@@ -206,7 +199,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 true
             }
             R.id.menu_about -> {
-                true
+                false
             }
             R.id.menu_github -> {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_LINK)))

@@ -84,5 +84,18 @@ fun sourceName(@MusicSource key: Int): String = sourceMap[key].name
 fun sourceKey(@MusicSource key: Int): String = sourceMap[key].key
 fun sourceColor(@MusicSource key: Int): Int = sourceMap[key].color
 
+const val SEARCH_NAME = "name"
+const val SEARCH_ID = "id"
+const val SEARCH_URL = "url"
+
+fun searchType(searchType: String): String {
+    return when (searchType) {
+        SEARCH_NAME -> "音乐名称"
+        SEARCH_ID -> "音乐ID"
+        SEARCH_URL -> "音乐地址"
+        else -> "音乐名称"
+    }
+}
+
 /** 默认下载路径 */
 val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei")

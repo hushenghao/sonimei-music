@@ -2,12 +2,14 @@ package com.dede.sonimei.module.home
 
 import com.dede.sonimei.MusicSource
 import com.dede.sonimei.NETEASE
+import com.dede.sonimei.SEARCH_NAME
 import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
 import com.dede.sonimei.sourceKey
 import com.dede.sonimei.util.extends.applyFragmentLifecycle
 import com.dede.sonimei.util.extends.kson.fromJson
+import com.dede.sonimei.util.extends.notNull
 import org.jetbrains.anko.AnkoLogger
 
 /**
@@ -20,15 +22,32 @@ class SearchPresenter(val view: ISearchView) : AnkoLogger {
     private var search = ""
     @MusicSource
     private var source = NETEASE
+    private var type = SEARCH_NAME
 
     fun pagerSize() = this.pageSize
 
-    fun search(search: String, @MusicSource source: Int) {
+    fun search(search: String, pair: Pair<Int, String>) {
         this.search = search
         this.page = 1
-        this.source = source
+        this.source = pair.first
+        this.type = pair.second
         view.showLoading()
         loadList(false, this.search)
+    }
+
+    fun search(search: String) {
+        this.search = search
+        this.page = 1
+        view.showLoading()
+        loadList(false, this.search)
+    }
+
+    fun research() {
+        if (search.notNull()) {
+            this.search(this.search, this.source to this.type)
+        } else {
+            view.hideLoading()
+        }
     }
 
     fun loadMore() {
@@ -41,7 +60,7 @@ class SearchPresenter(val view: ISearchView) : AnkoLogger {
                 .header("X-Requested-With", "XMLHttpRequest")
                 .params("input", search)
                 .params("type", sourceKey(source))
-                .params("filter", "name")
+                .params("filter", type)
                 .params("page", page.toString())
                 .post()
                 .applyFragmentLifecycle(view.provider())

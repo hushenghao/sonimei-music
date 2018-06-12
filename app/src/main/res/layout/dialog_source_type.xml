@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="300dp"
+    android:layout_height="350dp"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -13,10 +13,10 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
         android:drawableLeft="@drawable/ic_menu_source"
-        android:drawablePadding="8dp"
+        android:drawablePadding="6dp"
         android:drawableTint="@color/icon_tint"
         android:gravity="center_vertical"
-        android:text="选择搜索来源"
+        android:text="搜索来源和类型"
         android:textColor="@color/text1"
         android:textSize="15sp" />
 
