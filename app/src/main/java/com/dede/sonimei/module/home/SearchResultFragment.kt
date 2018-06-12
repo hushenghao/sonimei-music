@@ -98,9 +98,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
         val tvEmpty = TextView(context)
         tvEmpty.text = Html.fromHtml(resources.getString(R.string.empty_help))
-        tvEmpty.textSize = 12f
-        val dip = dip(10)
-        tvEmpty.setPadding(dip, dip, dip, dip)
+        tvEmpty.textSize = 12.5f
+        val dip = dip(15)
+        tvEmpty.setPadding(dip, dip, dip, 0)
         tvEmpty.setTextColor(context!!.color(R.color.text2))
         adapter.emptyView = tvEmpty
     }
@@ -110,6 +110,14 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         if (!userVisibleHint || !isVisible) return
 
         presenter.search(search!!, pair)
+    }
+
+    fun setTypeSource(pair: Pair<Int, String>) {
+        presenter.setTypeSource(pair)
+    }
+
+    fun getTypeSource(): Pair<Int, String> {
+        return presenter.getTypeSource()
     }
 
     fun search(search: String?) {

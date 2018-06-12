@@ -20,12 +20,13 @@ import com.dede.sonimei.util.extends.show
 /**
  * Created by hsh on 2018/5/23.
  */
-class SourceTypeDialog(context: Context, data: Pair<Int, String>) :
+class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
         BottomSheetDialog(context, R.style.BottomSheetDialog),
         CompoundButton.OnCheckedChangeListener,
         DialogInterface.OnDismissListener {
 
     override fun onDismiss(dialog: DialogInterface?) {
+        if (data.toString() == selectData.toString()) return
         callback?.invoke(selectData)
     }
 
@@ -85,6 +86,7 @@ class SourceTypeDialog(context: Context, data: Pair<Int, String>) :
         recyclerView.adapter = adapter
 
         adapter.setOnItemClickListener { _, _, p ->
+            if (p == selectPosition) return@setOnItemClickListener
             selectPosition = p
             selectData = list[p].source to this.selectData.second
             adapter.notifyDataSetChanged()

@@ -50,6 +50,16 @@ class SearchPresenter(val view: ISearchView) : AnkoLogger {
         }
     }
 
+
+    fun setTypeSource(pair: Pair<Int, String>) {
+        this.source = pair.first
+        this.type = pair.second
+    }
+
+    fun getTypeSource(): Pair<Int, String> {
+        return source to type
+    }
+
     fun loadMore() {
         this.page++
         loadList(true, this.search)

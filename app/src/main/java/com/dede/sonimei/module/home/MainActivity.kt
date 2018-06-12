@@ -51,8 +51,6 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     private lateinit var drawable: CircularRevealDrawable
     private lateinit var searchResultFragment: SearchResultFragment
     private lateinit var playFragment: PlayFragment
-    @MusicSource
-    private var source: Int = NETEASE
 
     override fun initView(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -65,7 +63,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         }
         setSupportActionBar(tool_bar)
 
-        source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
+        val source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
 
         searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
@@ -80,32 +78,30 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
         behavior = BottomSheetBehavior.from(bottom_sheet)
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            private var isBlackBar = false
-            // private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            private val isM = false
-
+            //            private var isBlackBar = false
+//            private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
             @SuppressLint("InlinedApi")
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 if (slideOffset > 0.85f) {
-                    if (isM) {
-                        if (!isBlackBar) {
-                            // 状态栏黑色字体
-                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                            isBlackBar = true
-                        }
-                    }
+//                    if (isM) {
+//                        if (!isBlackBar) {
+//                            // 状态栏黑色字体
+//                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
+//                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+//                            isBlackBar = true
+//                        }
+//                    }
                     rl_bottom_play.hide()
                     bottom_sheet.open = true
                 } else {
-                    if (isM) {
-                        if (isBlackBar) {
-                            // 状态栏白色字体
-                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility xor
-                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                            isBlackBar = false
-                        }
-                    }
+//                    if (isM) {
+//                        if (isBlackBar) {
+//                            // 状态栏白色字体
+//                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility xor
+//                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+//                            isBlackBar = false
+//                        }
+//                    }
                     rl_bottom_play.show()
                     bottom_sheet.open = false
                 }
@@ -174,9 +170,9 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.menu_source_type -> {
-                SourceTypeDialog(this, source to SEARCH_NAME)
+                SourceTypeDialog(this, searchResultFragment.getTypeSource())
                         .callback {
-                            source = it.first
+                            val source = it.first
                             tv_source_name.text = sourceName(source)
                             val searchType = searchType(it.second)
                             searchView?.queryHint = searchType
@@ -184,6 +180,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                             val query = searchView?.query?.toString()
                             if (query.notNull()) {
                                 searchResultFragment.search(query, it)
+                            } else {
+                                searchResultFragment.setTypeSource(it)
                             }
                             drawable.play(sourceColor(source))
                         }
