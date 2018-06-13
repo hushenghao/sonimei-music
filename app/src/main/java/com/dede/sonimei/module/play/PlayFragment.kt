@@ -15,11 +15,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.ViewGroup
 import android.widget.SeekBar
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
+import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.SeekBarChangeListener
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
@@ -47,6 +49,8 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
 
     private val mediaPlayer by lazy { MediaPlayer() }
     private val handler = Handler()
+
+    private var caretDrawable: CaretDrawable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +81,21 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         })
 
         iv_close.onClick { (activity as MainActivity?)?.toggleBottomSheet() }
+
+        // 修改title顶部距离，防止状态栏遮挡
+        val params = tv_title.layoutParams as ViewGroup.MarginLayoutParams
+        params.topMargin = params.topMargin + ScreenHelper.getFrameTopMargin(activity)
+
+        caretDrawable = CaretDrawable(context)
+        iv_test.setImageDrawable(caretDrawable)
+    }
+
+    /**
+     * 箭头指示器刷新，更新CaretDrawable显示进度
+     */
+    fun updateProgress(vy: Float) {
+        val v = Math.max(-1f, Math.min(vy * .0008f, 1f))
+        caretDrawable?.caretProgress = v
     }
 
     private val audioManager by lazy { context!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
@@ -110,8 +129,6 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
     }
 
     fun playSong(song: SearchSong) {
-        ll_play_content.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
-
         handler.removeCallbacks(this)
 
         // bottomSheet mini control

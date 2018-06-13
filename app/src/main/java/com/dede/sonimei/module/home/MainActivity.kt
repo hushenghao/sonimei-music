@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import com.dede.sonimei.*
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CircularRevealDrawable
+import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
@@ -47,7 +48,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun getLayoutId() = R.layout.activity_main
 
-    private lateinit var behavior: BottomSheetBehavior<FrameLayout>
+    private lateinit var behavior: PlayBottomSheetBehavior<FrameLayout>
     private lateinit var drawable: CircularRevealDrawable
     private lateinit var searchResultFragment: SearchResultFragment
     private lateinit var playFragment: PlayFragment
@@ -76,7 +77,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         }, 500)
         tv_source_name.text = sourceName(source)
 
-        behavior = BottomSheetBehavior.from(bottom_sheet)
+        behavior = BottomSheetBehavior.from(bottom_sheet) as PlayBottomSheetBehavior<FrameLayout>
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             //            private var isBlackBar = false
 //            private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
@@ -114,6 +115,12 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
+        behavior.onYVelocityChangeListener = object :PlayBottomSheetBehavior.OnYVelocityChangeListener{
+            override fun onChange(vy: Float) {
+                playFragment.updateProgress(vy)
+            }
+        }
+
         fl_bottom_play.onClick {
             toggleBottomSheet()
         }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="all_apps_caret_stroke_width">2dp</dimen>
+    <dimen name="all_apps_caret_shadow_spread">1dp</dimen>
+    <dimen name="all_apps_caret_size">13dp</dimen>
+
+    <color name="all_apps_caret_color">#FFFFFFFF</color>
+    <color name="all_apps_caret_shadow_color">#22000000</color>
+</resources>
