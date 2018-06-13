@@ -9,7 +9,7 @@
         android:id="@+id/ll_play_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#cd2e2b2b"
+        android:background="#cd1e1d1d"
         android:orientation="vertical">
 
         <TextView
@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="15dp"
+            android:layout_marginTop="3dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
@@ -42,7 +43,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -116,8 +117,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="18dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="20dp"
@@ -129,6 +130,7 @@
                 android:layout_height="32dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_music_download"
                 android:tint="@color/play_icon_tint" />
 
@@ -138,6 +140,7 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_pause_status"
                 android:tint="@color/play_icon_tint" />
 
@@ -147,6 +150,7 @@
                 android:layout_height="32dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_down"
                 android:tint="@color/play_icon_tint" />
         </LinearLayout>

@@ -39,7 +39,7 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
                     R.id.rb_search_url -> SEARCH_URL
                     else -> SEARCH_NAME
                 }
-
+        dismiss()
     }
 
     private val recyclerView: RecyclerView
@@ -90,6 +90,7 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
             selectPosition = p
             selectData = list[p].source to this.selectData.second
             adapter.notifyDataSetChanged()
+            dismiss()
         }
 
         setOnDismissListener(this)

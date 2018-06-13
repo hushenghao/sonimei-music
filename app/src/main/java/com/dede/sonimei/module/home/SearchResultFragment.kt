@@ -10,9 +10,7 @@ import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
-import com.dede.sonimei.util.extends.color
-import com.dede.sonimei.util.extends.isNull
-import com.dede.sonimei.util.extends.load
+import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.toast
@@ -61,7 +59,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     private val presenter by lazy { SearchPresenter(this) }
 
     // 列表适配器
-    private lateinit var adapter: BaseQuickAdapter<SearchSong, BaseViewHolder>
+    private lateinit var adapter: ListAdapter
 
     override fun getLayoutId() = R.layout.fragment_search_result
 
@@ -72,14 +70,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         }
 //        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 //        manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
-        adapter = object : BaseQuickAdapter<SearchSong, BaseViewHolder>(R.layout.item_search_result) {
-            override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
-                helper?.setText(R.id.tv_name, item?.title)
-                        ?.setText(R.id.tv_singer_album, item?.author)
-                        ?.addOnClickListener(R.id.iv_download)
-                helper?.getView<ImageView>(R.id.iv_album_img)?.load(item?.pic)
-            }
-        }
+        adapter = ListAdapter()
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
         rv_search_list.adapter = adapter
         adapter.setOnItemChildClickListener { _, _, position ->
@@ -88,19 +79,21 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             DownloadHelper.getInstance(context!!)
                     .download(song)
         }
-        adapter.setOnItemClickListener { _, _, position ->
-            if (position >= adapter.data.size) return@setOnItemClickListener
-            val song = adapter.data[position] ?: return@setOnItemClickListener
-            if (activity is MainActivity) {
+        adapter.setOnItemClickListener { adapter, _, position ->
+            val listAdapter = (adapter as ListAdapter)
+            if (position >= listAdapter.data.size) return@setOnItemClickListener
+            val song = listAdapter.data[position]
+            listAdapter.onItemClick(position)
+            if (activity != null && activity is MainActivity) {
                 (activity as MainActivity).playSong(song)
             }
         }
 
         val tvEmpty = TextView(context)
         tvEmpty.text = Html.fromHtml(resources.getString(R.string.empty_help))
-        tvEmpty.textSize = 12.5f
-        val dip = dip(15)
-        tvEmpty.setPadding(dip, dip, dip, 0)
+        tvEmpty.textSize = 12f
+        tvEmpty.setLineSpacing(8f, 1f)
+        tvEmpty.setPadding(dip(15), dip(10), dip(15), 0)
         tvEmpty.setTextColor(context!!.color(R.color.text2))
         adapter.emptyView = tvEmpty
     }
@@ -134,6 +127,42 @@ class SearchResultFragment : BaseFragment(), ISearchView {
          */
         hideLoading()
         super.onDestroyView()
+    }
+
+    /**
+     * 列表适配器
+     */
+    class ListAdapter : BaseQuickAdapter<SearchSong, BaseViewHolder>(R.layout.item_search_result) {
+
+        private var clickPosition = -1
+
+        fun onItemClick(position: Int) {
+            if (position == this.clickPosition) return
+            notifyItemChanged(this.clickPosition)
+            this.clickPosition = position
+            notifyItemChanged(position)
+        }
+
+        override fun setNewData(data: List<SearchSong>?) {
+            this.clickPosition = -1
+            super.setNewData(data)
+        }
+
+        override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
+            helper?.setText(R.id.tv_name, item?.title)
+                    ?.setText(R.id.tv_singer_album, item?.author)
+                    ?.addOnClickListener(R.id.iv_download)
+            val ivPlaying = helper?.getView<ImageView>(R.id.iv_playing)
+            val ivAlbum = helper?.getView<ImageView>(R.id.iv_album_img)
+            if (helper?.layoutPosition == clickPosition) {
+                ivAlbum.gone()
+                ivPlaying.show()
+            } else {
+                ivAlbum.show()
+                ivPlaying.gone()
+                ivAlbum?.load(item?.pic)
+            }
+        }
     }
 
 }

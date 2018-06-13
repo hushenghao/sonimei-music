@@ -91,7 +91,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 //                            isBlackBar = true
 //                        }
 //                    }
-                    rl_bottom_play.hide()
+                    fl_bottom_play.hide()
                     bottom_sheet.open = true
                 } else {
 //                    if (isM) {
@@ -102,19 +102,19 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 //                            isBlackBar = false
 //                        }
 //                    }
-                    rl_bottom_play.show()
+                    fl_bottom_play.show()
                     bottom_sheet.open = false
                 }
 
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
-                rl_bottom_play.alpha = b
+                fl_bottom_play.alpha = b
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
         })
-        rl_bottom_play.onClick {
+        fl_bottom_play.onClick {
             toggleBottomSheet()
         }
         // 隐藏mini play control

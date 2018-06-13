@@ -43,7 +43,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
 
     override fun getLayoutId() = R.layout.fragment_play
 
-    private val updateDelay = 300L
+    private val updateDelay = 200L
 
     private val mediaPlayer by lazy { MediaPlayer() }
     private val handler = Handler()

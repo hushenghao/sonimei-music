@@ -62,7 +62,7 @@ object ImageUtil {
     }
 
     fun getPlayBitmap(context: Context, source: Bitmap): Bitmap {
-        return ImageUtil.rsBlur(context, ImageUtil.getScreenScaleBitmap(source, context), 20, .8f)
+        return ImageUtil.rsBlur(context, ImageUtil.getScreenScaleBitmap(source, context), 15, .8f)
     }
 
     /**

@@ -92,6 +92,8 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
      * 保存日志文件，不需要读写SD卡权限
      */
     private fun saveCatchInfo2File(ex: Throwable) {
+        if (BuildConfig.DEBUG) return
+
         val sb = StringBuilder()
         for ((key, value) in deviceInfo) {
             sb.append("$key=$value\n")
