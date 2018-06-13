@@ -11,6 +11,7 @@ import com.dede.sonimei.R
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
+import com.dede.sonimei.util.extends.isNull
 import org.jetbrains.anko.*
 import java.io.File
 
@@ -99,6 +100,10 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
     }
 
     fun download(song: SearchSong) {
+        if (song.url.isNull()) {
+            toast("非法的下载链接")
+            return
+        }
         filterDownload(song.url, {
             val request = DownloadManager.Request(Uri.parse(song.url))
             request.setTitle(song.getName())

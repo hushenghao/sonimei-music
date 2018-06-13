@@ -1,6 +1,10 @@
 package com.dede.sonimei.module.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.text.Html
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,6 +15,7 @@ import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.util.extends.*
+import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.toast
@@ -68,8 +73,6 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         swipe_refresh.setOnRefreshListener {
             presenter.research()
         }
-//        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//        manager.primaryClip = ClipData.newPlainText(null, adapter.data[position].url)
         adapter = ListAdapter()
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
         rv_search_list.adapter = adapter
@@ -88,6 +91,13 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 (activity as MainActivity).playSong(song)
             }
         }
+        adapter.setOnItemLongClickListener { adapter, _, position ->
+            val listAdapter = (adapter as ListAdapter)
+            if (position >= listAdapter.data.size) return@setOnItemLongClickListener false
+            val song = listAdapter.data[position]
+            showDialog(song, position)
+            return@setOnItemLongClickListener false
+        }
 
         val tvEmpty = TextView(context)
         tvEmpty.text = Html.fromHtml(resources.getString(R.string.empty_help))
@@ -96,6 +106,52 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         tvEmpty.setPadding(dip(15), dip(10), dip(15), 0)
         tvEmpty.setTextColor(context!!.color(R.color.text2))
         adapter.emptyView = tvEmpty
+    }
+
+    private val ITEM_PLAY = "播放"
+    private val ITEM_DOWNLOAD = "下载"
+    private val ITEM_COPY_URL = "复制下载链接"
+    private val ITEM_COPY_SOURCE = "复制音乐链接"
+    private val ITEM_COPY_JSON = "复制Json数据"
+
+    private val dialogItems by lazy {
+        arrayOf(ITEM_PLAY, ITEM_DOWNLOAD, ITEM_COPY_URL, ITEM_COPY_SOURCE/*, ITEM_COPY_JSON*/)
+    }
+
+    private fun showDialog(song: SearchSong, position: Int) {
+        AlertDialog.Builder(context!!)
+                .setTitle("选项")
+                .setItems(dialogItems) { _, which ->
+                    if (which >= dialogItems.size) return@setItems
+                    val s = dialogItems[which]
+                    when (s) {
+                        ITEM_PLAY -> {
+                            adapter.onItemClick(position)
+                            if (activity != null && activity is MainActivity) {
+                                (activity as MainActivity).playSong(song)
+                            }
+                        }
+                        ITEM_DOWNLOAD -> {
+                            DownloadHelper.getInstance(context!!)
+                                    .download(song)
+                        }
+                        ITEM_COPY_SOURCE -> copy(song.link)
+                        ITEM_COPY_URL -> copy(song.url)
+                        ITEM_COPY_JSON -> copy(GsonBuilder().create().toJson(song))
+                    }
+                }
+                .create()
+                .show()
+    }
+
+    private fun copy(string: String?) {
+        if (string.isNull()) {
+            toast("内容为空")
+            return
+        }
+        val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        manager.primaryClip = ClipData.newPlainText(null, string)
+        toast("已复制到剪切板")
     }
 
     fun search(search: String?, pair: Pair<Int, String>) {
