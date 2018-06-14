@@ -1,7 +1,7 @@
 package com.dede.sonimei.module.home
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -13,9 +13,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.dede.sonimei.*
 import com.dede.sonimei.base.BaseActivity
+import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.CircularRevealDrawable
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.search.SearchSong
@@ -30,6 +32,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.info
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -52,6 +55,14 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     private lateinit var drawable: CircularRevealDrawable
     private lateinit var searchResultFragment: SearchResultFragment
     private lateinit var playFragment: PlayFragment
+
+    private val anim by lazy {
+        val anim = ValueAnimator
+                .ofFloat()
+                .setDuration(250L)
+        anim.interpolator = LinearInterpolator()
+        return@lazy anim
+    }
 
     override fun initView(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -77,34 +88,29 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         }, 500)
         tv_source_name.text = sourceName(source)
 
+        val caretDrawable = CaretDrawable(this)
+        caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_UP
+        iv_arrow_indicators.setImageDrawable(caretDrawable)
+
         behavior = BottomSheetBehavior.from(bottom_sheet) as PlayBottomSheetBehavior<FrameLayout>
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            //            private var isBlackBar = false
-//            private val isM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-            @SuppressLint("InlinedApi")
+            var lastOffset = 0f
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset > 0.85f) {
-//                    if (isM) {
-//                        if (!isBlackBar) {
-//                            // 状态栏黑色字体
-//                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-//                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-//                            isBlackBar = true
-//                        }
-//                    }
+                if (behavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                    if (lastOffset > slideOffset) {
+                        caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_DOWN
+                    } else {
+                        caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_UP
+                    }
+                }
+                lastOffset = slideOffset
+
+                bottom_sheet.open = if (slideOffset > 0.85f) {
                     fl_bottom_play.hide()
-                    bottom_sheet.open = true
+                    true
                 } else {
-//                    if (isM) {
-//                        if (isBlackBar) {
-//                            // 状态栏白色字体
-//                            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility xor
-//                                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-//                            isBlackBar = false
-//                        }
-//                    }
                     fl_bottom_play.show()
-                    bottom_sheet.open = false
+                    false
                 }
 
                 var b = 1 - slideOffset * 2f
@@ -113,11 +119,39 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        if (anim.isRunning) {
+                            anim.cancel()
+                        }
+                        anim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_DOWN)
+                        anim.addUpdateListener { animation ->
+                            caretDrawable.caretProgress = animation.animatedValue as Float
+                        }
+                        anim.start()
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        if (anim.isRunning) {
+                            anim.cancel()
+                        }
+                        anim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_UP)
+                        anim.addUpdateListener { animation ->
+                            caretDrawable.caretProgress = animation.animatedValue as Float
+                        }
+                        anim.start()
+                    }
+                }
             }
         })
-        behavior.onYVelocityChangeListener = object :PlayBottomSheetBehavior.OnYVelocityChangeListener{
+        behavior.onYVelocityChangeListener = object : PlayBottomSheetBehavior.OnYVelocityChangeListener {
             override fun onChange(vy: Float) {
-                playFragment.updateProgress(vy)
+                val state = behavior.state
+                if (state == BottomSheetBehavior.STATE_EXPANDED ||
+                        state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    return
+                }
+                val v = Math.max(-1f, Math.min(vy * .0025f, 1f))
+                caretDrawable.caretProgress = v
             }
         }
 
@@ -136,6 +170,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         // 显示 mini play control
         behavior.isHideable = false
         behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        iv_arrow_indicators.show()
         val bottomDimens = resources.getDimensionPixelSize(R.dimen.search_list_bottom_margin)
         behavior.peekHeight = bottomDimens
         fl_search_result.setPadding(0, 0, 0, bottomDimens)

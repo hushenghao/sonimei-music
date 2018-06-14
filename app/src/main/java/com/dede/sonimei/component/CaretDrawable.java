@@ -22,12 +22,16 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-
-
 import android.graphics.drawable.Drawable;
 
 import com.dede.sonimei.R;
 
+/**
+ * Android 7.1.2_r36 System Launcher3 source
+ *
+ * @see <a href='http://androidxref.com/7.1.2_r36/xref/packages/apps/Launcher3/'>Launcher传送门</a>
+ * @see <a href='http://androidxref.com/7.1.2_r36/xref/packages/apps/Launcher3/src/com/android/launcher3/pageindicators/CaretDrawable.java/'>源码</a>
+ */
 public class CaretDrawable extends Drawable {
     public static final float PROGRESS_CARET_POINTING_UP = -1f;
     public static final float PROGRESS_CARET_POINTING_DOWN = 1f;
@@ -103,8 +107,8 @@ public class CaretDrawable extends Drawable {
      * Sets the caret progress
      *
      * @param progress The progress ({@value #PROGRESS_CARET_POINTING_UP} for pointing up,
-     * {@value #PROGRESS_CARET_POINTING_DOWN} for pointing down, {@value #PROGRESS_CARET_NEUTRAL}
-     * for neutral)
+     *                 {@value #PROGRESS_CARET_POINTING_DOWN} for pointing down, {@value #PROGRESS_CARET_NEUTRAL}
+     *                 for neutral)
      */
     public void setCaretProgress(float progress) {
         mCaretProgress = progress;

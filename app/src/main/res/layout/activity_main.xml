@@ -84,6 +84,22 @@
             android:layout_height="match_parent" />
     </FrameLayout>
 
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="5dp"
+        app:layout_anchor="@id/bottom_sheet"
+        app:layout_anchorGravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/iv_arrow_indicators"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="5dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
     <!--自定义FrameLayout 在Bottom Sheet 打开时拦截所有触摸事件-->
     <com.dede.sonimei.component.BottomSheetFrameLayout
         android:id="@+id/bottom_sheet"

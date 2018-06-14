@@ -96,7 +96,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             if (position >= listAdapter.data.size) return@setOnItemLongClickListener false
             val song = listAdapter.data[position]
             showDialog(song, position)
-            return@setOnItemLongClickListener false
+            return@setOnItemLongClickListener true
         }
 
         val tvEmpty = TextView(context)

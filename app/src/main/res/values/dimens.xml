@@ -5,5 +5,5 @@
     <dimen name="all_apps_caret_size">13dp</dimen>
 
     <color name="all_apps_caret_color">#FFFFFFFF</color>
-    <color name="all_apps_caret_shadow_color">#22000000</color>
+    <color name="all_apps_caret_shadow_color">#10000000</color>
 </resources>
