@@ -32,7 +32,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.info
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -51,12 +50,12 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun getLayoutId() = R.layout.activity_main
 
-    private lateinit var behavior: PlayBottomSheetBehavior<FrameLayout>
+    private lateinit var playBehavior: PlayBottomSheetBehavior<FrameLayout>
     private lateinit var drawable: CircularRevealDrawable
     private lateinit var searchResultFragment: SearchResultFragment
     private lateinit var playFragment: PlayFragment
 
-    private val anim by lazy {
+    private val arrowAnim by lazy {
         val anim = ValueAnimator
                 .ofFloat()
                 .setDuration(250L)
@@ -85,18 +84,18 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         app_bar.postDelayed({
             val color = sourceColor(source)
             drawable.play(color)
-        }, 500)
+        }, 500L)
         tv_source_name.text = sourceName(source)
 
         val caretDrawable = CaretDrawable(this)
         caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_UP
         iv_arrow_indicators.setImageDrawable(caretDrawable)
 
-        behavior = BottomSheetBehavior.from(bottom_sheet) as PlayBottomSheetBehavior<FrameLayout>
-        behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        playBehavior = BottomSheetBehavior.from(bottom_sheet) as PlayBottomSheetBehavior<FrameLayout>
+        playBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             var lastOffset = 0f
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (behavior.state == BottomSheetBehavior.STATE_SETTLING) {
+                if (playBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
                     if (lastOffset > slideOffset) {
                         caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_DOWN
                     } else {
@@ -121,31 +120,34 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        if (anim.isRunning) {
-                            anim.cancel()
+                        tool_bar.collapseActionView()// 关闭搜索框
+                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        if (arrowAnim.isRunning) {
+                            arrowAnim.cancel()
                         }
-                        anim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_DOWN)
-                        anim.addUpdateListener { animation ->
+                        arrowAnim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_DOWN)
+                        arrowAnim.addUpdateListener { animation ->
                             caretDrawable.caretProgress = animation.animatedValue as Float
                         }
-                        anim.start()
+                        arrowAnim.start()
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
-                        if (anim.isRunning) {
-                            anim.cancel()
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        if (arrowAnim.isRunning) {
+                            arrowAnim.cancel()
                         }
-                        anim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_UP)
-                        anim.addUpdateListener { animation ->
+                        arrowAnim.setFloatValues(caretDrawable.caretProgress, CaretDrawable.PROGRESS_CARET_POINTING_UP)
+                        arrowAnim.addUpdateListener { animation ->
                             caretDrawable.caretProgress = animation.animatedValue as Float
                         }
-                        anim.start()
+                        arrowAnim.start()
                     }
                 }
             }
         })
-        behavior.onYVelocityChangeListener = object : PlayBottomSheetBehavior.OnYVelocityChangeListener {
+        playBehavior.onYVelocityChangeListener = object : PlayBottomSheetBehavior.OnYVelocityChangeListener {
             override fun onChange(vy: Float) {
-                val state = behavior.state
+                val state = playBehavior.state
                 if (state == BottomSheetBehavior.STATE_EXPANDED ||
                         state == BottomSheetBehavior.STATE_COLLAPSED) {
                     return
@@ -159,8 +161,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             toggleBottomSheet()
         }
         // 隐藏mini play control
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        behavior.peekHeight = 0
+        playBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        playBehavior.peekHeight = 0
     }
 
     /**
@@ -168,21 +170,21 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
      */
     fun playSong(song: SearchSong) {
         // 显示 mini play control
-        behavior.isHideable = false
-        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        playBehavior.isHideable = false
+        playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         iv_arrow_indicators.show()
         val bottomDimens = resources.getDimensionPixelSize(R.dimen.search_list_bottom_margin)
-        behavior.peekHeight = bottomDimens
+        playBehavior.peekHeight = bottomDimens
         fl_search_result.setPadding(0, 0, 0, bottomDimens)
 
         playFragment.playSong(song)
     }
 
     fun toggleBottomSheet() {
-        if (behavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        if (playBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            playBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         } else {
-            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -256,7 +258,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     private var lastTime = 0L
 
     override fun onBackPressed() {
-        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+        if (playBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             toggleBottomSheet()
             return
         }

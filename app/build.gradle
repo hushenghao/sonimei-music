@@ -4,13 +4,13 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.dede.sonimei"
-        minSdkVersion 19
-        targetSdkVersion 27
-        versionCode 5
-        versionName "0.3"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 6
+        versionName "0.4"
     }
     buildTypes {
         release {
@@ -21,14 +21,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "sonimei_${variant.buildType.name}_${variant.versionName}(${variant.versionCode}).apk"
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "com.android.support:cardview-v7:$supportLibraryVersion"
     // rxjava + retrofit
     implementation 'io.reactivex.rxjava2:rxjava:2.1.14-RC1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
@@ -58,8 +64,6 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     // base adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
-    // search bar
-//    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     // lrcview
     //    implementation 'me.wcy:lrcview:2.0.1'
     implementation project(':lrcview')

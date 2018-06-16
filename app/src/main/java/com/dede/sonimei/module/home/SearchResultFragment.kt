@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,10 +15,14 @@ import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
-import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.isNull
+import com.dede.sonimei.util.extends.load
+import com.dede.sonimei.util.extends.show
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_search_result.*
-import org.jetbrains.anko.support.v4.dip
+import org.jetbrains.anko.find
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -76,6 +81,11 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         adapter = ListAdapter()
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
         rv_search_list.adapter = adapter
+        rv_search_list.layoutManager = object : LinearLayoutManager(context) {
+            override fun canScrollVertically(): Boolean {
+                return if (adapter.data.size > 0) super.canScrollVertically() else false
+            }
+        }
         adapter.setOnItemChildClickListener { _, _, position ->
             if (position >= adapter.data.size) return@setOnItemChildClickListener
             val song = adapter.data[position] ?: return@setOnItemChildClickListener
@@ -99,13 +109,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             return@setOnItemLongClickListener true
         }
 
-        val tvEmpty = TextView(context)
+        adapter.setEmptyView(R.layout.layout_list_empty)
+        val tvEmpty = adapter.emptyView.find<TextView>(R.id.tv_empty)
         tvEmpty.text = Html.fromHtml(resources.getString(R.string.empty_help))
-        tvEmpty.textSize = 12f
-        tvEmpty.setLineSpacing(8f, 1f)
-        tvEmpty.setPadding(dip(15), dip(10), dip(15), 0)
-        tvEmpty.setTextColor(context!!.color(R.color.text2))
-        adapter.emptyView = tvEmpty
     }
 
     private val ITEM_PLAY = "播放"
@@ -200,7 +206,13 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         }
 
         override fun setNewData(data: List<SearchSong>?) {
-            this.clickPosition = -1
+            var ignore = false
+            if (clickPosition != -1 && data != null && clickPosition < data.size) {
+                if (this.data[clickPosition].link == data[clickPosition].link) {
+                    ignore = true
+                }
+            }
+            if (!ignore) this.clickPosition = -1
             super.setNewData(data)
         }
 

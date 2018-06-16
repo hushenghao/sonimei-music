@@ -114,7 +114,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
         try {
             val timestamp = System.currentTimeMillis()
             val time = formatter.format(Date())
-            val fileName = "crash-$time-$timestamp.txt"
+            val fileName = "crash-$time-$timestamp.log"
             val dir = mApplicationContext!!.getExternalFilesDir("log")
             fos = FileOutputStream(dir.absolutePath + File.separator + fileName)
             fos.write(sb.toString().toByteArray())

@@ -14,8 +14,8 @@ import android.view.animation.LinearInterpolator
  * @date 2017/12/25 13:54.
  * @doc 圆形揭露动画Drawable
  */
-class CircularRevealDrawable @JvmOverloads constructor(@param:ColorInt private var mBgColor: Int,
-                                                       @param:IntRange(from = 0) private val mDuration: Long = 500)
+class CircularRevealDrawable constructor(@ColorInt private var mBgColor: Int,
+                                         @IntRange(from = 0) private val mDuration: Long = 500)
     : Drawable(), ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
     private val mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -26,7 +26,13 @@ class CircularRevealDrawable @JvmOverloads constructor(@param:ColorInt private v
     private var mRadius = 0f
 
     private var mAnimIsEnd: Boolean = false
-    private var radiusValueAnimator: ValueAnimator? = null
+    private val radiusValueAnimator by lazy {
+        val animator = ValueAnimator.ofFloat()
+        animator.addUpdateListener(this)
+        animator.addListener(this)
+        animator.interpolator = LinearInterpolator()
+        animator
+    }
 
     private val height: Int
         get() = bounds.height()
@@ -39,17 +45,13 @@ class CircularRevealDrawable @JvmOverloads constructor(@param:ColorInt private v
             this.mAnimColor = animColor
             this.mCenterX = centerX
             this.mCenterY = centerY
-            if (radiusValueAnimator != null && radiusValueAnimator!!.isRunning) {
-                radiusValueAnimator!!.removeUpdateListener(this)
-                radiusValueAnimator!!.removeListener(this)
-                radiusValueAnimator!!.cancel()
+            if (radiusValueAnimator.isRunning) {
+                radiusValueAnimator.cancel()
             }
-            radiusValueAnimator = ValueAnimator.ofFloat(startRadius, endRadius)
-            radiusValueAnimator!!.duration = mDuration
-            radiusValueAnimator!!.interpolator = LinearInterpolator()
-            radiusValueAnimator!!.addUpdateListener(this)
-            radiusValueAnimator!!.addListener(this)
-            radiusValueAnimator!!.start()
+            radiusValueAnimator.setFloatValues(startRadius, endRadius)
+            radiusValueAnimator.duration = mDuration
+
+            radiusValueAnimator.start()
         }
     }
 
@@ -121,6 +123,6 @@ class CircularRevealDrawable @JvmOverloads constructor(@param:ColorInt private v
 
     companion object {
 
-        private val TAG = "CircularRevealDrawable"
+        private const val TAG = "CircularRevealDrawable"
     }
 }
