@@ -57,6 +57,7 @@ object ImageUtil {
         // Copy the output to the blurred bitmap
         output.copyTo(inputBmp)
 
+        scriptIntrinsicBlur.destroy()
         renderScript.destroy()
         return inputBmp
     }
