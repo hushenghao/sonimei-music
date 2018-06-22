@@ -19,7 +19,7 @@ class DatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "sonimei_d
             return instance!!
         }
 
-        const val TABLE_SEARCH_HIS = "SearchHis"
+        const val TABLE_SEARCH_HIS = "search_his"
         const val COLUMNS_ID = "_id"
         const val COLUMNS_TEXT = "text"
         const val COLUMNS_TIMESTAMP = "time_stamp"
@@ -28,8 +28,9 @@ class DatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "sonimei_d
     override fun onCreate(db: SQLiteDatabase) {
         db.createTable(TABLE_SEARCH_HIS, true,
                 COLUMNS_ID to INTEGER + PRIMARY_KEY + UNIQUE,
-                COLUMNS_TEXT to TEXT,
-                COLUMNS_TIMESTAMP to SqlType.create("TimeStamp NOT NULL DEFAULT (datetime('now','localtime'))")
+                COLUMNS_TEXT to TEXT + NOT_NULL,
+                COLUMNS_TIMESTAMP to SqlType.create("TimeStamp NOT NULL DEFAULT (datetime('now','localtime'))"),
+                "PRIMARY" to SqlType.create("KEY($COLUMNS_ID,$COLUMNS_TEXT)")// id和text作为复合主键
         )
     }
 

@@ -65,7 +65,6 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     // base adapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
-    // lrcview
-    //    implementation 'me.wcy:lrcview:2.0.1'
+    // lrcview // implementation 'me.wcy:lrcview:2.0.1'
     implementation project(':lrcview')
 }

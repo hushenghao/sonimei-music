@@ -4,11 +4,13 @@ import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.widget.SimpleCursorAdapter
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.SearchView
 import android.text.Spannable
@@ -16,6 +18,8 @@ import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.view.animation.LinearInterpolator
+import android.widget.AutoCompleteTextView
+import android.widget.CursorAdapter
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.dede.sonimei.*
@@ -25,6 +29,10 @@ import com.dede.sonimei.component.CircularRevealDrawable
 import com.dede.sonimei.component.LinkTagClickableSpan
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.module.db.DatabaseOpenHelper.Companion.COLUMNS_TEXT
+import com.dede.sonimei.module.db.DatabaseOpenHelper.Companion.COLUMNS_TIMESTAMP
+import com.dede.sonimei.module.db.DatabaseOpenHelper.Companion.TABLE_SEARCH_HIS
+import com.dede.sonimei.module.db.db
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.module.setting.Settings
@@ -35,16 +43,26 @@ import com.dede.sonimei.util.extends.show
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
-import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.*
+import org.jetbrains.anko.db.replace
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 
 class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         searchView?.clearFocus()
-        searchResultFragment.search(query)
+//        searchResultFragment.search(query)
+        if (query.notNull() && searchHisCursor != null) {
+            doAsync {
+                db.replace(TABLE_SEARCH_HIS,
+                        COLUMNS_TEXT to query)
+                searchHisCursor = db.query(TABLE_SEARCH_HIS, null, null,
+                        null, null, null, "$COLUMNS_TIMESTAMP DESC")
+                uiThread {
+                    searchView?.suggestionsAdapter?.swapCursor(searchHisCursor)?.close()
+                }
+            }
+        }
         return false// 关闭键盘
     }
 
@@ -205,6 +223,8 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private var searchView: SearchView? = null
 
+    private var searchHisCursor: Cursor? = null
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
         searchView = menu?.findItem(R.id.menu_search)?.actionView as SearchView?
@@ -212,6 +232,31 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         tv_search_type.text = searchType
         searchView?.queryHint = searchType
         searchView?.setOnQueryTextListener(this)
+
+        // 内部是继承于AutoCompleteTextView的SearchAutoComplete
+        val autoCompleteTextView = searchView
+                ?.findViewById<AutoCompleteTextView>(R.id.search_src_text)
+        if (autoCompleteTextView != null) {
+            // 设置一个小于0的值，默认显示筛选列表
+            // 因为SearchView&SearchAutoComplete重写了enoughToFilter方法，小于0时返回true显示popList
+            autoCompleteTextView.threshold = -1
+            autoCompleteTextView.setDropDownBackgroundResource(R.drawable.abc_popup_background)
+
+            doAsync {
+                searchHisCursor = db.query(TABLE_SEARCH_HIS, null, null,
+                        null, null, null, "$COLUMNS_TIMESTAMP DESC")
+                uiThread {
+                    searchView?.suggestionsAdapter = SimpleCursorAdapter(
+                            this@MainActivity,
+                            R.layout.item_search_his,
+                            searchHisCursor,
+                            arrayOf(COLUMNS_TEXT),
+                            intArrayOf(R.id.tv_query),
+                            CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+                    )
+                }
+            }
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -289,6 +334,11 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        searchHisCursor?.close()
     }
 
     private var lastTime = 0L

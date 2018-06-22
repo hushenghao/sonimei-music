@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionBarPopupTheme">@style/actionBarPop</item>
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteStyle</item>
     </style>
 
     <style name="NoActonBar" parent="AppTheme">
@@ -16,6 +17,10 @@
 
     <style name="actionBarPop" parent="ThemeOverlay.AppCompat.Light">
         <item name="overlapAnchor">false</item>
+    </style>
+
+    <style name="AutoCompleteStyle" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <!--<item name="android:popupBackground">@drawable/abc_popup_background</item>-->
     </style>
 
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
