@@ -54,6 +54,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-sdk25-coroutines:$anko_version"
     implementation "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$anko_version"
+    implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
     // gson
     implementation 'com.google.code.gson:gson:2.8.1'
     // glide
