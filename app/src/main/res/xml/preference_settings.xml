@@ -30,7 +30,7 @@
             android:title="加入QQ群">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://jq.qq.com/?_wv=1027&amp;k=50DXboo" />
+                android:data="https://jq.qq.com/?_wv=1027&amp;k=5dsSzyx" />
         </PreferenceScreen>
 
         <Preference

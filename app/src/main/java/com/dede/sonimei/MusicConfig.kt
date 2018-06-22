@@ -14,6 +14,7 @@ import java.io.File
 const val APE_LINK = "http://music.sonimei.cn/ape/"
 const val GITHUB_LINK = "https://github.com/hushenghao/music/"
 const val WEB_LINK = "http://music.sonimei.cn/"
+const val GROUP_LINK = "https://jq.qq.com/?_wv=1027&k=5dsSzyx"
 
 /** 音乐来源 */
 const val NETEASE: Int = 1// 网易云

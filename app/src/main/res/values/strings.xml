@@ -3,6 +3,12 @@
     <string name="setting_label">设置</string>
     <string name="select_source_label">选择搜索来源</string>
 
+    <string name="about_author">作者：de得得de</string>
+    <string name="about_github">Github：https://github.com/hushenghao/music/</string>
+    <string name="about_group">加入QQ群：296513604</string>
+    <string name="about_version">版本：%1s(%2d)</string>
+    <string name="about_market">喜欢，给个好评</string>
+
     <string name="empty_help">
     &lt;div&gt;
         &lt;h4&gt;帮助：&lt;/h4&gt;
