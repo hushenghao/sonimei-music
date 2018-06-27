@@ -22,15 +22,15 @@ class DatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "sonimei_d
         const val TABLE_SEARCH_HIS = "search_his"
         const val COLUMNS_ID = "_id"
         const val COLUMNS_TEXT = "text"
-        const val COLUMNS_TIMESTAMP = "time_stamp"
+        const val COLUMNS_TIMESTAMP = "times_tamp"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         db.createTable(TABLE_SEARCH_HIS, true,
                 COLUMNS_ID to INTEGER + PRIMARY_KEY + UNIQUE,
                 COLUMNS_TEXT to TEXT + NOT_NULL,
-                COLUMNS_TIMESTAMP to SqlType.create("TimeStamp NOT NULL DEFAULT (datetime('now','localtime'))"),
-                "PRIMARY" to SqlType.create("KEY($COLUMNS_ID,$COLUMNS_TEXT)")// id和text作为复合主键
+                // 默认值时间戳，单位为秒
+                COLUMNS_TIMESTAMP to SqlType.create("TIMESTAMP NOT NULL DEFAULT (strftime('%s',datetime('now')))")
         )
     }
 

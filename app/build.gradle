@@ -9,8 +9,8 @@ android {
         applicationId "com.dede.sonimei"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "0.4"
+        versionCode 7
+        versionName "0.5"
     }
     buildTypes {
         release {

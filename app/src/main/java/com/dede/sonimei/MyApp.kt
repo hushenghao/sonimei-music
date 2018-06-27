@@ -1,7 +1,6 @@
 package com.dede.sonimei
 
 import android.app.Application
-import android.os.StrictMode
 import android.view.ViewConfiguration
 import com.dede.sonimei.net.HttpUtil
 import com.squareup.leakcanary.LeakCanary
@@ -14,22 +13,6 @@ class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
-//                    .detectDiskReads()
-//                    .detectDiskWrites()
-                    .detectCustomSlowCalls()
-                    .detectNetwork()   // or .detectAll() for all detectable problems
-                    .penaltyLog()
-                    .build())
-            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
-                    .detectActivityLeaks()
-                    .detectLeakedRegistrationObjects()
-                    .penaltyLog()
-                    .build())
-        }
 
         makeActionOverflowMenuShown()
         if (!LeakCanary.isInAnalyzerProcess(this)) {

@@ -24,8 +24,7 @@
 
         <activity
             android:name=".module.home.MainActivity"
-            android:theme="@style/NoActonBar"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            android:theme="@style/NoActonBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

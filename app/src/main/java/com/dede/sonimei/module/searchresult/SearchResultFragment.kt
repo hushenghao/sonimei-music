@@ -1,4 +1,4 @@
-package com.dede.sonimei.module.home
+package com.dede.sonimei.module.searchresult
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -15,6 +15,7 @@ import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
+import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.util.extends.gone
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.load
@@ -22,7 +23,6 @@ import com.dede.sonimei.util.extends.show
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.find
-import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.toast
 
 

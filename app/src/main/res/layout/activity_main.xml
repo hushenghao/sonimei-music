@@ -63,9 +63,9 @@
                 android:id="@+id/tool_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/actionBarPop"
+                app:popupTheme="@style/ActionBarPopStyle"
+                app:theme="@style/ActionBarStyle"
                 app:title=" " />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -79,7 +79,7 @@
 
         <fragment
             android:id="@+id/search_result_fragment"
-            android:name="com.dede.sonimei.module.home.SearchResultFragment"
+            android:name="com.dede.sonimei.module.searchresult.SearchResultFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

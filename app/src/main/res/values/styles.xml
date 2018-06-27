@@ -6,23 +6,27 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="actionBarPopupTheme">@style/actionBarPop</item>
-        <item name="autoCompleteTextViewStyle">@style/AutoCompleteStyle</item>
     </style>
 
+    <!--MainActivity Style-->
     <style name="NoActonBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="actionBarPop" parent="ThemeOverlay.AppCompat.Light">
+    <!--ActionBar的样式，包括PopMenu和AutoCompleteTextView弹出pop样式-->
+    <style name="ActionBarStyle" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!--ActionBar PopMenu的样式-->
+    <style name="ActionBarPopStyle" parent="Base.Widget.AppCompat.PopupMenu.Overflow">
         <item name="overlapAnchor">false</item>
     </style>
 
-    <style name="AutoCompleteStyle" parent="Widget.AppCompat.Light.AutoCompleteTextView">
-        <!--<item name="android:popupBackground">@drawable/abc_popup_background</item>-->
-    </style>
-
+    <!--BottomSheetDialog的强调色-->
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="colorAccent">@color/colorAccent</item>
     </style>

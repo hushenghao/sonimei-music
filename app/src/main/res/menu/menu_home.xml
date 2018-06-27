@@ -15,7 +15,7 @@
         android:id="@+id/menu_source_type"
         android:icon="@drawable/ic_menu_source"
         android:title="搜索来源和类型"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_setting"
