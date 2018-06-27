@@ -15,18 +15,19 @@ import android.view.ViewConfiguration
  */
 class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
 
+    private var mMaximumVelocity: Float = 0f
+
+    constructor() : super()
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        mMaximumVelocity = ViewConfiguration.get(context).scaledMaximumFlingVelocity.toFloat()
+    }
+
     /**
      * 垂直方向的手指移动速度变化监听
      */
     interface OnYVelocityChangeListener {
         fun onChange(vy: Float)
-    }
-
-    private val mMaximumVelocity: Float
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        val configuration = ViewConfiguration.get(context)
-        mMaximumVelocity = configuration.scaledMaximumFlingVelocity.toFloat()
     }
 
     private var velocityTracker: VelocityTracker? = null
@@ -53,6 +54,10 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
                     onYVelocityChangeListener?.onChange(yVelocity)
                 }
             }
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+                id = -1
+            }
         }
 
         return super.onInterceptTouchEvent(parent, child, event)
@@ -78,6 +83,10 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
                     val yVelocity = velocityTracker!!.getYVelocity(event.getPointerId(id))
                     onYVelocityChangeListener?.onChange(yVelocity)
                 }
+            }
+            MotionEvent.ACTION_UP,
+            MotionEvent.ACTION_CANCEL -> {
+                id = -1
             }
         }
 
