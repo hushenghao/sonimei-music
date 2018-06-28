@@ -3,6 +3,7 @@ package com.dede.sonimei.module.searchresult
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
@@ -16,10 +17,7 @@ import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.module.home.MainActivity
-import com.dede.sonimei.util.extends.gone
-import com.dede.sonimei.util.extends.isNull
-import com.dede.sonimei.util.extends.load
-import com.dede.sonimei.util.extends.show
+import com.dede.sonimei.util.extends.*
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.find
@@ -214,19 +212,24 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             super.setNewData(data)
         }
 
-        override fun convert(helper: BaseViewHolder?, item: SearchSong?) {
-            helper?.setText(R.id.tv_name, item?.title)
-                    ?.setText(R.id.tv_singer_album, item?.author)
-                    ?.addOnClickListener(R.id.iv_download)
-            val ivPlaying = helper?.getView<ImageView>(R.id.iv_playing)
-            val ivAlbum = helper?.getView<ImageView>(R.id.iv_album_img)
-            if (helper?.layoutPosition == clickPosition) {
+        override fun convert(helper: BaseViewHolder, item: SearchSong) {
+            helper.setText(R.id.tv_name, item.title)
+                    .addOnClickListener(R.id.iv_download)
+            if (item.url.isNull()) {
+                helper.setText(R.id.tv_singer_album, (item.author + " 资源不可用".color(Color.RED)).toHtml())
+            } else {
+                helper.setText(R.id.tv_singer_album, item.author)
+            }
+
+            val ivPlaying = helper.getView<ImageView>(R.id.iv_playing)
+            val ivAlbum = helper.getView<ImageView>(R.id.iv_album_img)
+            if (helper.layoutPosition == clickPosition) {
                 ivAlbum.gone()
                 ivPlaying.show()
             } else {
                 ivAlbum.show()
                 ivPlaying.gone()
-                ivAlbum?.load(item?.pic)
+                ivAlbum?.load(item.pic)
             }
         }
     }

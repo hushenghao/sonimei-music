@@ -3,28 +3,24 @@ package com.dede.sonimei.module.home
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.SearchView
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
-import android.widget.TextView
 import com.dede.sonimei.*
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.CircularRevealDrawable
-import com.dede.sonimei.component.LinkTagClickableSpan
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.db.DatabaseOpenHelper.Companion.COLUMNS_TEXT
@@ -158,7 +154,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                         state == BottomSheetBehavior.STATE_COLLAPSED) {
                     return
                 }
-                val v = Math.max(-1f, Math.min(vy * .0025f, 1f))
+                val v = Math.max(-1f, Math.min(vy * .0023f, 1f))
                 caretDrawable.caretProgress = v
             }
         }
@@ -278,42 +274,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 true
             }
             R.id.menu_about -> {
-                val view = LayoutInflater.from(this).inflate(R.layout.dialog_about, null)
-                val tvVersion = view.findViewById<TextView>(R.id.tv_version)
-                try {
-                    val packageInfo = packageManager.getPackageInfo(packageName, 0)
-                    tvVersion.text = String.format(tvVersion.text.toString(),
-                            packageInfo.versionName,
-                            packageInfo.versionCode)
-                } catch (e: PackageManager.NameNotFoundException) {
-                }
-
-                val tvGithub = view.findViewById<TextView>(R.id.tv_github)
-                tvGithub.tag = GITHUB_LINK
-                val github = SpannableString(tvGithub.text)
-                github.setSpan(LinkTagClickableSpan(), 7, github.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                tvGithub.movementMethod = LinkMovementMethod.getInstance()
-                tvGithub.text = github
-
-                val tvQQGroup = view.findViewById<TextView>(R.id.tv_group)
-                tvQQGroup.tag = GROUP_LINK
-                val qqGroup = SpannableString(tvQQGroup.text)
-                qqGroup.setSpan(LinkTagClickableSpan(false), 6, qqGroup.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                tvQQGroup.movementMethod = LinkMovementMethod.getInstance()
-                tvQQGroup.text = qqGroup
-
-                AlertDialog.Builder(this)
-                        .setView(view)
-                        .setNegativeButton("确定", null)
-                        .setNeutralButton(R.string.about_market) { _, _ ->
-                            try {
-                                startActivity(Intent(Intent.ACTION_VIEW,
-                                        Uri.parse("market://details?id=$packageName")))
-                            } catch (e: ClassNotFoundException) {
-                            }
-                        }
-                        .create()
-                        .show()
+                AboutDialog(this).show()
                 true
             }
             R.id.menu_webview -> {

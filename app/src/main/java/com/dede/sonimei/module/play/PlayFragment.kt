@@ -29,6 +29,7 @@ import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
@@ -82,6 +83,11 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         // 修改title顶部距离，防止状态栏遮挡
         val params = tv_title.layoutParams as ViewGroup.MarginLayoutParams
         params.topMargin = params.topMargin + ScreenHelper.getFrameTopMargin(activity)
+
+        lrc_view.setOnLineChangeListener { _, lineStr, _ ->
+            tv_lrc.show()
+            tv_lrc.text = lineStr// update mini control lrc text
+        }
     }
 
     private val audioManager by lazy { context!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
@@ -145,10 +151,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         tv_singer.text = song.author
 
         lrc_view.loadLrc(song.lrc)
-        lrc_view.setOnLineChangeListener { _, lineStr, _ ->
-            tv_lrc.show()
-            tv_lrc.text = lineStr// update mini control lrc text
-        }
+        lrc_view.setOnPlayClickListener(null)
 
         iv_download.onClick {
             DownloadHelper.download(this@PlayFragment.activity, song)
@@ -165,6 +168,10 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
                                 .build())
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            }
+            if (song.url.isNull()) {
+                toast("播放链接为空")
+                return
             }
             mediaPlayer.setDataSource(song.url)
             mediaPlayer.setOnBufferingUpdateListener { mp, percent ->

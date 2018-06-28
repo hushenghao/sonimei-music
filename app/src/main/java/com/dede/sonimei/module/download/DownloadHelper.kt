@@ -88,8 +88,10 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                 if (url == downloadUrl) {
                     toast("已经正在下载了...")
                     cancel = true
+                    break
                 }
             }
+            runningCursor.close()
             if (cancel) return@doAsync
 
             // 查询在等待中的任务
@@ -100,6 +102,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                 if (url == downloadUrl) {
                     toast("已经在下载队列了...")
                     cancel = true
+                    break
                 }
             }
             pendingCursor.close()
@@ -126,7 +129,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
      */
     fun download(song: SearchSong) {
         if (song.url.isNull()) {
-            toast("非法的下载链接")
+            toast("下载链接为空")
             return
         }
         filterDownload(song.url, {
