@@ -1,6 +1,5 @@
 package com.dede.sonimei.module.home
 
-import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
@@ -34,7 +33,6 @@ import com.dede.sonimei.module.searchresult.SearchResultFragment
 import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.util.extends.*
-import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.defaultSharedPreferences
@@ -194,17 +192,6 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         } else {
             playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-    }
-
-    private val rxPermissions by lazy { RxPermissions(this) }
-
-    override fun onResume() {
-        super.onResume()
-        rxPermissions
-                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                .filter { !it }
-                .subscribe { toast("读取SD卡权限被拒绝") }
     }
 
     private lateinit var searchView: SearchView

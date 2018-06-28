@@ -151,8 +151,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
         }
 
         iv_download.onClick {
-            DownloadHelper.getInstance(getContext()!!)
-                    .download(song)
+            DownloadHelper.download(this@PlayFragment.activity, song)
         }
 
         try {

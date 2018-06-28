@@ -1,6 +1,8 @@
 package com.dede.sonimei.module.download
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
 import android.net.ConnectivityManager
@@ -12,6 +14,7 @@ import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.util.extends.isNull
+import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.*
 import java.io.File
 
@@ -29,6 +32,25 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             if (instance == null)
                 instance = DownloadHelper(context.applicationContext)
             return instance!!
+        }
+
+        /**
+         * 判断运行时权限后下载，没有权限时申请后再下载
+         */
+        fun download(activity: Activity?, song: SearchSong) {
+            if (activity == null) {
+                instance?.download(song)
+                return
+            }
+            RxPermissions(activity)
+                    .request(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .subscribe {
+                        if (it)
+                            getInstance(activity).download(song)
+                        else
+                            activity.toast("读写SD卡权限被拒绝")
+                    }
         }
     }
 
@@ -99,6 +121,9 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
         handler.post(runnable)
     }
 
+    /**
+     * 直接下载，忽略运行时权限
+     */
     fun download(song: SearchSong) {
         if (song.url.isNull()) {
             toast("非法的下载链接")

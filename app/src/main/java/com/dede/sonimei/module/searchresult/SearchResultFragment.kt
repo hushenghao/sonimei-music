@@ -89,8 +89,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         adapter.setOnItemChildClickListener { _, _, position ->
             if (position >= adapter.data.size) return@setOnItemChildClickListener
             val song = adapter.data[position] ?: return@setOnItemChildClickListener
-            DownloadHelper.getInstance(context!!)
-                    .download(song)
+            DownloadHelper.download(activity, song)
         }
         adapter.setOnItemClickListener { adapter, _, position ->
             val listAdapter = (adapter as ListAdapter)
@@ -138,8 +137,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                             }
                         }
                         ITEM_DOWNLOAD -> {
-                            DownloadHelper.getInstance(context!!)
-                                    .download(song)
+                            DownloadHelper.download(activity, song)
                         }
                         ITEM_COPY_SOURCE -> copy(song.link)
                         ITEM_COPY_URL -> copy(song.url)
