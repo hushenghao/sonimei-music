@@ -25,7 +25,7 @@
 
     <ImageView
         android:id="@+id/iv_delete"
-        android:layout_width="33dp"
+        android:layout_width="36dp"
         android:layout_height="match_parent"
         android:layout_marginRight="5dp"
         android:adjustViewBounds="true"

@@ -14,15 +14,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <!--ActionBar的样式，包括PopMenu和AutoCompleteTextView弹出pop样式-->
-    <style name="ActionBarStyle" parent="ThemeOverlay.AppCompat.ActionBar">
+    <!--ToolBar的样式，包括PopMenu和AutoCompleteTextView弹出pop样式-->
+    <style name="ToolBarStyle" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="actionMenuTextColor">@color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="android:textSize">16sp</item>
     </style>
 
-    <!--ActionBar PopMenu的样式-->
-    <style name="ActionBarPopStyle" parent="Base.Widget.AppCompat.PopupMenu.Overflow">
+    <!--ToolBar PopMenu的样式-->
+    <style name="ToolBarPopStyle" parent="Base.Widget.AppCompat.PopupMenu.Overflow">
         <item name="overlapAnchor">false</item>
     </style>
 

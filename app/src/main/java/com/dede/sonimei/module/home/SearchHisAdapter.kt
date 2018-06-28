@@ -47,7 +47,7 @@ class SearchHisAdapter(context: Context)
         }
 
         setFilterQueryProvider {
-            // 文字改变时重新插叙数据库，模糊匹配，on WorkThread
+            // 文字改变时重新查询数据库，模糊匹配，on WorkThread
             query(it?.toString())
         }
     }
@@ -58,6 +58,13 @@ class SearchHisAdapter(context: Context)
             return count
         }
         return count + HEADER_COUNT
+    }
+
+    override fun getItem(position: Int): Any? {
+        return when (getItemViewType(position)) {
+            ITEM_NORMAL -> super.getItem(position - HEADER_COUNT)
+            else -> null
+        }
     }
 
     override fun getViewTypeCount(): Int {
