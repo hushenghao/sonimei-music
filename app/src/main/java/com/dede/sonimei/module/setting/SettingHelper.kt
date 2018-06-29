@@ -69,8 +69,7 @@ object SettingHelper {
                     // 其他挂载点
                     val storageList = FileUtils.getStorageList(context)
                     storageList
-                            .filter { it.path != null }
-                            .filter { it.path!!.contains(type) }
+                            .filter { it.path?.contains(type) ?: false }
                             .forEach {
                                 if (split.size < 2) {
                                     return it.path
@@ -80,12 +79,15 @@ object SettingHelper {
                 }
 
             } else if (isDownloadsDocument(uri)) {
-
-                val id = DocumentsContract.getDocumentId(uri)
-                val contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
-
-                return getDataColumn(context, contentUri, null, null)
+                val idStr = DocumentsContract.getDocumentId(uri)
+                return try {
+                    val id = idStr.toLong()
+                    val contentUri = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"), id)
+                    getDataColumn(context, contentUri, null, null)
+                } catch (e: NumberFormatException) {
+                    null
+                }
             } else if (isMediaDocument(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

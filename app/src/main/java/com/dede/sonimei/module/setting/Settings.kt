@@ -15,10 +15,10 @@ import com.dede.sonimei.R
 import com.dede.sonimei.data.Source
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.sourceName
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.info
-import org.jetbrains.anko.startActivityForResult
+import com.dede.sonimei.util.extends.isNull
+import org.jetbrains.anko.*
+import java.io.File
+
 
 /**
  * Created by hsh on 2018/5/17.
@@ -87,7 +87,7 @@ class Settings : PreferenceFragment(),
         defaultSearchSource.summary = sourceName(source)
         defaultSearchSource.onPreferenceClickListener = this
 
-        val customPath = findPreference(KEY_CUSTOM_PATH)// 自定义下载路径，5.0一下不可用，隐藏设置项
+        val customPath = findPreference(KEY_CUSTOM_PATH)// 自定义下载路径，5.0以下不可用，隐藏设置项
         if (!isLollipop) {
             (findPreference(KEY_DOWNLOAD_SETTING) as PreferenceCategory)
                     .removePreference(customPath)
@@ -125,6 +125,10 @@ class Settings : PreferenceFragment(),
                 info(uri.toString())
                 val path = SettingHelper.documentUri2Path(activity, uri)
                 info(path)
+                if (path.isNull() || File(path).canRead()) {
+                    toast("路径不可用")
+                    return
+                }
                 defaultSharedPreferences.edit()
                         .putString(KEY_CUSTOM_PATH, path)
                         .apply()
