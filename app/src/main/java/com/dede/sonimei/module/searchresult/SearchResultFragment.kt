@@ -93,7 +93,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             val listAdapter = (adapter as ListAdapter)
             if (position >= listAdapter.data.size) return@setOnItemClickListener
             val song = listAdapter.data[position]
-            listAdapter.onItemClick(position)
+            if (song != null && song.url.notNull()) {
+                listAdapter.onItemClick(position)
+            }
             if (activity != null && activity is MainActivity) {
                 (activity as MainActivity).playSong(song)
             }
@@ -213,12 +215,14 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         }
 
         override fun convert(helper: BaseViewHolder, item: SearchSong) {
-            helper.setText(R.id.tv_name, item.title)
-                    .addOnClickListener(R.id.iv_download)
+            helper.addOnClickListener(R.id.iv_download)
             if (item.url.isNull()) {
-                helper.setText(R.id.tv_singer_album, (item.author + " 资源不可用".color(Color.RED)).toHtml())
+                helper.setText(R.id.tv_singer_album,
+                        (item.author.del() + "&nbsp;&nbsp;&nbsp;(QAQ)资源不可用！".color(Color.RED)).toHtml())
+                        .setText(R.id.tv_name, item.title.del().toHtml())
             } else {
                 helper.setText(R.id.tv_singer_album, item.author)
+                        .setText(R.id.tv_name, item.title)
             }
 
             val ivPlaying = helper.getView<ImageView>(R.id.iv_playing)

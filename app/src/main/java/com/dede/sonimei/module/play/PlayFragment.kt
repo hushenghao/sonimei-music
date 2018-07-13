@@ -169,10 +169,7 @@ class PlayFragment : BaseFragment(), MediaPlayer.OnPreparedListener, Runnable {
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             }
-            if (song.url.isNull()) {
-                toast("播放链接为空")
-                return
-            }
+
             mediaPlayer.setDataSource(song.url)
             mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
                 if (percent >= 100) {

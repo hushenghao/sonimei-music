@@ -41,13 +41,13 @@ fun Long.toTime(): String {
 
 fun String.toHtml(): Spanned = Html.fromHtml(this)
 
-fun String.color(@ColorInt color: Int): String {
-    if (this.isNull()) return this
+fun String?.color(@ColorInt color: Int): String {
+    if (this.isNull()) return ""
     val colorStr = Integer.toHexString(color)
     return color("#" + colorStr.substring(colorStr.length - 6, colorStr.length))
 }
 
-fun String.color(colorStr: String): String = if (this.notNull()) "<font color=\"" +
+fun String?.color(colorStr: String): String = if (this.notNull()) "<font color=\"" +
         colorStr + "\">" + this + "</font>" else ""
 
 fun String.color(context: Context, @ColorRes colorRes: Int): String {
@@ -57,9 +57,9 @@ fun String.color(context: Context, @ColorRes colorRes: Int): String {
 /**
  * 删除线
  */
-fun String.del(): String = "<del>$this</del>"
+fun String?.del(): String = if (this.isNull()) "" else "<del>$this</del>"
 
 /**
  * 加粗
  */
-fun String.strong(): String = "<strong>$this</strong>"
+fun String?.strong(): String = if (this.isNull()) "" else "<strong>$this</strong>"

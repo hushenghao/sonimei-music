@@ -79,6 +79,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
         val source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
 
         searchResultFragment = supportFragmentManager.findFragmentById(R.id.search_result_fragment) as SearchResultFragment
+        searchResultFragment.setTypeSource(source to searchResultFragment.getTypeSource().second)
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
         drawable = CircularRevealDrawable(color(R.color.colorPrimary))
@@ -170,7 +171,11 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
     /**
      * 播放音乐
      */
-    fun playSong(song: SearchSong) {
+    fun playSong(song: SearchSong?) {
+        if (song == null || song.url.isNull()) {
+            toast("播放链接为空")
+            return
+        }
         // 显示 mini play control
         playBehavior.isHideable = false
         playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -218,7 +223,7 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     v.postDelayed({
                         autoCompleteTextView.showDropDown()
                         autoCompleteTextView.threshold = -1
-                    }, 200)
+                    }, 250)
                 }
             }
             autoCompleteTextView.setOnItemClickListener { _, _, position, _ ->

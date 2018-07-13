@@ -6,6 +6,7 @@ import android.support.annotation.LayoutRes
 import com.dede.sonimei.BuildConfig
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 
 
 /**
@@ -31,14 +32,17 @@ abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
                     .build())
         }
         super.onCreate(savedInstanceState)
+        info("onCreate")
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setContentView(getLayoutId())
 
+        info("initView")
         initView(savedInstanceState)
 
+        info("loadData")
         loadData()
     }
 
@@ -53,5 +57,30 @@ abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
 
     @LayoutRes
     abstract fun getLayoutId(): Int
+
+    override fun onStart() {
+        super.onStart()
+        info("onStart")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        info("onRestart")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        info("onStop")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        info("onSaveInstanceState")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        info("onDestroy")
+    }
 
 }
