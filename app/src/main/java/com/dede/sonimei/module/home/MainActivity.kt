@@ -32,6 +32,7 @@ import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.info
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -115,6 +116,17 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     false
                 }
 
+                // 隐藏fragment 优化过度绘制
+                if (slideOffset > 0.9f) {
+                    supportFragmentManager.beginTransaction()
+                            .hide(searchResultFragment)
+                            .commit()
+                } else {
+                    supportFragmentManager.beginTransaction()
+                            .show(searchResultFragment)
+                            .commit()
+                }
+
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
                 fl_bottom_play.alpha = b
@@ -164,24 +176,23 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
             toggleBottomSheet()
         }
         // 隐藏mini play control
-        playBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        playBehavior.peekHeight = 0
+//        playBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+//        playBehavior.peekHeight = 0
     }
 
     /**
      * 播放音乐
      */
     fun playSong(song: SearchSong?) {
-        if (song == null || song.url.isNull()) {
+        if (song == null || song.path.isNull()) {
             toast("播放链接为空")
             return
         }
         // 显示 mini play control
         playBehavior.isHideable = false
         playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        iv_arrow_indicators.show()
         val bottomDimens = resources.getDimensionPixelSize(R.dimen.search_list_bottom_margin)
-        playBehavior.peekHeight = bottomDimens
+//        playBehavior.peekHeight = bottomDimens
         fl_search_result.setPadding(0, 0, 0, bottomDimens)
 
         playFragment.playSong(song)
@@ -216,11 +227,16 @@ class MainActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
             // 监听焦点变化，延迟弹出搜索历史pop
             autoCompleteTextView.setOnFocusChangeListener { v, hasFocus ->
+                info("focus change " + playBehavior.state)
                 if (!hasFocus) {
-                    autoCompleteTextView.threshold = 1
+                    autoCompleteTextView.threshold = Int.MAX_VALUE
                 } else {
                     // 延时显示，等待键盘弹起
                     v.postDelayed({
+                        // 打开播放页时会关闭搜索框，忽略焦点变化
+                        if (playBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+                            return@postDelayed
+                        }
                         autoCompleteTextView.showDropDown()
                         autoCompleteTextView.threshold = -1
                     }, 250)

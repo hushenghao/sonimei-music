@@ -33,7 +33,7 @@ const val XIMALAYA: Int = 13// 喜马拉雅
 const val KG: Int = 14// 全民k歌
 
 /**
- * 音乐来源枚举
+ * 音乐来源
  */
 @Retention(AnnotationRetention.RUNTIME)
 @IntDef(NETEASE, _1TING, BAIDU, KUGOU, KUWO, QQ, XIAMI, _5SINGYC, _5SINGFC, MIGU, LIZHI, QINGTING, XIMALAYA, KG)
@@ -41,7 +41,7 @@ annotation class MusicSource
 
 private val sourceMap by lazy {
     val array = SparseArray<Source>()
-    array.put(NETEASE, Source(NETEASE, "网易云", "netease", 0xffF62400.toInt()))
+    array.put(NETEASE, Source(NETEASE, "网易云", "netease", 0xffC20C0D.toInt()))
     array.put(QQ, Source(QQ, "QQ", "qq", 0xff30C27C.toInt()))
     array.put(KUGOU, Source(KUGOU, "酷狗", "kugou", 0xff3585FB.toInt()))
     array.put(KUWO, Source(KUWO, "酷我", "kuwo", 0xffFCAB3A.toInt()))
@@ -87,7 +87,7 @@ fun sourceColor(@MusicSource key: Int): Int = sourceMap[key].color
 
 const val SEARCH_NAME = "name"
 const val SEARCH_ID = "id"
-const val SEARCH_URL = "url"
+const val SEARCH_URL = "path"
 
 fun searchType(searchType: String): String {
     return when (searchType) {

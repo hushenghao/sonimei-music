@@ -8,7 +8,7 @@ import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
 import com.dede.sonimei.sourceKey
 import com.dede.sonimei.util.extends.applyFragmentLifecycle
-import com.dede.sonimei.util.extends.kson.fromJson
+import com.dede.sonimei.util.extends.kson.fromExposeJson
 import com.dede.sonimei.util.extends.notNull
 import org.jetbrains.anko.AnkoLogger
 
@@ -84,7 +84,7 @@ class SearchPresenter(val view: ISearchView) : AnkoLogger {
                     it.trueStatus()
                 }
                 .map { it.data }
-                .map { it.fromJson<ArrayList<SearchSong>>() }
+                .map { it.fromExposeJson<ArrayList<SearchSong>>() }
                 .subscribe({
                     view.hideLoading()
                     view.loadSuccess(isLoadMore, it)

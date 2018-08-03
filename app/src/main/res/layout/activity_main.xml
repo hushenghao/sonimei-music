@@ -96,8 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:layout_marginTop="5dp"
-            android:visibility="gone" />
+            android:layout_marginTop="5dp" />
     </FrameLayout>
 
     <!--自定义FrameLayout 在Bottom Sheet 打开时拦截所有触摸事件-->

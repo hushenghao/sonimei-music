@@ -128,12 +128,12 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
      * 直接下载，忽略运行时权限
      */
     fun download(song: SearchSong) {
-        if (song.url.isNull()) {
+        if (song.path.isNull()) {
             toast("下载链接为空")
             return
         }
-        filterDownload(song.url, {
-            val request = DownloadManager.Request(Uri.parse(song.url))
+        filterDownload(song.path, {
+            val request = DownloadManager.Request(Uri.parse(song.path))
             request.setTitle(song.getName())
             request.setMimeType("audio/mpeg")
             val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)

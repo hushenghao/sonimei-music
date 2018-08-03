@@ -59,6 +59,9 @@ object ImageUtil {
 
         scriptIntrinsicBlur.destroy()
         renderScript.destroy()
+        output.destroy()
+        input.destroy()
+
         return inputBmp
     }
 

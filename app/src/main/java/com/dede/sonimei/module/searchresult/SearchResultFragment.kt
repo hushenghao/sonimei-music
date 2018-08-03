@@ -93,7 +93,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             val listAdapter = (adapter as ListAdapter)
             if (position >= listAdapter.data.size) return@setOnItemClickListener
             val song = listAdapter.data[position]
-            if (song != null && song.url.notNull()) {
+            if (song != null && song.path.notNull()) {
                 listAdapter.onItemClick(position)
             }
             if (activity != null && activity is MainActivity) {
@@ -140,7 +140,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                             DownloadHelper.download(activity, song)
                         }
                         ITEM_COPY_SOURCE -> copy(song.link)
-                        ITEM_COPY_URL -> copy(song.url)
+                        ITEM_COPY_URL -> copy(song.path)
                         ITEM_COPY_JSON -> copy(GsonBuilder().create().toJson(song))
                     }
                 }
@@ -216,7 +216,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
         override fun convert(helper: BaseViewHolder, item: SearchSong) {
             helper.addOnClickListener(R.id.iv_download)
-            if (item.url.isNull()) {
+            if (item.path.isNull()) {
                 helper.setText(R.id.tv_singer_album,
                         (item.author.del() + "&nbsp;&nbsp;&nbsp;(QAQ)资源不可用！".color(Color.RED)).toHtml())
                         .setText(R.id.tv_name, item.title.del().toHtml())
