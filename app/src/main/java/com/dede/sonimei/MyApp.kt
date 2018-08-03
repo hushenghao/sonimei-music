@@ -4,6 +4,7 @@ import android.app.Application
 import android.view.ViewConfiguration
 import com.dede.sonimei.net.HttpUtil
 import com.squareup.leakcanary.LeakCanary
+import com.tencent.bugly.crashreport.CrashReport
 
 
 /**
@@ -21,6 +22,10 @@ class MyApp : Application() {
 
         CrashHandler.init(this)
 
+        // 开发设备
+        CrashReport.setIsDevelopmentDevice(applicationContext, BuildConfig.DEBUG)
+        // bugly 第三个参数调试开关
+        CrashReport.initCrashReport(applicationContext, "8d0cfa602d", BuildConfig.DEBUG)
         HttpUtil.init(this)
     }
 

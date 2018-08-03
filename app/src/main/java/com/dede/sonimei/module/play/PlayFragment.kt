@@ -186,12 +186,9 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         handler.removeCallbacks(this)
 
         // bottomSheet mini control
-        iv_play.isClickable = false
-        iv_play_bottom.isClickable = false
-        sb_progress.max = 1000// 提高精度
+        sb_progress.max = maxProgress.toInt()// 提高精度
         sb_progress.progress = 0
         sb_progress.secondaryProgress = 0
-        sb_progress.isEnabled = false
         tv_name.text = song.getName()
         tv_name.isSelected = true
         tv_lrc.gone()
@@ -265,9 +262,9 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     override fun onPlayStart(mp: MusicPlayer) {
         val duration = mp.duration
         tv_all_time.text = duration.toTime()
+        iv_play.isClickable = true
         iv_play_bottom.isClickable = true
         sb_progress.isEnabled = true
-        iv_play.isClickable = true
         lrc_view.isEnabled = true
 
         iv_play.setImageResource(R.drawable.ic_play_status)

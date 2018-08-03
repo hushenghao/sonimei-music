@@ -1,13 +1,18 @@
 package com.dede.sonimei
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Looper
 import android.widget.Toast
+import com.dede.sonimei.module.home.MainActivity
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.error
 import org.jetbrains.anko.info
 import java.io.*
@@ -54,15 +59,24 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
             defaultHandler?.uncaughtException(t, e)
         } else {
             try {
-                Thread.sleep(3000)
+                Thread.sleep(2000)
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            //退出程序
-//        ExitUtil.finish()
-            android.os.Process.killProcess(android.os.Process.myPid())
-            System.exit(1)
+            restart()
         }
+    }
+
+    private fun restart() {
+        if (mApplicationContext != null) {
+            val intent = Intent(mApplicationContext, MainActivity::class.java)
+            val restartIntent = PendingIntent.getActivity(mApplicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+            val alarmManager = mApplicationContext!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, restartIntent)
+        }
+        //退出程序
+        android.os.Process.killProcess(android.os.Process.myPid())
+        System.exit(1)
     }
 
     private fun handleException(ex: Throwable?): Boolean {
@@ -74,15 +88,13 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
         collectDeviceInfo(mApplicationContext!!)
 
         //使用Toast来显示异常信息
-        object : Thread() {
-            override fun run() {
-                Looper.prepare()
-                Toast.makeText(mApplicationContext,
-                        "喵，很抱歉，程序出现异常，即将退出！",
-                        Toast.LENGTH_SHORT).show()
-                Looper.loop()
-            }
-        }.start()
+        doAsync {
+            Looper.prepare()
+            Toast.makeText(mApplicationContext,
+                    "喵，很抱歉，程序出现异常，即将退出！",
+                    Toast.LENGTH_SHORT).show()
+            Looper.loop()
+        }
         //保存日志文件
         saveCatchInfo2File(ex)
         return true
