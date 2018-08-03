@@ -16,7 +16,7 @@
         android:drawablePadding="6dp"
         android:drawableTint="@color/icon_tint"
         android:gravity="center_vertical"
-        android:text="搜索来源和类型"
+        android:text="@string/source_type"
         android:textColor="@color/text1"
         android:textSize="15sp" />
 

@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fl_bottom_play"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/search_list_bottom_margin"
+    android:layout_height="@dimen/dimen_bottom_play_controller_height"
     android:background="@color/white"
     tools:showIn="@layout/fragment_play">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/search_list_bottom_margin"
+        android:layout_height="@dimen/dimen_bottom_play_controller_height"
         android:background="?attr/selectableItemBackground">
 
         <ImageView

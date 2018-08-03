@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="音乐名称"
+            android:text="@string/search_name"
             android:textColor="@color/text1"
             android:textSize="14sp" />
 
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="音乐ID"
+            android:text="@string/search_id"
             android:textColor="@color/text1"
             android:textSize="14sp" />
 
@@ -36,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="音乐地址"
+            android:text="@string/search_url"
             android:textColor="@color/text1"
             android:textSize="14sp" />
 

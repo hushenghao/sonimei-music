@@ -1,4 +1,4 @@
-package com.dede.sonimei.module.searchresult
+package com.dede.sonimei.module.search.netresult
 
 import com.dede.sonimei.data.search.SearchSong
 import com.trello.rxlifecycle2.LifecycleProvider

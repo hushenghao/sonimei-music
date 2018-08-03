@@ -10,6 +10,8 @@
     <string name="about_version">版本：%1s(%2d)</string>
     <string name="about_market">喜欢，给个好评</string>
 
+    <string name="net_error">网络开小差儿！</string>
+
     <string name="empty_help">
     &lt;div&gt;
         &lt;h4&gt;帮助：&lt;/h4&gt;
@@ -53,4 +55,56 @@
         &lt;/div&gt;
     &lt;/div&gt;
     </string>
+    <string name="source_type">搜索来源和类型</string>
+    <string name="no_lrc">暂无歌词</string>
+    <string name="default_all_time">--:--</string>
+    <string name="default_now_time">00:00</string>
+    <string name="search_name">音乐名称</string>
+    <string name="search_id">音乐ID</string>
+    <string name="search_url">音乐地址</string>
+    <!--menu-->
+    <string name="menu_search">搜索</string>
+    <string name="menu_source_type">搜索来源和类型</string>
+    <string name="menu_setting">设置</string>
+    <string name="menu_ape">无损音乐下载</string>
+    <string name="menu_webview">网页版</string>
+    <string name="menu_about">关于</string>
+    <!--setting-->
+    <string name="setting_group_search">搜索</string>
+    <string name="setting_search_source">默认搜索来源</string>
+    <string name="setting_group_down">下载选项</string>
+    <string name="setting_down_wifionly">仅在Wi-Fi下下载</string>
+    <string name="setting_down_path">自定义下载路径</string>
+    <string name="setting_group_other">其他</string>
+    <string name="setting_other_qqgroup">加入QQ群</string>
+    <string name="setting_other_debug_sum">如有bug，欢迎反馈</string>
+    <string name="setting_other_debug_title">正在开发中…</string>
+
+    <string name="download_sd_error">读写SD卡权限被拒绝</string>
+    <string name="download_file_downed">文件已经下载过了…</string>
+    <string name="download_isdownloading">已经正在下载了…</string>
+    <string name="download_haslinked">已经在下载队列了…</string>
+    <string name="download_link_empty">下载链接为空</string>
+    <string name="download_onlywifi">已开启仅Wi-Fi下载…</string>
+    <string name="download_start">开始下载 %1s</string>
+
+    <string name="sure">确定</string>
+    <string name="play_path_empty">播放链接为空</string>
+    <string name="reclick_exit">再按一次退出</string>
+    <string name="clear_his">清空搜索历史</string>
+
+    <string name="dialog_option">选项</string>
+    <string-array name="dialog_items">
+        <item>播放</item>
+        <item>下载</item>
+        <item>复制下载链接</item>
+        <item>复制音乐链接</item>
+    </string-array>
+
+    <string name="copy_empty">内容为空</string>
+    <string name="copy_succ">已复制到剪切板</string>
+    <string name="source_error"><![CDATA[&nbsp;&nbsp;&nbsp;(QAQ)资源不可用！]]></string>
+    <string name="choose_file_dir">选择文件路径</string>
+    <string name="app_crash">喵，很抱歉，程序出现异常，即将退出！</string>
+
 </resources>

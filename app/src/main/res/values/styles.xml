@@ -31,7 +31,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <dimen name="search_list_bottom_margin">55dp</dimen>
+    <dimen name="dimen_bottom_play_controller_height">55dp</dimen>
 
     <style name="volumeSeekBar" parent="Widget.AppCompat.SeekBar">
         <item name="android:thumb">@drawable/shape_volume_seek_thumb</item>

@@ -71,8 +71,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         context?.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun initView(savedInstanceState: Bundle?) {
         iv_play.setOnClickListener(playClick)
         iv_play_bottom.setOnClickListener(playClick)
 

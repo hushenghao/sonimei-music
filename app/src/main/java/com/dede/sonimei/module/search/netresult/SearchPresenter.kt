@@ -1,4 +1,4 @@
-package com.dede.sonimei.module.searchresult
+package com.dede.sonimei.module.search.netresult
 
 import com.dede.sonimei.MusicSource
 import com.dede.sonimei.NETEASE

@@ -41,7 +41,7 @@ annotation class MusicSource
 
 private val sourceMap by lazy {
     val array = SparseArray<Source>()
-    array.put(NETEASE, Source(NETEASE, "网易云", "netease", 0xffC20C0D.toInt()))
+    array.put(NETEASE, Source(NETEASE, "网易云", "netease", 0xffD90C0D.toInt()))
     array.put(QQ, Source(QQ, "QQ", "qq", 0xff30C27C.toInt()))
     array.put(KUGOU, Source(KUGOU, "酷狗", "kugou", 0xff3585FB.toInt()))
     array.put(KUWO, Source(KUWO, "酷我", "kuwo", 0xffFCAB3A.toInt()))

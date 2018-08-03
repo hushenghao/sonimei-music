@@ -51,7 +51,7 @@ class Settings : PreferenceFragment(),
                 }
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 try {
-                    startActivityForResult(Intent.createChooser(intent, "选择文件路径"),
+                    startActivityForResult(Intent.createChooser(intent, getString(R.string.choose_file_dir)),
                             selectPathCode)
                 } catch (e: ActivityNotFoundException) {
                     e.printStackTrace()

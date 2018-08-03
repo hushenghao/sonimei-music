@@ -68,7 +68,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
     }
 
     private fun restart() {
-        if (mApplicationContext != null) {
+        if (mApplicationContext != null && !BuildConfig.DEBUG) {
             val intent = Intent(mApplicationContext, MainActivity::class.java)
             val restartIntent = PendingIntent.getActivity(mApplicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
             val alarmManager = mApplicationContext!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -91,7 +91,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
         doAsync {
             Looper.prepare()
             Toast.makeText(mApplicationContext,
-                    "喵，很抱歉，程序出现异常，即将退出！",
+                    R.string.app_crash,
                     Toast.LENGTH_SHORT).show()
             Looper.loop()
         }

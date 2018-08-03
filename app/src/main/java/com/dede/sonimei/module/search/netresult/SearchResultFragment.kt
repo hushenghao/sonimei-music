@@ -1,4 +1,4 @@
-package com.dede.sonimei.module.searchresult
+package com.dede.sonimei.module.search.netresult
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -18,7 +18,6 @@ import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.util.extends.*
-import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.toast
@@ -59,7 +58,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         } else {
             hideLoading()
         }
-        toast(msg ?: "网络错误")
+        toast(msg ?: getString(R.string.net_error))
     }
 
     override fun provider() = this
@@ -113,35 +112,22 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         tvEmpty.text = Html.fromHtml(resources.getString(R.string.empty_help))
     }
 
-    private val ITEM_PLAY = "播放"
-    private val ITEM_DOWNLOAD = "下载"
-    private val ITEM_COPY_URL = "复制下载链接"
-    private val ITEM_COPY_SOURCE = "复制音乐链接"
-    private val ITEM_COPY_JSON = "复制Json数据"
-
-    private val dialogItems by lazy {
-        arrayOf(ITEM_PLAY, ITEM_DOWNLOAD, ITEM_COPY_URL, ITEM_COPY_SOURCE/*, ITEM_COPY_JSON*/)
-    }
-
     private fun showDialog(song: SearchSong, position: Int) {
         AlertDialog.Builder(context!!)
-                .setTitle("选项")
-                .setItems(dialogItems) { _, which ->
-                    if (which >= dialogItems.size) return@setItems
-                    val s = dialogItems[which]
-                    when (s) {
-                        ITEM_PLAY -> {
+                .setTitle(R.string.dialog_option)
+                .setItems(R.array.dialog_items) { _, which ->
+                    when (which) {
+                        0 -> {
                             adapter.onItemClick(position)
                             if (activity != null && activity is MainActivity) {
                                 (activity as MainActivity).playSong(song)
                             }
                         }
-                        ITEM_DOWNLOAD -> {
+                        1 -> {
                             DownloadHelper.download(activity, song)
                         }
-                        ITEM_COPY_SOURCE -> copy(song.link)
-                        ITEM_COPY_URL -> copy(song.path)
-                        ITEM_COPY_JSON -> copy(GsonBuilder().create().toJson(song))
+                        2 -> copy(song.link)
+                        3 -> copy(song.path)
                     }
                 }
                 .create()
@@ -150,12 +136,12 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
     private fun copy(string: String?) {
         if (string.isNull()) {
-            toast("内容为空")
+            toast(R.string.copy_empty)
             return
         }
         val manager = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         manager.primaryClip = ClipData.newPlainText(null, string)
-        toast("已复制到剪切板")
+        toast(R.string.copy_succ)
     }
 
     fun search(search: String?, pair: Pair<Int, String>) {
@@ -217,8 +203,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         override fun convert(helper: BaseViewHolder, item: SearchSong) {
             helper.addOnClickListener(R.id.iv_download)
             if (item.path.isNull()) {
+                val errorHtml = helper.itemView.context.getString(R.string.source_error).color(Color.RED)
                 helper.setText(R.id.tv_singer_album,
-                        (item.author.del() + "&nbsp;&nbsp;&nbsp;(QAQ)资源不可用！".color(Color.RED)).toHtml())
+                        (item.author.del() + errorHtml).toHtml())
                         .setText(R.id.tv_name, item.title.del().toHtml())
             } else {
                 helper.setText(R.id.tv_singer_album, item.author)

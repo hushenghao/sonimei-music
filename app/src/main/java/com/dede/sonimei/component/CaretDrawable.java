@@ -111,6 +111,7 @@ public class CaretDrawable extends Drawable {
      *                 for neutral)
      */
     public void setCaretProgress(float progress) {
+        progress = Math.max(PROGRESS_CARET_POINTING_UP, Math.min(progress, PROGRESS_CARET_POINTING_DOWN));// 限制范围
         mCaretProgress = progress;
         invalidateSelf();
     }

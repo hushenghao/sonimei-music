@@ -26,7 +26,7 @@ class AboutDialog(context: Context) {
     init {
         dialog = AlertDialog.Builder(context)
                 .setView(createView(context))
-                .setNegativeButton("确定", null)
+                .setNegativeButton(R.string.sure, null)
                 .setNeutralButton(R.string.about_market) { _, _ ->
                     try {
                         context.startActivity(Intent(Intent.ACTION_VIEW,

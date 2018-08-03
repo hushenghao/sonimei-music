@@ -118,7 +118,7 @@ class SearchHisAdapter(context: Context)
             }
             ITEM_HEADER -> {
                 val textView = convertView as? TextView ?: TextView(mContext)
-                textView.text = "清空搜索历史"
+                textView.setText(R.string.clear_his)
                 textView.setTextColor(ContextCompat.getColor(mContext, R.color.text2))
                 textView.textSize = 14f
                 textView.setPadding(mContext.dip(15), mContext.dip(15), 0, mContext.dip(5))

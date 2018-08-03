@@ -3,38 +3,38 @@
     android:persistent="true"
     android:title="@string/setting_label">
 
-    <PreferenceCategory android:title="搜索">
+    <PreferenceCategory android:title="@string/setting_group_search">
         <Preference
             android:key="default_search_source"
-            android:title="默认搜索来源" />
+            android:title="@string/setting_search_source" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="download_setting"
-        android:title="下载选项">
+        android:title="@string/setting_group_down">
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="wifi_download"
-            android:title="仅在Wi-Fi下下载" />
+            android:title="@string/setting_down_wifionly" />
 
         <Preference
             android:key="custom_path"
-            android:title="自定义下载路径" />
+            android:title="@string/setting_down_path" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="其他">
+    <PreferenceCategory android:title="@string/setting_group_other">
 
         <PreferenceScreen
             android:summary="296513604"
-            android:title="加入QQ群">
+            android:title="@string/setting_other_qqgroup">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://jq.qq.com/?_wv=1027&amp;k=5dsSzyx" />
         </PreferenceScreen>
 
         <Preference
-            android:summary="如有bug，欢迎反馈"
-            android:title="正在开发中..." />
+            android:summary="@string/setting_other_debug_sum"
+            android:title="@string/setting_other_debug_title" />
     </PreferenceCategory>
 </PreferenceScreen>

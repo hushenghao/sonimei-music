@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.StringRes
 import com.dede.sonimei.R
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
@@ -49,7 +50,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                         if (it)
                             getInstance(activity).download(song)
                         else
-                            activity.toast("读写SD卡权限被拒绝")
+                            activity.toast(R.string.download_sd_error)
                     }
         }
     }
@@ -71,7 +72,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                     val path = Uri.parse(uriStr).path// 文件路径
                     val file = File(path)
                     if (file.exists()) {
-                        toast("文件已经下载过了...")
+                        toast(R.string.download_file_downed)
                         cancel = true
                         break
                     }
@@ -86,7 +87,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             while (runningCursor.moveToNext()) {
                 val url = runningCursor.getString(runningCursor.getColumnIndex(DownloadManager.COLUMN_URI))
                 if (url == downloadUrl) {
-                    toast("已经正在下载了...")
+                    toast(R.string.download_isdownloading)
                     cancel = true
                     break
                 }
@@ -100,7 +101,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             while (pendingCursor.moveToNext()) {
                 val url = pendingCursor.getString(pendingCursor.getColumnIndex(DownloadManager.COLUMN_URI))
                 if (url == downloadUrl) {
-                    toast("已经在下载队列了...")
+                    toast(R.string.download_haslinked)
                     cancel = true
                     break
                 }
@@ -120,6 +121,12 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
         })
     }
 
+    private fun toast(@StringRes res: Int) {
+        uiThread(Runnable {
+            context.toast(context.getString(res))
+        })
+    }
+
     private fun uiThread(runnable: Runnable) {
         handler.post(runnable)
     }
@@ -129,17 +136,17 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
      */
     fun download(song: SearchSong) {
         if (song.path.isNull()) {
-            toast("下载链接为空")
+            toast(R.string.download_link_empty)
             return
         }
-        filterDownload(song.path, {
+        filterDownload(song.path) {
             val request = DownloadManager.Request(Uri.parse(song.path))
             request.setTitle(song.getName())
             request.setMimeType("audio/mpeg")
             val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
             if (wifiDownload) {
                 if (!isWifiConnected(context)) {
-                    toast("已开启仅Wi-Fi下载...")
+                    toast(R.string.download_onlywifi)
                 }
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
             }
@@ -152,9 +159,9 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             }
             request.setDestinationUri(Uri.fromFile(File(file, song.getName() + ".mp3")))
             val id = downloadManager.enqueue(request)
-            toast("开始下载 " + song.getName())
-            info("id:" + id)
-        })
+            toast(String.format(context.getString(R.string.download_start), song.getName()))
+            info("id:$id")
+        }
     }
 
     fun isWifiConnected(context: Context?): Boolean {

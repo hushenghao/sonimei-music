@@ -7,35 +7,35 @@
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_menu_search"
-        android:title="搜索"
+        android:title="@string/menu_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 
     <item
         android:id="@+id/menu_source_type"
         android:icon="@drawable/ic_menu_source"
-        android:title="搜索来源和类型"
+        android:title="@string/menu_source_type"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_setting"
         android:icon="@drawable/ic_menu_settings"
-        android:title="设置"
+        android:title="@string/menu_setting"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_ape"
-        android:title="无损音乐下载"
+        android:title="@string/menu_ape"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_webview"
-        android:title="网页版"
+        android:title="@string/menu_webview"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_about"
-        android:title="关于"
+        android:title="@string/menu_about"
         app:showAsAction="never" />
 
 </menu>

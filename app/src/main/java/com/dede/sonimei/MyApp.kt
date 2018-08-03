@@ -16,6 +16,7 @@ class MyApp : Application() {
         super.onCreate()
 
         makeActionOverflowMenuShown()
+
         if (!LeakCanary.isInAnalyzerProcess(this)) {
             LeakCanary.install(this)
         }
@@ -30,7 +31,7 @@ class MyApp : Application() {
     }
 
     /**
-     * 强制菜单键
+     * 强制菜单键弹出PopMenu
      */
     private fun makeActionOverflowMenuShown() {
         //devices with hardware menu button (e.g. Samsung Note) don't show action overflow menu
