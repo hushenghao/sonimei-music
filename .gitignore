@@ -3,7 +3,7 @@
 /local.properties
 .idea
 /build
-/captures
+/key.properties
 =======
 # Built application files
 *.apk

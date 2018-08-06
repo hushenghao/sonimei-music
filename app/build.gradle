@@ -3,6 +3,21 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+/**
+ * 一些key和签名配置，如果报错在项目根目录新建key.properties文件，内容如下
+ *
+ * storePassword=xxx
+ * keyPassword=xxx
+ * keyAlias=key0
+ * storeFile=keystore路径
+ * buglyAppId=bugly应用Id
+ *
+ * 都没有引号
+ */
+def keyPropertiesFile = rootProject.file("key.properties")
+def keyProperties = new Properties()
+keyProperties.load(new FileInputStream(keyPropertiesFile))
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
@@ -11,9 +26,26 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 7
         versionName "0.5"
+
+        // 在BuildConfig类中生成BUGLY_APPID常量
+        buildConfigField "String", "BUGLY_APPID", "\"${keyProperties['buglyAppId']}\""
     }
-    buildTypes {
+
+    signingConfigs {
         release {
+            keyAlias keyProperties['keyAlias']
+            keyPassword keyProperties['keyPassword']
+            storeFile file(keyProperties['storeFile'])
+            storePassword keyProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             zipAlignEnabled true
             debuggable false

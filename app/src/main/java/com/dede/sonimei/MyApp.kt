@@ -26,7 +26,7 @@ class MyApp : Application() {
         // 开发设备
         CrashReport.setIsDevelopmentDevice(applicationContext, BuildConfig.DEBUG)
         // bugly 第三个参数调试开关
-        CrashReport.initCrashReport(applicationContext, "8d0cfa602d", BuildConfig.DEBUG)
+        CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
         HttpUtil.init(this)
     }
 
