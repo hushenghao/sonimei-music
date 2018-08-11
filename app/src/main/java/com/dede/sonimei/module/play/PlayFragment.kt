@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.view.View
-import android.view.ViewGroup
 import android.widget.SeekBar
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
@@ -28,10 +27,8 @@ import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.gone
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
-import com.squareup.haha.perflib.Main
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
-import org.jetbrains.anko.info
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 

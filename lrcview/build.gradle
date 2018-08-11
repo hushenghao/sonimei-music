@@ -9,5 +9,4 @@ android {
 }
 
 dependencies {
-    compile files('libs/com.umeng.message_3.1.1.jar')
 }
