@@ -20,6 +20,7 @@ import com.dede.sonimei.WEB_LINK
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.PlayBottomSheetBehavior
+import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.search.SearchFragment
@@ -150,21 +151,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    /**
-     * 播放音乐
-     */
-    fun playSong(song: SearchSong?) {
+    fun playSongs(songs: List<BaseSong>, song: BaseSong?) {
         if (song == null || song.path.isNull()) {
             toast(R.string.play_path_empty)
             return
         }
-        // 显示 mini play control
         playBehavior.isHideable = false
         playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        val bottomDimens = resources.getDimensionPixelSize(R.dimen.search_list_bottom_margin)
-//        fl_search_result.setPadding(0, 0, 0, bottomDimens)
 
-        playFragment.playSong(song)
+        playFragment.playSongs(songs, song)
     }
 
     fun toggleBottomSheet() {

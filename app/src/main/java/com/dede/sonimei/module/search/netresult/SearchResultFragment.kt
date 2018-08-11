@@ -92,11 +92,11 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             val listAdapter = (adapter as ListAdapter)
             if (position >= listAdapter.data.size) return@setOnItemClickListener
             val song = listAdapter.data[position]
-            if (song != null && song.path.notNull()) {
-                listAdapter.onItemClick(position)
-            }
+//            if (song != null && song.path.notNull()) {
+//                listAdapter.onItemClick(position)
+//            }
             if (activity != null && activity is MainActivity) {
-                (activity as MainActivity).playSong(song)
+                (activity as MainActivity).playSongs(listAdapter.data, song)
             }
         }
         adapter.setOnItemLongClickListener { adapter, _, position ->
@@ -118,9 +118,9 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 .setItems(R.array.dialog_items) { _, which ->
                     when (which) {
                         0 -> {
-                            adapter.onItemClick(position)
+//                            adapter.onItemClick(position)
                             if (activity != null && activity is MainActivity) {
-                                (activity as MainActivity).playSong(song)
+                                (activity as MainActivity).playSongs(adapter.data, song)
                             }
                         }
                         1 -> {

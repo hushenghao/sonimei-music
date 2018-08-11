@@ -99,4 +99,4 @@ fun searchType(searchType: String): String {
 }
 
 /** 默认下载路径 */
-val defaultDownloadPath = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei")
+val defaultDownloadPath: File by lazy { File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei") }

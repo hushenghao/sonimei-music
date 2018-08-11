@@ -7,10 +7,12 @@
     android:background="@color/white"
     tools:showIn="@layout/fragment_play">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_bottom_play_controller_height"
-        android:background="?attr/selectableItemBackground">
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/iv_album_img"
@@ -21,11 +23,12 @@
             android:layout_marginRight="10dp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/iv_play"
             android:layout_toRightOf="@id/iv_album_img"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
@@ -58,12 +61,19 @@
             android:id="@+id/iv_play"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="12dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_pause_status"
             android:tint="@color/icon_tint" />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_play_list"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginRight="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_play_list"
+            android:tint="@color/icon_tint" />
+
+    </LinearLayout>
 </FrameLayout>

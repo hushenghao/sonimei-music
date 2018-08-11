@@ -129,9 +129,30 @@
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:adjustViewBounds="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_music_download"
+                android:tint="@color/play_icon_tint" />
+
+            <ImageView
+                android:id="@+id/iv_play_mode"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_mode_order"
+                android:tint="@color/play_icon_tint" />
+
+            <ImageView
+                android:id="@+id/iv_play_last"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_play_last"
                 android:tint="@color/play_icon_tint" />
 
             <ImageView
@@ -145,14 +166,35 @@
                 android:tint="@color/play_icon_tint" />
 
             <ImageView
-                android:id="@+id/iv_close"
+                android:id="@+id/iv_play_next"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_down"
+                android:src="@drawable/ic_play_next"
                 android:tint="@color/play_icon_tint" />
+
+            <ImageView
+                android:id="@+id/iv_play_bottom_list"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_play_list"
+                android:tint="@color/play_icon_tint" />
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_down"
+                android:tint="@color/play_icon_tint"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

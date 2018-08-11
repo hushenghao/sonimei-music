@@ -17,9 +17,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.SeekBarChangeListener
+import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
-import com.dede.sonimei.module.download.DownloadHelper
-import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.ImageUtil
@@ -29,46 +28,66 @@ import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
+import org.jetbrains.anko.info
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
 /**
  * Created by hsh on 2018/5/23.
  */
-class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeListener {
+class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeListener,
+        ServiceConnection, PlayListDialog.Callback {
 
-    override fun getLayoutId() = R.layout.fragment_play
-
-    private val updateDelay = 200L
+    private val updateDelay = 200L// 进度更新间隔
 
     private val handler = Handler()
+
+    private val audioManager by lazy { context!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
+
+    /** 监听音量变化 */
+    private val volumeChangeReceiver: BroadcastReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == "android.media.VOLUME_CHANGED_ACTION") {
+                    sb_volume.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                }
+            }
+        }
+    }
+
+    // 播放按钮点击事件
+    private val playClick = View.OnClickListener {
+        if (musicBinder == null) return@OnClickListener
+
+        if (!musicBinder!!.isPlaying) {
+            musicBinder!!.start()
+        } else {
+            musicBinder!!.pause()
+        }
+    }
+
+    // 回调中 修改背景图片，高斯模糊处理
+    private val target = object : SimpleTarget<Bitmap>() {
+        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+            iv_album_img.setImageBitmap(resource)
+            val colorDrawable = ColorDrawable(0x66000000)
+            val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
+            val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable, colorDrawable))
+            ll_play_content.background = layerDrawable
+        }
+    }
+
+    override fun getLayoutId() = R.layout.fragment_play
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
-        context!!.registerReceiver(volumeChangeReceiver, filter)
+        context!!.registerReceiver(volumeChangeReceiver, filter)// 注册音量变化广播
 
         val intent = Intent(context, MusicService::class.java)
         context?.startService(intent)
-        connection = object : ServiceConnection {
-            override fun onServiceDisconnected(name: ComponentName?) {
-                musicBinder = null
-            }
-
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                musicBinder = service as MusicService.MusicBinder?
-                if (musicBinder == null) return
-
-                musicBinder!!.addOnStateChangeListener(this@PlayFragment)
-
-                val songInfo = musicBinder!!.getPlaySongInfo()
-                if (songInfo != null && songInfo is SearchSong) {
-                    playSong(songInfo)// 恢复状态
-                }
-            }
-        }
-        context?.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        context?.bindService(intent, this, Context.BIND_AUTO_CREATE)// 绑定服务
     }
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -87,7 +106,33 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             }
         })
 
-        iv_close.onClick { (activity as MainActivity?)?.toggleBottomSheet() }
+        iv_play_mode.onClick {
+            if (musicBinder == null) return@onClick
+
+            var mode = musicBinder!!.getPlayMode()
+            mode = when (mode) {
+                MODE_RANDOM -> MODE_SINGLE
+                MODE_SINGLE -> MODE_ORDER
+                MODE_ORDER -> MODE_RANDOM
+                else -> MODE_RANDOM
+            }
+            musicBinder!!.updatePlayMode(mode)
+            iv_play_mode.setImageResource(getPlayModeDrawRes(mode))
+        }
+
+        iv_play_next.onClick { musicBinder?.next() }
+
+        iv_play_last.onClick { musicBinder?.last() }
+
+
+        val playListClick = View.OnClickListener {
+            val listDialog = PlayListDialog(context!!, musicBinder!!.getPlayList(), musicBinder!!.getPlayIndex())
+            listDialog.callback = this@PlayFragment
+            listDialog.show()
+        }
+        iv_play_list.setOnClickListener(playListClick)
+        iv_play_bottom_list.setOnClickListener(playListClick)
+
 
         // 修改title顶部距离，防止状态栏遮挡
         val params = tv_title.layoutParams as ViewGroup.MarginLayoutParams
@@ -100,6 +145,10 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
         sb_progress.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress == 0 && !fromUser) {
+                    tv_now_time.text = 0.toTime()
+                    return
+                }
                 val time = progress2Time(progress)
                 tv_now_time.text = time.toTime()
             }
@@ -133,91 +182,87 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             true
         }
 
+        disablePlayController()
+    }
+
+    private fun enablePlayController(mp: MusicPlayer) {
+        val duration = mp.duration
+        tv_all_time.text = duration.toTime()
+        iv_play.isClickable = true
+        iv_play_bottom.isClickable = true
+        sb_progress.isEnabled = true
+        lrc_view.isEnabled = true
+    }
+
+    private fun disablePlayController() {
+        tv_all_time.text = 0.toTime()
         iv_play.isClickable = false
         iv_play_bottom.isClickable = false
         sb_progress.isEnabled = false
         lrc_view.isEnabled = false
     }
 
-    private val audioManager by lazy { context!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
-
-    /**
-     * 监听音量变化
-     */
-    private val volumeChangeReceiver: BroadcastReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == "android.media.VOLUME_CHANGED_ACTION") {
-                    sb_volume.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-                }
-            }
-        }
+    /** implement [PlayListDialog.Callback] */
+    override fun onItemClick(index: Int, baseSong: BaseSong) {
+        musicBinder!!.plays(musicBinder!!.getPlayList(), index)
     }
 
-    // 播放按钮点击事件
-    private val playClick = View.OnClickListener {
-        if (musicBinder == null) return@OnClickListener
+    override fun onItemRemove(index: Int, baseSong: BaseSong) {
+        musicBinder!!.removeAt(index)
+    }
 
-        if (!musicBinder!!.isPlaying) {
-            musicBinder!!.start()
-            handler.postDelayed(this, updateDelay)
+    /** implement [ServiceConnection] */
+
+    private var musicBinder: MusicBinder? = null
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        musicBinder = null
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        musicBinder = service as MusicBinder?
+        if (musicBinder == null) return
+
+        // 未播放状态，读取播放列表
+        musicBinder!!.onLoadPlayListFinishListener = object : MusicBinder.OnLoadPlayListFinishListener {
+            override fun onFinish() {
+                onDataSourceChange()
+                iv_play.isClickable = true
+                iv_play_bottom.isClickable = true
+            }
+        }
+        musicBinder!!.addOnPlayStateChangeListener(this@PlayFragment)
+
+        if (musicBinder!!.isPlaying) {
+            onDataSourceChange()
+            onPlayStart(musicBinder!!.getPlayer())
         } else {
-            musicBinder!!.pause()
-            handler.removeCallbacks(this)
-        }
-    }
-
-    // 回调中 修改背景图片，高斯模糊处理
-    private val target = object : SimpleTarget<Bitmap>() {
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            iv_album_img.setImageBitmap(resource)
-            val colorDrawable = ColorDrawable(0x66000000)
-            val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
-            val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable, colorDrawable))
-            ll_play_content.background = layerDrawable
-        }
-    }
-
-    private var musicBinder: MusicService.MusicBinder? = null
-    private var connection: ServiceConnection? = null
-
-    fun playSong(song: SearchSong) {
-        handler.removeCallbacks(this)
-
-        // bottomSheet mini control
-        sb_progress.max = maxProgress.toInt()// 提高精度
-        sb_progress.progress = 0
-        sb_progress.secondaryProgress = 0
-        tv_name.text = song.getName()
-        tv_name.isSelected = true
-        tv_lrc.gone()
-        GlideApp.with(this)
-                .asBitmap()
-                .load(song.pic)
-                .into<SimpleTarget<Bitmap>>(target)
-        // control
-        tv_title.text = song.title
-        tv_title.isSelected = true
-        tv_singer.text = song.author
-
-        lrc_view.loadLrc(song.lrc)
-
-        iv_download.onClick {
-            DownloadHelper.download(this@PlayFragment.activity, song)
-        }
-
-        if (musicBinder != null) {
-            if (musicBinder!!.isPlaying && song == musicBinder!!.getPlaySongInfo()) {
-                onPlayStart(musicBinder!!.getMusicPlayer())
-            } else {
-                musicBinder!!.play(song)
+            if (musicBinder!!.getPlayList().isNotEmpty()) {
+                onDataSourceChange()
+                iv_play.isClickable = true
+                iv_play_bottom.isClickable = true
             }
-            musicBinder!!.isLooping = true
         }
+        val mode = musicBinder!!.getPlayMode()
+        iv_play_mode.setImageResource(getPlayModeDrawRes(mode))
     }
 
     /**
-     * 更新进度
+     * 播放音乐
+     */
+    fun playSongs(list: List<BaseSong>, song: BaseSong?) {
+        if (musicBinder == null) return
+        val indexOf = list.indexOf(song)
+        musicBinder!!.plays(list, indexOf)
+    }
+
+    fun playSongs(list: List<BaseSong>, index: Int) {
+        if (musicBinder == null) return
+        musicBinder!!.plays(list, index)
+    }
+
+    /**
+     * 更新进度 implement [Runnable]
      */
     override fun run() {
         val currentPosition = musicBinder!!.currentPosition
@@ -256,15 +301,12 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     override fun onPlayStop() {
         iv_play.setImageResource(R.drawable.ic_pause_status)
         iv_play_bottom.setImageResource(R.drawable.ic_pause_status)
+
+        handler.removeCallbacks(this)
     }
 
     override fun onPlayStart(mp: MusicPlayer) {
-        val duration = mp.duration
-        tv_all_time.text = duration.toTime()
-        iv_play.isClickable = true
-        iv_play_bottom.isClickable = true
-        sb_progress.isEnabled = true
-        lrc_view.isEnabled = true
+        enablePlayController(mp)
 
         iv_play.setImageResource(R.drawable.ic_play_status)
         iv_play_bottom.setImageResource(R.drawable.ic_play_status)
@@ -281,18 +323,44 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     }
 
     override fun onPrepared(mp: MusicPlayer) {
+        musicBinder?.start()
+    }
+
+    override fun onDataSourceChange() {
+        handler.removeCallbacks(this)
+        sb_progress.max = maxProgress.toInt()// 提高精度
+        sb_progress.progress = 0
+        sb_progress.secondaryProgress = 0
+
+        val song = musicBinder?.getPlayInfo()
+        if (song != null) {
+            tv_name.text = song.getName()
+            tv_name.isSelected = true
+            tv_lrc.gone()
+            tv_title.text = song.title
+            tv_title.isSelected = true
+            if (song is SearchSong) {
+                GlideApp.with(this)
+                        .asBitmap()
+                        .load(song.pic)
+                        .into<SimpleTarget<Bitmap>>(target)
+                tv_singer.text = song.author
+                lrc_view.loadLrc(song.lrc)
+            }
+        }
     }
 
     override fun onBufferUpdate(percent: Int) {
         sb_progress.secondaryProgress = percent * 10// 更新缓冲进度条
     }
 
+
     override fun onDestroy() {
-        musicBinder?.removeOnStateChangeListener(this)
+        musicBinder?.removeOnPlayStateChangeListener(this)
         if (musicBinder?.isPlaying == false) {
             context?.stopService(Intent(context, MusicService::class.java))
         }
-        context?.unbindService(connection)
+        context?.unbindService(this)
         handler.removeCallbacks(this)
         context?.unregisterReceiver(volumeChangeReceiver)
         super.onDestroy()

@@ -1,30 +1,24 @@
 package com.dede.sonimei.player
 
-import android.content.Context
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
 import android.media.MediaPlayer
-import android.os.Build
+import com.dede.sonimei.module.play.IReviseOnPlayStateChangeListener
 
 /**
  * Created by hsh on 2018/8/1.
  */
-class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnBufferingUpdateListener,
-        MediaPlayer.OnCompletionListener {
+class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnBufferingUpdateListener,
+        MediaPlayer.OnCompletionListener,
+        IReviseOnPlayStateChangeListener {
 
     /**
-     * 使用内部类来进行状态恢复
+     * 播放遇到严重错误时，使用内部类来进行状态恢复
      */
-    inner class ReCreateHelper {
-        fun reCreate(): MusicPlayer {
+    inner class RecreateHelper {
+        fun recreate(): MusicPlayer {
             val mediaPlayer = MusicPlayer()
 
             mediaPlayer.onPlayStateChangeListeners = this@MusicPlayer.onPlayStateChangeListeners
-            mediaPlayer.audioManager = this@MusicPlayer.audioManager
-            mediaPlayer.onResumeFocusAutoStart = this@MusicPlayer.onResumeFocusAutoStart
-            mediaPlayer.autoManagerAudioFocus = this@MusicPlayer.autoManagerAudioFocus
             mediaPlayer.isLooping = this@MusicPlayer.isLooping
 
             this@MusicPlayer.release()
@@ -32,19 +26,19 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    fun getReCreateHelper() = ReCreateHelper()
+    fun getRecreateHelper() = RecreateHelper()
 
-    /**  ==================    */
+    var onPlayStateChangeListeners = ArrayList<MusicPlayer.OnPlayStateChangeListener>()
 
-    private var onPlayStateChangeListeners = ArrayList<OnPlayStateChangeListener>()
+    /**  ========= implement [IReviseOnPlayStateChangeListener] =========  */
 
-    fun addOnPlayStateChangeListener(listener: OnPlayStateChangeListener?) {
+    override fun addOnPlayStateChangeListener(listener: OnPlayStateChangeListener?) {
         if (listener != null && !onPlayStateChangeListeners.contains(listener)) {
             onPlayStateChangeListeners.add(listener)
         }
     }
 
-    fun removeOnPlayStateChangeListener(listener: OnPlayStateChangeListener?) {
+    override fun removeOnPlayStateChangeListener(listener: OnPlayStateChangeListener?) {
         if (listener == null) {
             onPlayStateChangeListeners.clear()
             return
@@ -58,25 +52,8 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
         setOnPreparedListener(this)
     }
 
-    private var audioManager: AudioManager? = null
-    private var autoManagerAudioFocus = true// 自动管理音频焦点
-
-    /**
-     * 自动管理音频焦点
-     */
-    fun autoManagerAudioFocus(context: Context, auto: Boolean) {
-        autoManagerAudioFocus = auto
-        if (audioManager == null) {
-            this.audioManager = context.applicationContext
-                    .getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        }
-    }
-
     override fun start() {
         if (isPlaying) return
-        if (autoManagerAudioFocus) {
-            requestAudioFocus()
-        }
         super.start()
         onPlayStateChangeListeners.forEach {
             it.onPlayStart(this@MusicPlayer)
@@ -84,6 +61,7 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
     }
 
     override fun stop() {
+        if (!isPlaying) return
         super.stop()
         onPlayStateChangeListeners.forEach {
             it.onPlayStop()
@@ -99,28 +77,41 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
     }
 
     override fun reset() {
-        setOnBufferingUpdateListener(this)
         super.reset()
+        isAsyncPrepared = false
+        hasDataSource = false
+        setOnBufferingUpdateListener(this)
     }
 
-    private var onPreparedAutoStart = true
-
     /**
-     * 是否自动播放在准备完成后
+     * 是否异步准备完成
      */
-    fun autoStartOnPrepared(auto: Boolean) {
-        onPreparedAutoStart = auto
+    var isAsyncPrepared = false
+        private set
+
+    var hasDataSource = false
+        private set
+
+    override fun prepareAsync() {
+        super.prepareAsync()
+        isAsyncPrepared = false
+    }
+
+    override fun setDataSource(path: String?) {
+        super.setDataSource(path)
+        hasDataSource = true
+        onPlayStateChangeListeners.forEach {
+            it.onDataSourceChange()
+        }
     }
 
     /**
      * 异步准备完毕回调 implement [MediaPlayer.OnPreparedListener]
      */
     override fun onPrepared(mp: MediaPlayer?) {
+        isAsyncPrepared = true
         onPlayStateChangeListeners.forEach {
             it.onPrepared(this@MusicPlayer)
-        }
-        if (onPreparedAutoStart) {
-            start()
         }
     }
 
@@ -147,78 +138,6 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
     override fun release() {
         removeOnPlayStateChangeListener(null)
         super.release()
-        if (autoManagerAudioFocus) {
-            releaseAudioFocus()
-        }
-    }
-
-    /**
-     * 获取焦点
-     */
-    private fun requestAudioFocus(): Boolean {
-        if (audioManager == null) return false
-
-        val r = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager!!.abandonAudioFocusRequest(
-                    AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                            .setOnAudioFocusChangeListener(this)
-                            .setWillPauseWhenDucked(true)
-                            .setAudioAttributes(
-                                    AudioAttributes.Builder()
-                                            .setLegacyStreamType(AudioManager.STREAM_MUSIC)
-                                            .build()
-                            )
-                            .build()
-            )
-        } else {
-            audioManager!!.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
-        }
-        return r == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
-    /**
-     * 释放焦点
-     */
-    private fun releaseAudioFocus(): Boolean {
-        if (audioManager == null) return false
-
-        val r = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager!!.abandonAudioFocusRequest(
-                    AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_LOSS)
-                            .build()
-            )
-        } else {
-            audioManager!!.abandonAudioFocus(this)
-        }
-        return r == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-    }
-
-    // 短暂失去焦点时，恢复焦点后自动播放
-    private var onResumeFocusAutoStart = false
-
-    /**
-     * 焦点变化回调 implement [AudioManager.OnAudioFocusChangeListener]
-     */
-    override fun onAudioFocusChange(focusChange: Int) {
-        when (focusChange) {
-            AudioManager.AUDIOFOCUS_GAIN -> {
-                if (!isPlaying && onResumeFocusAutoStart) {
-                    start()
-                    onResumeFocusAutoStart = false
-                }
-            }
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                if (isPlaying) {
-                    onResumeFocusAutoStart = true
-                    pause()
-                }
-            }
-            AudioManager.AUDIOFOCUS_LOSS -> {
-                if (isPlaying) {
-                    pause()
-                }
-            }
-        }
     }
 
     /**
@@ -226,21 +145,47 @@ class MusicPlayer : MediaPlayer(), AudioManager.OnAudioFocusChangeListener,
      */
     interface OnPlayStateChangeListener {
 
+        /**
+         * 开始播放
+         */
         fun onPlayStart(mp: MusicPlayer)
 
+        /**
+         * 播放暂停
+         */
         fun onPlayPause()
 
+        /**
+         * 播放停止
+         */
         fun onPlayStop()
 
+        /**
+         * 准备完成
+         */
         fun onPrepared(mp: MusicPlayer)
 
+        /**
+         * 播放完成
+         */
         fun onCompletion()
 
+        /**
+         * 缓冲流更新
+         */
         fun onBufferUpdate(percent: Int)
+
+        /**
+         * 数据源改变
+         */
+        fun onDataSourceChange()
 
     }
 
-    class SimplePlayStateChangeListener() : OnPlayStateChangeListener {
+    open class SimplePlayStateChangeListener : OnPlayStateChangeListener {
+
+        override fun onDataSourceChange() {
+        }
 
         override fun onPlayStart(mp: MusicPlayer) {
         }

@@ -26,7 +26,7 @@ class MyApp : Application() {
         // 开发设备
         CrashReport.setIsDevelopmentDevice(applicationContext, BuildConfig.DEBUG)
         // bugly 第三个参数调试开关
-        CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
+//        CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
         HttpUtil.init(this)
     }
 
@@ -38,10 +38,8 @@ class MyApp : Application() {
         try {
             val config = ViewConfiguration.get(this)
             val menuKeyField = ViewConfiguration::class.java.getDeclaredField("sHasPermanentMenuKey")
-            if (menuKeyField != null) {
-                menuKeyField.isAccessible = true
-                menuKeyField.setBoolean(config, false)
-            }
+            menuKeyField.isAccessible = true
+            menuKeyField.setBoolean(config, false)
         } catch (e: Exception) {
             e.printStackTrace()
         }

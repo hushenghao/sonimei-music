@@ -7,7 +7,7 @@
     <string name="about_author">作者：de得得de</string>
     <string name="about_github">Github：https://github.com/hushenghao/music/</string>
     <string name="about_group">加入QQ群：296513604</string>
-    <string name="about_version">版本：%1s(%2d)</string>
+    <string name="about_version">版本：%1$s(%2$d)</string>
     <string name="about_market">喜欢，给个好评</string>
 
     <string name="net_error">网络开小差儿！</string>
@@ -86,7 +86,7 @@
     <string name="download_haslinked">已经在下载队列了…</string>
     <string name="download_link_empty">下载链接为空</string>
     <string name="download_onlywifi">已开启仅Wi-Fi下载…</string>
-    <string name="download_start">开始下载 %1s</string>
+    <string name="download_start">开始下载 %1$s</string>
 
     <string name="sure">确定</string>
     <string name="play_path_empty">播放链接为空</string>
@@ -107,4 +107,10 @@
     <string name="choose_file_dir">选择文件路径</string>
     <string name="app_crash">喵，很抱歉，程序出现异常，即将退出！</string>
 
+    <string name="play_mode_order">顺序播放</string>
+    <string name="play_mode_single">单曲循环</string>
+    <string name="play_mode_random">随机播放</string>
+    <string name="play_error">播放错误 (%1$d)</string>
+
+    <string name="play_list_title">播放列表</string>
 </resources>
