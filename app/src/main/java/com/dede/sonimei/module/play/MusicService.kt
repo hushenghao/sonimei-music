@@ -10,7 +10,6 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
-import android.os.Environment
 import android.os.IBinder
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
@@ -34,16 +33,28 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun removeAt(index: Int) {
         if (index >= playList.size || index < 0) return
+
         if (index < playIndex) {
             playList.removeAt(index)
             playIndex--// 调整索引
         } else {
             playList.removeAt(index)
-        }
-        if (playList.isNotEmpty()) {
-            play(playList[playIndex])
-        } else {
-            musicPlayer.stop()
+            // 移除当前播放的位置
+            if (index == playIndex) {
+                if (playList.isEmpty()) {
+                    playIndex = 0
+                    musicPlayer.stop()
+                } else {
+                    playIndex = index
+                    val end = playList.size - 1
+                    if (playIndex > end) {
+                        playIndex = end
+                    }
+                    musicPlayer.stop()
+                    autoStart = false
+                    play(playList[playIndex])
+                }
+            }
         }
         savePlayList()
     }
@@ -163,6 +174,7 @@ class MusicService : Service(), IPlayControllerListenerI,
     override fun next() {
         var path: String? = null
         val size = playList.size
+        if (size == 0) return
         if (size == 1) {
             path = playList[0].path
         } else {
@@ -199,6 +211,7 @@ class MusicService : Service(), IPlayControllerListenerI,
     override fun last() {
         var path: String? = null
         val size = playList.size
+        if (size == 0) return
         if (size == 1) {
             path = playList[0].path
         } else {
@@ -246,6 +259,8 @@ class MusicService : Service(), IPlayControllerListenerI,
         this.playMode = mode
         toast(getPlayModeStrRes(this.playMode))
         musicPlayer.isLooping = this.playMode == MODE_SINGLE// 是否是单曲循环
+
+        sp.edit().putInt("play_mode", playMode).apply()
     }
 
     @PlayMode
@@ -277,10 +292,14 @@ class MusicService : Service(), IPlayControllerListenerI,
     /** 随机播放取随机数 */
     private val random = Random()
 
+    private var autoStart = true
+
     /** 处理音频焦点 */
     private val audioManager by lazy {
         getSystemService(Context.AUDIO_SERVICE).to<AudioManager>()
     }
+
+    private val sp by lazy { applicationContext.defaultSharedPreferences }
 
     /**
      * 获取焦点
@@ -326,13 +345,16 @@ class MusicService : Service(), IPlayControllerListenerI,
      * 焦点变化回调 implement [AudioManager.OnAudioFocusChangeListener]
      */
     override fun onAudioFocusChange(focusChange: Int) {
+        if (!musicPlayer.hasDataSource || !musicPlayer.isAsyncPrepared) {
+            return
+        }
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (!musicPlayer.isPlaying && onResumeFocusAutoStart) {
                     start()
                     onResumeFocusAutoStart = false
+                    musicPlayer.setVolume(1f, 1f)
                 }
-                musicPlayer.setVolume(1f, 1f)
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (musicPlayer.isPlaying) {
@@ -341,7 +363,9 @@ class MusicService : Service(), IPlayControllerListenerI,
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
-                musicPlayer.stop()
+                if (musicPlayer.isPlaying) {
+                    musicPlayer.pause()
+                }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                 if (musicPlayer.isPlaying) {
@@ -357,7 +381,8 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun onCreate() {
         super.onCreate()
-
+        playIndex = sp.getInt("play_index", 0)
+        playMode = sp.getInt("play_mode", MODE_ORDER)
         loadPlayList()
 
         initMusicPlayer()
@@ -398,13 +423,21 @@ class MusicService : Service(), IPlayControllerListenerI,
                     next()
                     return@setOnErrorListener true
                 }
+                -38 -> {
+                    // getDuration error
+                    return@setOnErrorListener true
+                }
             }
             false
         }
 
         musicPlayer.addOnPlayStateChangeListener(object : MusicPlayer.SimplePlayStateChangeListener() {
             override fun onPrepared(mp: MusicPlayer) {
-                start()// 准备完成自动播放
+                if (autoStart) {
+                    start()// 准备完成自动播放
+                } else {
+                    autoStart = true
+                }
             }
 
             override fun onCompletion() {
@@ -434,6 +467,7 @@ class MusicService : Service(), IPlayControllerListenerI,
         unregisterReceiver(headsetPlugReceiver)
         musicPlayer.release()
         releaseAudioFocus()
+        sp.edit().putInt("play_index", playIndex).apply()
 
         super.onDestroy()
     }
@@ -453,46 +487,12 @@ class MusicService : Service(), IPlayControllerListenerI,
                 uiThread {
                     playList.clear()
                     playList.addAll(list)
+                    val size = playList.size
+                    if (this@MusicService.playIndex >= size) {
+                        this@MusicService.playIndex = size - 1
+                    }
                     binder?.onLoadPlayListFinishListener?.onFinish()
                 }
-            }
-        }
-    }
-
-    private fun savePlayIndex() {
-        if (playIndex < 0) return
-        var out: ObjectOutputStream? = null
-        try {
-            val outputStream = FileOutputStream(File(Environment.getExternalStorageState(), "play_index"))
-            out = ObjectOutputStream(outputStream)
-            out.writeInt(playIndex)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                out?.close()
-            } catch (e: IOException) {
-            }
-        }
-    }
-
-    private fun readPlayIndex() {
-        val file = File(Environment.getExternalStorageState(), "play_index")
-        if (!file.exists()) return
-
-        var input: ObjectInputStream? = null
-        try {
-            input = ObjectInputStream(FileInputStream(file))
-            val index = input.readInt()
-            if (index >= 0) {
-                playIndex = index
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                input?.close()
-            } catch (e: IOException) {
             }
         }
     }

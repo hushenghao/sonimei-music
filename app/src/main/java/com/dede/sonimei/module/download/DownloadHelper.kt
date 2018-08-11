@@ -7,14 +7,17 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.StringRes
+import android.webkit.MimeTypeMap
 import com.dede.sonimei.R
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.util.extends.isNull
+import com.dede.sonimei.util.extends.notNull
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.*
 import java.io.File
@@ -142,22 +145,39 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
         filterDownload(song.path) {
             val request = DownloadManager.Request(Uri.parse(song.path))
             request.setTitle(song.getName())
-            request.setMimeType("audio/mpeg")
+            val mimeTypeMap = MimeTypeMap.getSingleton()
+            val mimeString = mimeTypeMap.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(song.path))
+            if (mimeString.notNull()) {
+                request.setMimeType(mimeString)
+            } else {
+                request.setMimeType("audio/mpeg")
+            }
             val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
             if (wifiDownload) {
                 if (!isWifiConnected(context)) {
                     toast(R.string.download_onlywifi)
                 }
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
+            } else {
+                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
             }
+            request.allowScanningByMediaScanner()
+            request.setVisibleInDownloadsUi(true)
             request.setDescription(context.resources.getString(R.string.app_name))
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
             val file = File(path)
-            if (!file.exists()) {
+            val r = if (!file.exists()) {
                 file.mkdirs()
+            } else {
+                file.isDirectory && file.canWrite()
             }
-            request.setDestinationUri(Uri.fromFile(File(file, song.getName() + ".mp3")))
+            if (!r) {
+                toast(R.string.download_path_error)
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, song.getName() + ".mp3")
+            } else {
+                request.setDestinationUri(Uri.fromFile(File(file, song.getName() + ".mp3")))
+            }
             val id = downloadManager.enqueue(request)
             toast(String.format(context.getString(R.string.download_start), song.getName()))
             info("id:$id")

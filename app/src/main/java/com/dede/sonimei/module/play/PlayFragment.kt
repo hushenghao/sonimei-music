@@ -19,6 +19,8 @@ import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.SeekBarChangeListener
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.module.download.DownloadHelper
+import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.ImageUtil
@@ -26,6 +28,7 @@ import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.gone
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
+import com.squareup.haha.perflib.Main
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.info
@@ -135,8 +138,11 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
 
         // 修改title顶部距离，防止状态栏遮挡
-        val params = tv_title.layoutParams as ViewGroup.MarginLayoutParams
-        params.topMargin = params.topMargin + ScreenHelper.getFrameTopMargin(activity)
+        ll_play_content.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
+        iv_download.onClick {
+            val song = musicBinder?.getPlayInfo() as? SearchSong ?: return@onClick
+            DownloadHelper.download(activity, song)
+        }
 
         lrc_view.setOnLineChangeListener { _, lineStr, _ ->
             tv_lrc.show()
@@ -209,6 +215,10 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
     override fun onItemRemove(index: Int, baseSong: BaseSong) {
         musicBinder!!.removeAt(index)
+        if (musicBinder!!.getPlayList().isEmpty()) {
+            val activity = activity as MainActivity
+            activity.hideBottomController()// 关闭播放控制页
+        }
     }
 
     /** implement [ServiceConnection] */
@@ -226,6 +236,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         // 未播放状态，读取播放列表
         musicBinder!!.onLoadPlayListFinishListener = object : MusicBinder.OnLoadPlayListFinishListener {
             override fun onFinish() {
+                musicBinder?.onLoadPlayListFinishListener = null
                 onDataSourceChange()
                 iv_play.isClickable = true
                 iv_play_bottom.isClickable = true
@@ -323,7 +334,6 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     }
 
     override fun onPrepared(mp: MusicPlayer) {
-        musicBinder?.start()
     }
 
     override fun onDataSourceChange() {
@@ -346,7 +356,11 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
                         .into<SimpleTarget<Bitmap>>(target)
                 tv_singer.text = song.author
                 lrc_view.loadLrc(song.lrc)
+                iv_download.show()
+            } else {
+                iv_download.gone()
             }
+            (activity as MainActivity).showBottomController()
         }
     }
 

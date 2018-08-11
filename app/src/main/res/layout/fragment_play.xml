@@ -12,33 +12,51 @@
         android:background="#cd1e1d1d"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="3dp"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="不要说话" />
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="3dp">
 
-        <TextView
-            android:id="@+id/tv_singer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="3dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/play_icon_tint"
-            android:textSize="12sp"
-            tools:text="陈奕迅" />
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="不要说话" />
+
+            <TextView
+                android:id="@+id/tv_singer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_title"
+                android:layout_marginTop="3dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/play_icon_tint"
+                android:textSize="12sp"
+                tools:text="陈奕迅" />
+
+            <ImageView
+                android:id="@+id/iv_download"
+                android:layout_width="26dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_music_download"
+                android:tint="@color/play_icon_tint"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,7 +69,7 @@
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_marginLeft="30dp"
-                android:src="@drawable/ic_volume"
+                android:src="@drawable/ic_playing"
                 android:tint="@color/play_icon_tint" />
 
             <SeekBar
@@ -125,17 +143,6 @@
             android:paddingRight="20dp">
 
             <ImageView
-                android:id="@+id/iv_download"
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_music_download"
-                android:tint="@color/play_icon_tint" />
-
-            <ImageView
                 android:id="@+id/iv_play_mode"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
@@ -185,20 +192,12 @@
                 android:src="@drawable/ic_play_list"
                 android:tint="@color/play_icon_tint" />
 
-            <ImageView
-                android:id="@+id/iv_close"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_down"
-                android:tint="@color/play_icon_tint"
-                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>
 
     <!--bottom sheet mini control-->
-    <include layout="@layout/layout_bottom_sheet_play_control" />
+    <include
+        layout="@layout/layout_bottom_sheet_play_control"
+        tools:visibility="gone" />
 </FrameLayout>

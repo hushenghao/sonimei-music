@@ -8,10 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
+import android.view.*
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.dede.sonimei.APE_LINK
@@ -25,10 +24,7 @@ import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.search.SearchFragment
 import com.dede.sonimei.module.setting.SettingActivity
-import com.dede.sonimei.util.extends.hide
-import com.dede.sonimei.util.extends.isNull
-import com.dede.sonimei.util.extends.show
-import com.dede.sonimei.util.extends.to
+import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -149,6 +145,27 @@ class MainActivity : BaseActivity() {
         fl_bottom_play.onClick {
             toggleBottomSheet()
         }
+
+        hideBottomController()
+    }
+
+    fun showBottomController() {
+        val height = resources.getDimensionPixelOffset(R.dimen.dimen_bottom_play_controller_height)
+        iv_arrow_indicators.show()
+        playBehavior.peekHeight = height
+        val params = fl_content.layoutParams as ViewGroup.MarginLayoutParams
+        params.bottomMargin = height
+        fl_content.layoutParams = params
+    }
+
+    fun hideBottomController() {
+        iv_arrow_indicators.gone()
+        playBehavior.peekHeight = 0
+        val params = fl_content.layoutParams as ViewGroup.MarginLayoutParams
+        params.bottomMargin = 0
+        fl_content.layoutParams = params
+
+        playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     fun playSongs(songs: List<BaseSong>, song: BaseSong?) {

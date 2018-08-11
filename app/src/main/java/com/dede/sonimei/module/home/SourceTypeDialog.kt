@@ -2,9 +2,12 @@ package com.dede.sonimei.module.home
 
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
+import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -16,6 +19,7 @@ import com.dede.sonimei.data.Source
 import com.dede.sonimei.util.extends.color
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
+import kotlinx.android.synthetic.main.dialog_source_type.*
 
 /**
  * Created by hsh on 2018/5/23.
@@ -94,6 +98,16 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
         }
 
         setOnDismissListener(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        var params = ll_content.layoutParams
+        if (params == null) {
+            params = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+        }
+        params.height = (context.resources.displayMetrics.heightPixels * .6).toInt()
     }
 
     private var callback: ((Pair<Int, String>) -> Unit)? = null

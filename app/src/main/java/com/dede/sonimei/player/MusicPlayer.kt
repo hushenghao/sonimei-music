@@ -53,7 +53,6 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun start() {
-        if (isPlaying) return
         super.start()
         onPlayStateChangeListeners.forEach {
             it.onPlayStart(this@MusicPlayer)
@@ -61,7 +60,6 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun stop() {
-        if (!isPlaying) return
         super.stop()
         onPlayStateChangeListeners.forEach {
             it.onPlayStop()
@@ -69,7 +67,6 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun pause() {
-        if (!isPlaying) return
         super.pause()
         onPlayStateChangeListeners.forEach {
             it.onPlayPause()
@@ -95,6 +92,16 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     override fun prepareAsync() {
         super.prepareAsync()
         isAsyncPrepared = false
+    }
+
+    override fun isPlaying(): Boolean {
+        if (!hasDataSource || !isAsyncPrepared) return false
+        return try {
+            super.isPlaying()
+        }catch (e:IllegalStateException) {
+            e.printStackTrace()
+            false
+        }
     }
 
     override fun setDataSource(path: String?) {

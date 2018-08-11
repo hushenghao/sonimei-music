@@ -12,13 +12,13 @@ import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.util.extends.color
+import kotlinx.android.synthetic.main.dialog_play_list.*
 
 /**
  * Created by hsh on 2018/8/8.
  */
 class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int = 0) : BottomSheetDialog(context, R.style.BottomSheetDialog) {
 
-    private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: Adapter
 
     init {
@@ -30,17 +30,15 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val layout = findViewById<LinearLayout>(R.id.ll_content)
-        var params = layout!!.layoutParams
+        var params = ll_content.layoutParams
         if (params == null) {
             params = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
         }
         params.height = (context.resources.displayMetrics.heightPixels * .6).toInt()
 
-        recyclerView = findViewById(R.id.recycler_view)!!
 
         adapter = Adapter()
-        recyclerView.adapter = adapter
+        recycler_view.adapter = adapter
         adapter.setOnItemClickListener { _, _, position ->
             callback?.onItemClick(position, list[position])
             dismiss()
@@ -55,13 +53,16 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
             }
         }
 
+        tv_list_count.text = context.getString(R.string.play_list_count, adapter.itemCount)
     }
 
-    inner class Adapter : BaseQuickAdapter<BaseSong, BaseViewHolder>(R.layout.item_search_his, list) {
+    inner class Adapter : BaseQuickAdapter<BaseSong, BaseViewHolder>(R.layout.item_play_list, list) {
         override fun convert(helper: BaseViewHolder?, item: BaseSong?) {
-            helper!!.setText(R.id.tv_query, item?.getName())
-                    .setTextColor(R.id.tv_query,
-                            if (helper.layoutPosition == index)
+            val playing = helper!!.layoutPosition == index
+            helper.setGone(R.id.iv_playing, playing)
+                    .setText(R.id.tv_content, item?.getName())
+                    .setTextColor(R.id.tv_content,
+                            if (playing)
                                 context.color(R.color.text1)
                             else
                                 context.color(R.color.text2))
