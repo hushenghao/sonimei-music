@@ -26,6 +26,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 8
         versionName "0.6"
+        flavorDimensions versionName
 
         // 在BuildConfig类中生成BUGLY_APPID常量
         buildConfigField "String", "BUGLY_APPID", "\"${keyProperties['buglyAppId']}\""
@@ -54,9 +55,18 @@ android {
         }
     }
 
+    productFlavors {
+        dev {}
+        preview {}
+        coolapk {}
+    }
+
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "sonimei_${variant.buildType.name}_${variant.versionName}(${variant.versionCode}).apk"
+            def buildType = variant.buildType.name
+            def version = "${variant.versionName}(${variant.versionCode})"
+            def flavor = variant.productFlavors[0].name
+            outputFileName = "sonimei_${flavor}_${buildType}_${version}.apk"
         }
     }
 }

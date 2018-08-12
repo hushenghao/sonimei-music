@@ -58,20 +58,23 @@ private val sourceMap by lazy {
     return@lazy array
 }
 
+val normalSource by lazy { QQ }// 默认来源
+val normalType by lazy { SEARCH_NAME }// 默认搜索类型
+
 val sourceArray: ArrayList<Int> by lazy {
     arrayListOf(
             NETEASE,
             QQ,
             KUGOU,
             KUWO,
-            XIAMI,// 暂时不可用
+            XIAMI,
             BAIDU,
             _1TING,
             MIGU,
             LIZHI,
             QINGTING,
             XIMALAYA,
-            KG,// 暂时搜索接口不可用
+            KG,
             _5SINGYC,
             _5SINGFC
     )

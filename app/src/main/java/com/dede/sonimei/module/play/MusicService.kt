@@ -11,6 +11,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.player.MusicPlayer
@@ -318,7 +319,7 @@ class MusicService : Service(), IPlayControllerListenerI,
                             .build()
             )
         } else {
-            audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT)
+            audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
         }
         return r == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
@@ -481,7 +482,11 @@ class MusicService : Service(), IPlayControllerListenerI,
     }
 
     private fun loadPlayList() {
-        doAsync({ it.printStackTrace() }) {
+        doAsync({
+            it.printStackTrace()
+            Log.i("hahah","==========================")
+            Log.i("hahah",Thread.currentThread().name)
+        }) {
             val list = File(filesDir, "play_list").load<List<BaseSong>>()
             if (list != null && list.isNotEmpty()) {
                 uiThread {

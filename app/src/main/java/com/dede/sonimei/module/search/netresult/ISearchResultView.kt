@@ -7,7 +7,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 /**
  * Created by hsh on 2018/5/15.
  */
-interface ISearchView {
+interface ISearchResultView {
 
     fun showLoading()
 

@@ -46,6 +46,10 @@ fun <T> File.load(): T? {
         return input.readObject().to<T>()
     } catch (e: IOException) {
         e.printStackTrace()
+        val delete = this.delete()
+        if (delete) {
+            Log.i("FileUtil", "delete file: " + this)
+        }
     } finally {
         try {
             input?.close()

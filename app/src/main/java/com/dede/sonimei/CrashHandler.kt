@@ -30,13 +30,15 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
 
     //用来存储设备信息和异常信息
     private val deviceInfo by lazy { LinkedHashMap<String, String>() }
-    private val formatter by lazy { SimpleDateFormat("yyyy-MM-dd-HH-mm-ss") }
+    private val formatter by lazy { SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA) }
 
     companion object {
         private var mApplicationContext: Context? = null
         private var defaultHandler: Thread.UncaughtExceptionHandler? = null
         @SuppressLint("StaticFieldLeak")
         private var instance: CrashHandler? = null
+
+        const val LOG_SUFFIX = ".log"
 
         fun instance(): CrashHandler {
             if (instance == null) {
@@ -51,6 +53,19 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
 
             Thread.setDefaultUncaughtExceptionHandler(instance())
         }
+    }
+
+    fun crashLogDir(): File {
+        return mApplicationContext!!.getExternalFilesDir("log")
+    }
+
+    fun isLog(f: File?): Boolean {
+        if (f == null) return false
+        if (!f.isFile) return false
+        if (f.name.endsWith(LOG_SUFFIX) && f.length() > 0) {
+            return true
+        }
+        return false
     }
 
     override fun uncaughtException(t: Thread, e: Throwable?) {
@@ -126,9 +141,8 @@ class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
         try {
             val timestamp = System.currentTimeMillis()
             val time = formatter.format(Date())
-            val fileName = "crash-$time-$timestamp.log"
-            val dir = mApplicationContext!!.getExternalFilesDir("log")
-            fos = FileOutputStream(dir.absolutePath + File.separator + fileName)
+            val fileName = "crash-$time-$timestamp$LOG_SUFFIX"
+            fos = FileOutputStream(crashLogDir().absolutePath + File.separator + fileName)
             fos.write(sb.toString().toByteArray())
         } catch (e: Exception) {
             e.printStackTrace()

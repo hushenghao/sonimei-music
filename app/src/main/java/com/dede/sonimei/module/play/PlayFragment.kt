@@ -148,6 +148,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
         sb_progress.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (musicBinder == null) return
                 if (progress == 0 && !fromUser) {
                     tv_now_time.text = 0.toTime()
                     return
@@ -368,10 +369,11 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
     override fun onDestroy() {
         musicBinder?.removeOnPlayStateChangeListener(this)
+        musicBinder?.onLoadPlayListFinishListener = null
+        context?.unbindService(this)
         if (musicBinder?.isPlaying == false) {
             context?.stopService(Intent(context, MusicService::class.java))
         }
-        context?.unbindService(this)
         handler.removeCallbacks(this)
         context?.unregisterReceiver(volumeChangeReceiver)
         super.onDestroy()

@@ -23,10 +23,11 @@ class MyApp : Application() {
 
         CrashHandler.init(this)
 
-        // 开发设备
-        CrashReport.setIsDevelopmentDevice(applicationContext, BuildConfig.DEBUG)
-        // bugly 第三个参数调试开关
-//        CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
+        // 除了开发渠道以外
+        if ("dev" != BuildConfig.FLAVOR) {
+            // bugly 第三个参数调试开关
+            CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
+        }
         HttpUtil.init(this)
     }
 

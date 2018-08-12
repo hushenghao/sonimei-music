@@ -1,5 +1,7 @@
 package com.dede.sonimei.data.search
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.dede.sonimei.data.BaseSong
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -16,7 +18,44 @@ data class SearchSong(@Expose val type: String?,
                       @Expose val lrc: String?,
                       @Expose val pic: String?
 ) : BaseSong(title, path) {
+
+    constructor(parcel: Parcel) : this(
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString()
+    )
+
     override fun getName(): String {
         return "$title - $author"
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(type)
+        parcel.writeString(link)
+        parcel.writeString(songId)
+        parcel.writeString(title)
+        parcel.writeString(title)
+        parcel.writeString(author)
+        parcel.writeString(path)
+        parcel.writeString(lrc)
+        parcel.writeString(pic)
+    }
+
+    companion object {
+        val CREATOR = object : Parcelable.Creator<SearchSong> {
+
+            override fun createFromParcel(parcel: Parcel): SearchSong {
+                return SearchSong(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SearchSong?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 }

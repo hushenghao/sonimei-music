@@ -1,12 +1,10 @@
 package com.dede.sonimei.module.search.netresult
 
-import com.dede.sonimei.MusicSource
-import com.dede.sonimei.NETEASE
-import com.dede.sonimei.SEARCH_NAME
+import android.os.Bundle
+import com.dede.sonimei.*
 import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
-import com.dede.sonimei.sourceKey
 import com.dede.sonimei.util.extends.applyFragmentLifecycle
 import com.dede.sonimei.util.extends.kson.fromExposeJson
 import com.dede.sonimei.util.extends.notNull
@@ -15,16 +13,31 @@ import org.jetbrains.anko.AnkoLogger
 /**
  * Created by hsh on 2018/5/15.
  */
-class SearchPresenter(val view: ISearchView) : AnkoLogger {
+class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
 
     private var page = 1
-    private var pageSize = 10
+    var pagerSize = 10
+        private set
     private var search = ""
     @MusicSource
-    private var source = NETEASE
-    private var type = SEARCH_NAME
+    private var source = normalSource
+    private var type = normalType
 
-    fun pagerSize() = this.pageSize
+    fun saveInstance(outState: Bundle) {
+        outState.putString("type", type)
+        outState.putInt("source", source)
+        outState.putInt("page", page)
+        outState.putString("search", search)
+    }
+
+    fun loadInstance(saveInstance: Bundle?) {
+        if (saveInstance == null) return
+        type = saveInstance.getString("type", type)
+        source = saveInstance.getInt("source", source)
+        page = saveInstance.getInt("page", 1)
+        search = saveInstance.getString("search", "")
+    }
+
 
     fun search(search: String, pair: Pair<Int, String>) {
         this.search = search

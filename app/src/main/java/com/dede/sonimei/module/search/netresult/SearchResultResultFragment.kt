@@ -12,21 +12,25 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.dede.sonimei.NETEASE
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.download.DownloadHelper
 import com.dede.sonimei.module.home.MainActivity
+import com.dede.sonimei.module.setting.Settings
+import com.dede.sonimei.normalSource
 import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.fragment_search_result.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.support.v4.defaultSharedPreferences
 import org.jetbrains.anko.support.v4.toast
 
 
 /**
  * Created by hsh on 2018/5/15.
  */
-class SearchResultFragment : BaseFragment(), ISearchView {
+class SearchResultResultFragment : BaseFragment(), ISearchResultView {
 
     override fun showLoading() {
         swipe_refresh.isRefreshing = true
@@ -39,14 +43,14 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     override fun loadSuccess(isLoadMore: Boolean, list: List<SearchSong>) {
         if (isLoadMore) {
             adapter.addData(list)
-            if (list.size >= presenter.pagerSize()) {
+            if (list.size >= presenter.pagerSize) {
                 adapter.loadMoreComplete()
             } else {
                 adapter.loadMoreEnd()
             }
         } else {
             adapter.setNewData(list)
-            if (list.size < presenter.pagerSize()) {
+            if (list.size < presenter.pagerSize) {
                 adapter.loadMoreEnd()
             }
         }
@@ -63,7 +67,7 @@ class SearchResultFragment : BaseFragment(), ISearchView {
 
     override fun provider() = this
 
-    private val presenter by lazy { SearchPresenter(this) }
+    private val presenter by lazy { SearchResultPresenter(this) }
 
     // 列表适配器
     private lateinit var adapter: ListAdapter
@@ -71,11 +75,22 @@ class SearchResultFragment : BaseFragment(), ISearchView {
     override fun getLayoutId() = R.layout.fragment_search_result
 
     override fun initView(savedInstanceState: Bundle?) {
+        presenter.loadInstance(savedInstanceState)
+
         swipe_refresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent)
         swipe_refresh.setOnRefreshListener {
             presenter.research()
         }
         adapter = ListAdapter()
+        if (savedInstanceState != null) {
+            val list = savedInstanceState.getParcelableArrayList<SearchSong>("search_list")
+            if (list != null && list.isNotEmpty()) {
+                adapter.addData(list)
+            }
+        } else {
+            val source = defaultSharedPreferences.getInt(Settings.KEY_DEFAULT_SEARCH_SOURCE, normalSource)
+            presenter.setTypeSource(source to getTypeSource().second)
+        }
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
         rv_search_list.adapter = adapter
         rv_search_list.layoutManager = object : LinearLayoutManager(context) {
@@ -92,9 +107,6 @@ class SearchResultFragment : BaseFragment(), ISearchView {
             val listAdapter = (adapter as ListAdapter)
             if (position >= listAdapter.data.size) return@setOnItemClickListener
             val song = listAdapter.data[position]
-//            if (song != null && song.path.notNull()) {
-//                listAdapter.onItemClick(position)
-//            }
             if (activity != null && activity is MainActivity) {
                 (activity as MainActivity).playSongs(listAdapter.data, song)
             }
@@ -118,7 +130,6 @@ class SearchResultFragment : BaseFragment(), ISearchView {
                 .setItems(R.array.dialog_items) { _, which ->
                     when (which) {
                         0 -> {
-//                            adapter.onItemClick(position)
                             if (activity != null && activity is MainActivity) {
                                 (activity as MainActivity).playSongs(adapter.data, song)
                             }
@@ -164,6 +175,12 @@ class SearchResultFragment : BaseFragment(), ISearchView {
         if (!userVisibleHint || !isVisible) return
 
         presenter.search(search!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenter.saveInstance(outState)
+        outState.putParcelableArrayList("search_list", ArrayList(adapter.data))
     }
 
     override fun onDestroyView() {

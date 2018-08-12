@@ -115,4 +115,12 @@
 
     <string name="play_list_title">播放列表</string>
     <string name="play_list_count">共(%1$d)首</string>
+
+    <string name="email">dede.hu@qq.com</string>
+    <string name="emile_theme">搜你妹问题反馈</string>
+    <string name="email_text">输入您的建议、意见或者使用中的问题，如果反馈问题最好注明版本和复现步骤</string>
+    <string name="email_chooser">发送反馈邮件</string>
+    <string name="dialog_bug_report">是否将最近的应用日志作为附件发送</string>
+    <string name="dont_send">不发送</string>
+    <string name="do_send">发送</string>
 </resources>

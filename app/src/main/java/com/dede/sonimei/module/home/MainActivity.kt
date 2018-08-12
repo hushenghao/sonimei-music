@@ -56,11 +56,13 @@ class MainActivity : BaseActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 
-        val searchFragment = SearchFragment()
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.fl_content, searchFragment)
+        if (savedInstanceState == null) {
+            val searchFragment = SearchFragment()
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.fl_content, searchFragment, "search_fragment")
 //                .addToBackStack(null)
-                .commit()
+                    .commit()
+        }
 
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
@@ -146,7 +148,15 @@ class MainActivity : BaseActivity() {
             toggleBottomSheet()
         }
 
-        hideBottomController()
+        val open = savedInstanceState?.getBoolean("is_open", false) ?: false
+        if (open) {
+            showBottomController()
+            playBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            fl_bottom_play.hide()
+            fl_content.hide()
+        } else {
+            hideBottomController()
+        }
     }
 
     fun showBottomController() {
@@ -216,6 +226,11 @@ class MainActivity : BaseActivity() {
                 false
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putBoolean("is_open", playBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
     }
 
     private var lastTime = 0L

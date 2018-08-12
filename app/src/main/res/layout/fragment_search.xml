@@ -77,7 +77,7 @@
 
         <fragment
             android:id="@+id/search_result_fragment"
-            android:name="com.dede.sonimei.module.search.netresult.SearchResultFragment"
+            android:name="com.dede.sonimei.module.search.netresult.SearchResultResultFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

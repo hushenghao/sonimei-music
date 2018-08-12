@@ -1,23 +1,27 @@
 package com.dede.sonimei.module.setting
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.preference.Preference
 import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
-import com.dede.sonimei.NETEASE
-import com.dede.sonimei.R
+import android.support.v7.app.AlertDialog
+import com.dede.sonimei.*
 import com.dede.sonimei.data.Source
-import com.dede.sonimei.defaultDownloadPath
-import com.dede.sonimei.sourceName
 import com.dede.sonimei.util.extends.isNull
+import com.tbruyelle.rxpermissions2.RxPermissions
+import kotlinx.coroutines.experimental.selects.select
 import org.jetbrains.anko.*
 import java.io.File
+import java.io.FileFilter
 
 
 /**
@@ -33,6 +37,7 @@ class Settings : PreferenceFragment(),
         const val KEY_DOWNLOAD_SETTING = "download_setting"
         const val KEY_WIFI_DOWNLOAD = "wifi_download"
         const val KEY_DEFAULT_SEARCH_SOURCE = "default_search_source"
+        const val KEY_BUG_REPORT = "bug_report"
     }
 
     private val selectPathCode = 1
@@ -58,8 +63,60 @@ class Settings : PreferenceFragment(),
                 }
                 true
             }
+            KEY_BUG_REPORT -> {
+                AlertDialog.Builder(context)
+                        .setTitle(R.string.emile_theme)
+                        .setMessage(R.string.dialog_bug_report)
+                        .setNegativeButton(R.string.dont_send) { _, _ -> sendEmail(false) }
+                        .setPositiveButton(R.string.do_send) { _, _ -> sendEmail(true) }
+                        .create()
+                        .show()
+                true
+            }
             else -> false
         }
+    }
+
+    private fun sendEmail(b: Boolean) {
+        if (!b) {
+            callEmail()
+            return
+        }
+        RxPermissions(activity)
+                .request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe({
+                    if (!it) {
+                        callEmail()
+                        return@subscribe
+                    }
+                    var file: File? = null
+                    val dir = CrashHandler.instance().crashLogDir()
+                    if (dir.exists() && dir.isDirectory) {
+                        val files = dir.listFiles(FileFilter { f ->
+                            return@FileFilter CrashHandler.instance().isLog(f)
+                        })
+                        if (files?.isNotEmpty() == true) {
+                            files.sortByDescending { f -> f.lastModified() }// 按时间倒序
+                            file = files[0]// 取最新的
+                        }
+                    }
+                    callEmail(file)
+                }, { it.printStackTrace() })
+    }
+
+    private fun callEmail(file: File? = null) {
+        val email = getString(R.string.email)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "message/rfc882"
+        val of = arrayOf(email)
+        intent.putExtra(Intent.EXTRA_EMAIL, of)
+//        intent.putExtra(Intent.EXTRA_CC, of) // 抄送人
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.emile_theme)) // 主题
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_text)) // 正文
+        if (file != null) {
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+        }
+        startActivity(Intent.createChooser(intent, getString(R.string.email_chooser)))
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -83,7 +140,7 @@ class Settings : PreferenceFragment(),
         addPreferencesFromResource(R.xml.preference_settings)
 
         defaultSearchSource = findPreference(KEY_DEFAULT_SEARCH_SOURCE)// 默认搜索来源
-        val source = defaultSharedPreferences.getInt(KEY_DEFAULT_SEARCH_SOURCE, NETEASE)
+        val source = defaultSharedPreferences.getInt(KEY_DEFAULT_SEARCH_SOURCE, normalSource)
         defaultSearchSource.summary = sourceName(source)
         defaultSearchSource.onPreferenceClickListener = this
 
@@ -96,6 +153,7 @@ class Settings : PreferenceFragment(),
             customPath.summary = defaultSharedPreferences
                     .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
         }
+        findPreference(KEY_BUG_REPORT).onPreferenceClickListener = this
     }
 
     override fun onResume() {
