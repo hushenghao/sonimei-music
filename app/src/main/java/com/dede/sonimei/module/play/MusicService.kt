@@ -354,6 +354,8 @@ class MusicService : Service(), IPlayControllerListenerI,
                 if (!musicPlayer.isPlaying && onResumeFocusAutoStart) {
                     start()
                     onResumeFocusAutoStart = false
+                }
+                if (musicPlayer.isAsyncPrepared) {
                     musicPlayer.setVolume(1f, 1f)
                 }
             }
@@ -484,8 +486,6 @@ class MusicService : Service(), IPlayControllerListenerI,
     private fun loadPlayList() {
         doAsync({
             it.printStackTrace()
-            Log.i("hahah","==========================")
-            Log.i("hahah",Thread.currentThread().name)
         }) {
             val list = File(filesDir, "play_list").load<List<BaseSong>>()
             if (list != null && list.isNotEmpty()) {
