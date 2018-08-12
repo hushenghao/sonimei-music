@@ -43,7 +43,6 @@ class Settings : PreferenceFragment(),
     private val selectPathCode = 1
     private val selectSourceCode = 2
 
-    @SuppressLint("InlinedApi")
     override fun onPreferenceClick(preference: Preference?): Boolean {
         return when (preference?.key) {
             KEY_DEFAULT_SEARCH_SOURCE -> {
@@ -64,7 +63,7 @@ class Settings : PreferenceFragment(),
                 true
             }
             KEY_BUG_REPORT -> {
-                AlertDialog.Builder(context)
+                AlertDialog.Builder(activity)
                         .setTitle(R.string.emile_theme)
                         .setMessage(R.string.dialog_bug_report)
                         .setNegativeButton(R.string.dont_send) { _, _ -> sendEmail(false) }
