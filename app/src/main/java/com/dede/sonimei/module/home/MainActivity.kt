@@ -8,8 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
 import android.view.*
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
@@ -20,7 +18,6 @@ import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.BaseSong
-import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.search.SearchFragment
 import com.dede.sonimei.module.setting.SettingActivity
@@ -56,8 +53,9 @@ class MainActivity : BaseActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 
+        val fragment = supportFragmentManager.findFragmentByTag("search_fragment")
         if (savedInstanceState == null) {
-            val searchFragment = SearchFragment()
+            val searchFragment = fragment as? SearchFragment ?: SearchFragment()
             supportFragmentManager.beginTransaction()
                     .replace(R.id.fl_content, searchFragment, "search_fragment")
 //                .addToBackStack(null)
