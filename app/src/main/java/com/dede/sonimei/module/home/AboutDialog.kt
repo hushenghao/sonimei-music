@@ -28,11 +28,9 @@ class AboutDialog(context: Context) {
                 .setView(createView(context))
                 .setNegativeButton(R.string.sure, null)
                 .setNeutralButton(R.string.about_market) { _, _ ->
-                    try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=${context.packageName}")))
-                    } catch (e: ClassNotFoundException) {
-                    }
+                    context.startActivity(Intent.createChooser(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}")),
+                            context.getString(R.string.chooser_market)))
                 }
                 .create()
     }

@@ -24,8 +24,8 @@ android {
         applicationId "com.dede.sonimei"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "0.6.1"
+        versionCode 11
+        versionName "0.6.2"
         flavorDimensions versionName
 
         // 在BuildConfig类中生成BUGLY_APPID常量

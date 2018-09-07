@@ -7,6 +7,7 @@
     <string name="about_author">作者：de得得de</string>
     <string name="about_github">Github：https://github.com/hushenghao/music/</string>
     <string name="about_group">加入QQ群：296513604</string>
+    <string name="qq_group">296513604</string>
     <string name="about_version">版本：%1$s(%2$d)</string>
     <string name="about_market">喜欢，给个好评</string>
 
@@ -123,4 +124,6 @@
     <string name="dialog_bug_report">是否将最近的应用日志作为附件发送</string>
     <string name="dont_send">不发送</string>
     <string name="do_send">发送</string>
+    <string name="chooser_browser">选择浏览器打开</string>
+    <string name="chooser_market">选择应用市场</string>
 </resources>

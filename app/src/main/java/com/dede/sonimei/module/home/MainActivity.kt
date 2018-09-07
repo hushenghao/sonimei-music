@@ -209,7 +209,9 @@ class MainActivity : BaseActivity() {
                 true
             }
             R.id.menu_ape -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(APE_LINK)))
+                startActivity(Intent.createChooser(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(APE_LINK)),
+                        getString(R.string.chooser_browser)))
                 true
             }
             R.id.menu_about -> {
@@ -217,7 +219,9 @@ class MainActivity : BaseActivity() {
                 true
             }
             R.id.menu_webview -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(WEB_LINK)))
+                startActivity(Intent.createChooser(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(WEB_LINK)),
+                        getString(R.string.chooser_browser)))
                 true
             }
             else -> {

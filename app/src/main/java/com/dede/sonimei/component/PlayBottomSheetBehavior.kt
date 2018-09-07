@@ -32,7 +32,6 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
 
     private var velocityTracker: VelocityTracker? = null
 
-    private var id: Int = -1
 
     override fun onInterceptTouchEvent(parent: CoordinatorLayout?, child: T, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
@@ -45,18 +44,10 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
         velocityTracker!!.addMovement(event)
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN ->
-                id = event.getPointerId(0)
             MotionEvent.ACTION_MOVE -> {
-                if (id != -1) {
-                    velocityTracker!!.computeCurrentVelocity(1000, mMaximumVelocity)
-                    val yVelocity = velocityTracker!!.getYVelocity(event.getPointerId(id))
-                    onYVelocityChangeListener?.onChange(yVelocity)
-                }
-            }
-            MotionEvent.ACTION_UP,
-            MotionEvent.ACTION_CANCEL -> {
-                id = -1
+                velocityTracker!!.computeCurrentVelocity(1000, mMaximumVelocity)
+                val yVelocity = velocityTracker!!.getYVelocity(event.getPointerId(event.actionIndex))
+                onYVelocityChangeListener?.onChange(yVelocity)
             }
         }
 
@@ -75,18 +66,10 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
         velocityTracker!!.addMovement(event)
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN ->
-                id = event.getPointerId(0)
             MotionEvent.ACTION_MOVE -> {
-                if (id != -1) {
-                    velocityTracker!!.computeCurrentVelocity(1000, mMaximumVelocity)
-                    val yVelocity = velocityTracker!!.getYVelocity(event.getPointerId(id))
-                    onYVelocityChangeListener?.onChange(yVelocity)
-                }
-            }
-            MotionEvent.ACTION_UP,
-            MotionEvent.ACTION_CANCEL -> {
-                id = -1
+                velocityTracker!!.computeCurrentVelocity(1000, mMaximumVelocity)
+                val yVelocity = velocityTracker!!.getYVelocity(event.getPointerId(event.actionIndex))
+                onYVelocityChangeListener?.onChange(yVelocity)
             }
         }
 
@@ -94,7 +77,6 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
     }
 
     private fun reset() {
-        id = -1
         velocityTracker?.recycle()
         velocityTracker = null
     }

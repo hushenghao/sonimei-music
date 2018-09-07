@@ -1,7 +1,8 @@
 package com.dede.sonimei.player
 
 import android.media.MediaPlayer
-import com.dede.sonimei.module.play.IReviseOnPlayStateChangeListener
+import com.dede.sonimei.module.play.*
+import java.lang.IllegalStateException
 
 /**
  * Created by hsh on 2018/8/1.
@@ -46,6 +47,11 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         onPlayStateChangeListeners.remove(listener)
     }
 
+
+    @PlayState
+    var state: Int = STATE_IDLE
+        private set
+
     init {
         setOnCompletionListener(this)
         setOnBufferingUpdateListener(this)
@@ -53,6 +59,10 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun start() {
+        if (state != STATE_PAUSED && state != STATE_PREPARED) {
+            return
+        }
+        state = STATE_STARTED
         super.start()
         onPlayStateChangeListeners.forEach {
             it.onPlayStart(this@MusicPlayer)
@@ -60,6 +70,11 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun stop() {
+        if (state != STATE_PREPARED && state != STATE_STARTED &&
+                state != STATE_PAUSED && state != STATE_PLAYBACK_COMPLETED) {
+            return
+        }
+        state = STATE_STOPED
         super.stop()
         onPlayStateChangeListeners.forEach {
             it.onPlayStop()
@@ -67,6 +82,10 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun pause() {
+        if (state != STATE_PREPARED && state != STATE_STARTED) {
+            return
+        }
+        state = STATE_PAUSED
         super.pause()
         onPlayStateChangeListeners.forEach {
             it.onPlayPause()
@@ -74,39 +93,75 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun reset() {
+        state = STATE_IDLE
         super.reset()
-        isAsyncPrepared = false
-        hasDataSource = false
         setOnBufferingUpdateListener(this)
     }
 
-    /**
-     * 是否异步准备完成
-     */
-    var isAsyncPrepared = false
-        private set
-
-    var hasDataSource = false
-        private set
-
     override fun prepareAsync() {
+        if (state != STATE_INITIALIZED && state != STATE_STOPED) {
+            return
+        }
+        state = STATE_PREPARING
         super.prepareAsync()
-        isAsyncPrepared = false
+    }
+
+    override fun prepare() {
+        if (state != STATE_INITIALIZED && state != STATE_STOPED) {
+            return
+        }
+        state = STATE_PREPARED
+        super.prepare()
     }
 
     override fun isPlaying(): Boolean {
-        if (!hasDataSource || !isAsyncPrepared) return false
-        return try {
-            super.isPlaying()
-        }catch (e:IllegalStateException) {
-            e.printStackTrace()
+        return if (state == STATE_ERROR || state == STATE_IDLE ||
+                state == STATE_INITIALIZED || state == STATE_PREPARING) {
             false
+        } else {
+            super.isPlaying()
         }
     }
 
+    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+        try {
+            super.setVolume(leftVolume, rightVolume)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun getDuration(): Int {
+        if (state != STATE_PREPARED && state != STATE_PAUSED &&
+                state != STATE_STARTED && state != STATE_PLAYBACK_COMPLETED &&
+                state != STATE_STOPED) {
+            return 0
+        }
+        return super.getDuration()
+    }
+
+    override fun getCurrentPosition(): Int {
+        if (state != STATE_PREPARED && state != STATE_PAUSED &&
+                state != STATE_STARTED && state != STATE_PLAYBACK_COMPLETED) {
+            return 0
+        }
+        return super.getCurrentPosition()
+    }
+
+    override fun seekTo(msec: Long, mode: Int) {
+        if (state != STATE_PREPARED && state != STATE_PAUSED &&
+                state != STATE_STARTED && state != STATE_PLAYBACK_COMPLETED) {
+            return
+        }
+        super.seekTo(msec, mode)
+    }
+
     override fun setDataSource(path: String?) {
+        if (state != STATE_IDLE) {
+            return
+        }
+        state = STATE_INITIALIZED
         super.setDataSource(path)
-        hasDataSource = true
         onPlayStateChangeListeners.forEach {
             it.onDataSourceChange()
         }
@@ -116,7 +171,7 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
      * 异步准备完毕回调 implement [MediaPlayer.OnPreparedListener]
      */
     override fun onPrepared(mp: MediaPlayer?) {
-        isAsyncPrepared = true
+        state = STATE_PREPARED
         onPlayStateChangeListeners.forEach {
             it.onPrepared(this@MusicPlayer)
         }
@@ -137,12 +192,14 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
      * 播放完成后回调 implement [MediaPlayer.OnCompletionListener]
      */
     override fun onCompletion(mp: MediaPlayer?) {
+        state = STATE_PLAYBACK_COMPLETED
         onPlayStateChangeListeners.forEach {
             it.onCompletion()
         }
     }
 
     override fun release() {
+        state = STATE_END
         removeOnPlayStateChangeListener(null)
         super.release()
     }

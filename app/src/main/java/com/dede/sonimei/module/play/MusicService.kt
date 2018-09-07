@@ -11,13 +11,12 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.extends.*
 import org.jetbrains.anko.*
-import java.io.*
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -161,7 +160,7 @@ class MusicService : Service(), IPlayControllerListenerI,
     override fun start() {
         requestAudioFocus()
 
-        if (musicPlayer.isAsyncPrepared) {
+        if (musicPlayer.state == STATE_PREPARED || musicPlayer.state == STATE_PAUSED) {
             musicPlayer.start()
         } else {
             plays(playList, playIndex)
@@ -346,18 +345,13 @@ class MusicService : Service(), IPlayControllerListenerI,
      * 焦点变化回调 implement [AudioManager.OnAudioFocusChangeListener]
      */
     override fun onAudioFocusChange(focusChange: Int) {
-        if (!musicPlayer.hasDataSource || !musicPlayer.isAsyncPrepared) {
-            return
-        }
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (!musicPlayer.isPlaying && onResumeFocusAutoStart) {
                     start()
                     onResumeFocusAutoStart = false
                 }
-                if (musicPlayer.isAsyncPrepared) {
-                    musicPlayer.setVolume(1f, 1f)
-                }
+                musicPlayer.setVolume(1f, 1f)
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 if (musicPlayer.isPlaying) {
@@ -367,7 +361,7 @@ class MusicService : Service(), IPlayControllerListenerI,
             }
             AudioManager.AUDIOFOCUS_LOSS -> {
                 if (musicPlayer.isPlaying) {
-                    musicPlayer.pause()
+                    musicPlayer.stop()
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {

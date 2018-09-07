@@ -38,6 +38,7 @@ class Settings : PreferenceFragment(),
         const val KEY_WIFI_DOWNLOAD = "wifi_download"
         const val KEY_DEFAULT_SEARCH_SOURCE = "default_search_source"
         const val KEY_BUG_REPORT = "bug_report"
+        const val KEY_QQ_GROUP = "qq_group"
     }
 
     private val selectPathCode = 1
@@ -70,6 +71,12 @@ class Settings : PreferenceFragment(),
                         .setPositiveButton(R.string.do_send) { _, _ -> sendEmail(true) }
                         .create()
                         .show()
+                true
+            }
+            KEY_QQ_GROUP -> {
+                startActivity(Intent.createChooser(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(GROUP_LINK)),
+                        getString(R.string.chooser_browser)))
                 true
             }
             else -> false
@@ -153,6 +160,7 @@ class Settings : PreferenceFragment(),
                     .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
         }
         findPreference(KEY_BUG_REPORT).onPreferenceClickListener = this
+        findPreference(KEY_QQ_GROUP).onPreferenceClickListener = this
     }
 
     override fun onResume() {
@@ -182,7 +190,7 @@ class Settings : PreferenceFragment(),
                 info(uri.toString())
                 val path = SettingHelper.documentUri2Path(activity, uri)
                 info(path)
-                if (path.isNull() || File(path).canRead()) {
+                if (path.isNull() || !File(path).canRead()) {
                     toast("路径不可用")
                     return
                 }
