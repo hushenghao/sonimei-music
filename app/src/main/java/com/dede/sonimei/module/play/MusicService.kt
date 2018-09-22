@@ -330,6 +330,7 @@ class MusicService : Service(), IPlayControllerListenerI,
         val r = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioManager.abandonAudioFocusRequest(
                     AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                            .setOnAudioFocusChangeListener(null)
                             .build()
             )
         } else {
@@ -366,7 +367,7 @@ class MusicService : Service(), IPlayControllerListenerI,
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                 if (musicPlayer.isPlaying) {
-                    musicPlayer.setVolume(0.1f, 0.1f)
+                    musicPlayer.setVolume(0.5f, 0.5f)
                 }
             }
         }
