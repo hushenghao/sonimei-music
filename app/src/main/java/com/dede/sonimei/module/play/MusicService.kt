@@ -330,7 +330,7 @@ class MusicService : Service(), IPlayControllerListenerI,
         val r = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             audioManager.abandonAudioFocusRequest(
                     AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                            .setOnAudioFocusChangeListener(null)
+                            .setOnAudioFocusChangeListener(this)
                             .build()
             )
         } else {
