@@ -1,7 +1,6 @@
 package com.dede.sonimei.module.setting
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -9,7 +8,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.preference.Preference
 import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
@@ -18,7 +16,6 @@ import com.dede.sonimei.*
 import com.dede.sonimei.data.Source
 import com.dede.sonimei.util.extends.isNull
 import com.tbruyelle.rxpermissions2.RxPermissions
-import kotlinx.coroutines.experimental.selects.select
 import org.jetbrains.anko.*
 import java.io.File
 import java.io.FileFilter

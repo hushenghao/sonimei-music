@@ -21,7 +21,8 @@ class MyApp : Application() {
             LeakCanary.install(this)
         }
 
-        CrashHandler.init(this)
+        if (!BuildConfig.DEBUG)
+            CrashHandler.init(this)
 
         // 除了开发渠道以外
         if ("dev" != BuildConfig.FLAVOR) {
