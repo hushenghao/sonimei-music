@@ -82,10 +82,10 @@ class MainActivity : BaseActivity() {
                 lastOffset = slideOffset
 
                 bottom_sheet.open = if (slideOffset > 0.85f) {
-                    fl_bottom_play.hide()
+                    ll_bottom_play.hide()
                     true
                 } else {
-                    fl_bottom_play.show()
+                    ll_bottom_play.show()
                     false
                 }
 
@@ -98,7 +98,7 @@ class MainActivity : BaseActivity() {
 
                 var b = 1 - slideOffset * 2f
                 if (b < 0f) b = 0f
-                fl_bottom_play.alpha = b
+                ll_bottom_play.alpha = b
             }
 
             @SuppressLint("RestrictedApi")
@@ -142,7 +142,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        fl_bottom_play.onClick {
+        ll_bottom_play.onClick {
             toggleBottomSheet()
         }
 
@@ -150,7 +150,7 @@ class MainActivity : BaseActivity() {
         if (open) {
             showBottomController()
             playBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            fl_bottom_play.hide()
+            ll_bottom_play.hide()
             fl_content.hide()
         } else {
             hideBottomController()

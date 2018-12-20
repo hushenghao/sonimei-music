@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.view.View
 import android.widget.SeekBar
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
@@ -73,7 +74,8 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             val colorDrawable = ColorDrawable(0x66000000)
             val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
             val layerDrawable = LayerDrawable(arrayOf(bitmapDrawable, colorDrawable))
-            ll_play_content.background = layerDrawable
+            activity?.findViewById<View>(R.id.bottom_sheet)?.background = layerDrawable
+//            ll_play_content.background = layerDrawable
         }
     }
 
@@ -350,6 +352,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             if (song is SearchSong) {
                 GlideApp.with(this)
                         .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .load(song.pic)
                         .into<SimpleTarget<Bitmap>>(target)
                 tv_singer.text = song.author

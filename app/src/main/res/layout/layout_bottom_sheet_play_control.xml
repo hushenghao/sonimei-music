@@ -1,79 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fl_bottom_play"
+    android:id="@+id/ll_bottom_play"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dimen_bottom_play_controller_height"
-    android:background="@color/white"
+    android:background="@drawable/drawable_bottom_mini_controller_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     tools:showIn="@layout/fragment_play">
 
+    <ImageView
+        android:id="@+id/iv_album_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="10dp" />
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_bottom_play_controller_height"
-        android:background="?attr/selectableItemBackground"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/iv_album_img"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="10dp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/iv_play"
-            android:layout_toRightOf="@id/iv_album_img"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:textColor="@color/text1"
+            android:textSize="15sp"
+            tools:text="不要说话" />
 
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:singleLine="true"
-                android:textColor="@color/text1"
-                android:textSize="15sp"
-                tools:text="不要说话" />
-
-            <TextView
-                android:id="@+id/tv_lrc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@color/text2"
-                android:textSize="12sp"
-                android:visibility="gone"
-                tools:text="陈奕迅 - 不想放手" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/iv_play"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginRight="12dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_pause_status"
-            android:tint="@color/icon_tint" />
-
-        <ImageView
-            android:id="@+id/iv_play_list"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginRight="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_play_list"
-            android:tint="@color/icon_tint" />
-
+        <TextView
+            android:id="@+id/tv_lrc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text2"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="陈奕迅 - 不想放手" />
     </LinearLayout>
-</FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_play"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginRight="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_pause_status"
+        android:tint="@color/icon_tint" />
+
+    <ImageView
+        android:id="@+id/iv_play_list"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginRight="10dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_play_list"
+        android:tint="@color/icon_tint" />
+
+</LinearLayout>

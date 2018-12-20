@@ -17,7 +17,6 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="5dp"
         app:layout_anchor="@id/bottom_sheet"
         app:layout_anchorGravity="center_horizontal">
 
@@ -25,8 +24,8 @@
             android:id="@+id/iv_arrow_indicators"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="20dp" />
     </FrameLayout>
 
     <!--自定义FrameLayout 在Bottom Sheet 打开时消费所有触摸事件-->
@@ -34,7 +33,8 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="5dp"
+        android:background="#cd1e1d1d"
+        android:elevation="6dp"
         app:behavior_peekHeight="@dimen/dimen_bottom_play_controller_height"
         app:layout_behavior="com.dede.sonimei.component.PlayBottomSheetBehavior">
 

@@ -126,4 +126,10 @@
     <string name="do_send">发送</string>
     <string name="chooser_browser">选择浏览器打开</string>
     <string name="chooser_market">选择应用市场</string>
+
+    <string name="play_notification_name">音乐播放通知</string>
+    <string name="notify_last">上一首</string>
+    <string name="notify_next">下一首</string>
+    <string name="notify_play">播放</string>
+    <string name="notify_pause">暂停</string>
 </resources>

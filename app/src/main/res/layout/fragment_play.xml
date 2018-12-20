@@ -9,15 +9,14 @@
         android:id="@+id/ll_play_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#cd1e1d1d"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="3dp">
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="30dp">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -86,8 +85,8 @@
             android:id="@+id/lrc_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="10dp"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
             app:lrcAnimationDuration="220"
             app:lrcCurrentTextColor="@color/white"
@@ -135,8 +134,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="23dp"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="23dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="20dp"

@@ -1,18 +1,26 @@
 package com.dede.sonimei.module.play
 
-import android.app.Service
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
+import android.support.v4.app.NotificationCompat
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.module.home.MainActivity
+import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.extends.*
 import org.jetbrains.anko.*
@@ -20,6 +28,17 @@ import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
+
+private const val ACTION_NOTIFICATION_PLAY = "play"
+private const val ACTION_NOTIFICATION_PAUSE = "pause"
+private const val ACTION_NOTIFICATION_NEXT = "next"
+private const val ACTION_NOTIFICATION_LAST = "last"
+
+private const val PLAY_NOTIFICATION_ID = 1001
+private const val PLAY_NOTIFICATION_CHANNEL = "sonimei_music_channel"
+
+private const val SP_KEY_PLAY_INDEX = "play_index"
+private const val SP_KEY_PLAY_LIST = "play_list"
 
 /**
  * Created by hsh on 2018/8/2.
@@ -140,9 +159,8 @@ class MusicService : Service(), IPlayControllerListenerI,
     private fun play(path: String) {
         info("index:" + playIndex + "  path:" + path)
         try {
-            val looping = this.musicPlayer.isLooping
             this.musicPlayer.reset()
-            this.musicPlayer.isLooping = looping
+            this.musicPlayer.isLooping = playMode == MODE_SINGLE // fix single loop mode
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 this.musicPlayer.setAudioAttributes(AudioAttributes.Builder()
                         .setLegacyStreamType(AudioManager.STREAM_MUSIC)
@@ -162,6 +180,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
         if (musicPlayer.state == STATE_PREPARED || musicPlayer.state == STATE_PAUSED) {
             musicPlayer.start()
+            notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
         } else {
             plays(playList, playIndex)
         }
@@ -169,6 +188,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun pause() {
         musicPlayer.pause()
+        notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
     }
 
     override fun next() {
@@ -295,9 +315,9 @@ class MusicService : Service(), IPlayControllerListenerI,
     private var autoStart = true
 
     /** 处理音频焦点 */
-    private val audioManager by lazy {
-        getSystemService(Context.AUDIO_SERVICE).to<AudioManager>()
-    }
+    private val audioManager by lazy { getSystemService(Context.AUDIO_SERVICE).to<AudioManager>() }
+
+    private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE).to<NotificationManager>() }
 
     private val sp by lazy { applicationContext.defaultSharedPreferences }
 
@@ -379,7 +399,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun onCreate() {
         super.onCreate()
-        playIndex = sp.getInt("play_index", 0)
+        playIndex = sp.getInt(SP_KEY_PLAY_INDEX, 0)
         playMode = sp.getInt("play_mode", MODE_ORDER)
         loadPlayList()
 
@@ -388,6 +408,13 @@ class MusicService : Service(), IPlayControllerListenerI,
         // 注册耳机断开广播
         val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         registerReceiver(headsetPlugReceiver, intentFilter)
+
+        // 注册通知点击广播
+        val notifyFilter = IntentFilter(ACTION_NOTIFICATION_LAST)
+        notifyFilter.addAction(ACTION_NOTIFICATION_NEXT)
+        notifyFilter.addAction(ACTION_NOTIFICATION_PAUSE)
+        notifyFilter.addAction(ACTION_NOTIFICATION_PLAY)
+        registerReceiver(notificationActionReceiver, notifyFilter)
     }
 
     /**
@@ -439,33 +466,145 @@ class MusicService : Service(), IPlayControllerListenerI,
             }
 
             override fun onCompletion() {
-                next()// 播放下一曲
+                next()// 播放下一曲，单曲循环时不会回调这里
             }
         })
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
     }
 
     private var binder: MusicBinder? = null
 
     override fun onBind(intent: Intent?): IBinder {
+        stopForeground(false)
         binder = MusicBinder(this)
         return binder!!
     }
 
+    override fun onRebind(intent: Intent?) {
+        super.onRebind(intent)
+        stopForeground(false)
+    }
+
     override fun onUnbind(intent: Intent?): Boolean {
         savePlayList()
-        return super.onUnbind(intent)
+        startForeground(PLAY_NOTIFICATION_ID, createNotification())
+        return false
+    }
+
+    private val notificationActionReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_NOTIFICATION_PLAY -> {
+                    start()
+                }
+                ACTION_NOTIFICATION_PAUSE -> {
+                    pause()
+                }
+                ACTION_NOTIFICATION_LAST -> {
+                    last()
+                }
+                ACTION_NOTIFICATION_NEXT -> {
+                    next()
+                }
+            }
+        }
+    }
+
+    private fun createNotification(): Notification {
+        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            var channel = notificationManager.getNotificationChannel(PLAY_NOTIFICATION_CHANNEL)
+            if (channel == null) {
+                channel = NotificationChannel(PLAY_NOTIFICATION_CHANNEL,
+                        getString(R.string.play_notification_name),
+                        NotificationManager.IMPORTANCE_LOW)
+                channel.setShowBadge(false)
+                notificationManager.createNotificationChannel(channel)
+            }
+            NotificationCompat.Builder(this, PLAY_NOTIFICATION_CHANNEL)
+        } else {
+            NotificationCompat.Builder(this)
+        }
+        val song = playList[playIndex]
+
+        val mediaStyle = android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(1, 2)
+        builder.setContentTitle(song.getName())
+                .setContentText(song.title)
+                .setChannelId(PLAY_NOTIFICATION_CHANNEL)// channel Id 兼容8.0+
+                .setSmallIcon(R.drawable.ic_notify_music_1)// 通知栏图标
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)// 完全可见通知
+                .setAutoCancel(false)// 点击不清楚
+                .setOngoing(musicPlayer.isPlaying)// 播放状态不可清除
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)// 关闭桌面图标角标
+                .setPriority(NotificationCompat.PRIORITY_LOW)// 优先级
+                .setCategory(NotificationCompat.CATEGORY_TRANSPORT)// 播放控制类型，好像没有什么用
+        builder.setUsesChronometer(true)
+                .setStyle(mediaStyle)
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+
+        addNotificationAction(builder)
+
+        val click = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 1, click, PendingIntent.FLAG_ONE_SHOT)
+        builder.setContentIntent(pendingIntent)// 内容点击intent
+
+        if (song is SearchSong) {
+//            val bitmap = GlideApp.with(this)
+//                    .asBitmap()
+//                    .load(song.pic)
+//                    .onlyRetrieveFromCache(true)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .submit()
+//                    .get()
+//            if (bitmap != null) {
+//                builder.setLargeIcon(bitmap)
+//                return builder.build()
+//            }
+
+            GlideApp.with(this)
+                    .asBitmap()
+                    .load(song.pic)
+                    .error(R.mipmap.ic_launcher)
+                    .into(object : SimpleTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            info(resource.toString())
+                            notificationManager.notify(PLAY_NOTIFICATION_ID,
+                                    builder.setLargeIcon(resource)
+                                            .build())
+                        }
+                    })
+        }
+        return builder.build()
+    }
+
+    private fun addNotificationAction(builder: NotificationCompat.Builder) {
+        val intent = Intent(ACTION_NOTIFICATION_LAST)
+        intent.setPackage(this.packageName)
+        var pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        builder.addAction(R.drawable.ic_play_last, getString(R.string.notify_last), pendingIntent)
+
+        if (musicPlayer.isPlaying) {
+            intent.action = ACTION_NOTIFICATION_PAUSE
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            builder.addAction(R.drawable.ic_play_status, getString(R.string.notify_pause), pendingIntent)
+        } else {
+            intent.action = ACTION_NOTIFICATION_PLAY
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            builder.addAction(R.drawable.ic_pause_status, getString(R.string.notify_play), pendingIntent)
+        }
+        intent.action = ACTION_NOTIFICATION_NEXT
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        builder.addAction(R.drawable.ic_play_next, getString(R.string.notify_next), pendingIntent)
     }
 
 
     override fun onDestroy() {
+        stopForeground(true)
         unregisterReceiver(headsetPlugReceiver)
+        unregisterReceiver(notificationActionReceiver)
         musicPlayer.release()
         releaseAudioFocus()
-        sp.edit().putInt("play_index", playIndex).apply()
+        sp.edit().putInt(SP_KEY_PLAY_INDEX, playIndex).apply()
 
         super.onDestroy()
     }
@@ -474,7 +613,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     private fun savePlayList() {
         doAsync({ it.printStackTrace() }) {
-            playList.save(File(filesDir, "play_list"))
+            playList.save(File(filesDir, SP_KEY_PLAY_LIST))
         }
     }
 
@@ -482,7 +621,7 @@ class MusicService : Service(), IPlayControllerListenerI,
         doAsync({
             it.printStackTrace()
         }) {
-            val list = File(filesDir, "play_list").load<List<BaseSong>>()
+            val list = File(filesDir, SP_KEY_PLAY_LIST).load<List<BaseSong>>()
             if (list != null && list.isNotEmpty()) {
                 uiThread {
                     playList.clear()

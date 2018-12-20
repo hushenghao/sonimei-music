@@ -33,7 +33,7 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
     private var velocityTracker: VelocityTracker? = null
 
 
-    override fun onInterceptTouchEvent(parent: CoordinatorLayout?, child: T, event: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: T, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
         }
@@ -56,7 +56,7 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
 
     var onYVelocityChangeListener: OnYVelocityChangeListener? = null
 
-    override fun onTouchEvent(parent: CoordinatorLayout?, child: T, event: MotionEvent): Boolean {
+    override fun onTouchEvent(parent: CoordinatorLayout, child: T, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
         }
