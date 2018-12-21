@@ -13,7 +13,7 @@ class MusicBinder(private val service: MusicService) : Binder(), IPlayController
      * 读取播放列表完成的回调
      */
     interface OnLoadPlayListFinishListener {
-        fun onFinish()
+        fun onLoadFinish()
     }
 
     var onLoadPlayListFinishListener: OnLoadPlayListFinishListener? = null

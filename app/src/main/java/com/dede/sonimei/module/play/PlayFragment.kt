@@ -37,7 +37,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
  * Created by hsh on 2018/5/23.
  */
 class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeListener,
-        ServiceConnection, PlayListDialog.Callback {
+        ServiceConnection, PlayListDialog.Callback, MusicBinder.OnLoadPlayListFinishListener {
 
     private val updateDelay = 200L// 进度更新间隔
 
@@ -234,14 +234,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         if (musicBinder == null) return
 
         // 未播放状态，读取播放列表
-        musicBinder!!.onLoadPlayListFinishListener = object : MusicBinder.OnLoadPlayListFinishListener {
-            override fun onFinish() {
-                musicBinder?.onLoadPlayListFinishListener = null
-                onDataSourceChange()
-                iv_play.isClickable = true
-                iv_play_bottom.isClickable = true
-            }
-        }
+        musicBinder!!.onLoadPlayListFinishListener = this
         musicBinder!!.addOnPlayStateChangeListener(this@PlayFragment)
 
         if (musicBinder!!.isPlaying) {
@@ -249,13 +242,21 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             onPlayStart(musicBinder!!.getPlayer())
         } else {
             if (musicBinder!!.getPlayList().isNotEmpty()) {
-                onDataSourceChange()
-                iv_play.isClickable = true
-                iv_play_bottom.isClickable = true
+                onLoadFinish()// 列表不为空说明绑定服务成功之前已经加载完成
             }
         }
         val mode = musicBinder!!.getPlayMode()
         iv_play_mode.setImageResource(getPlayModeDrawRes(mode))
+    }
+
+    /**
+     * 播放列表加载完成
+     */
+    override fun onLoadFinish() {
+        musicBinder?.onLoadPlayListFinishListener = null
+        onDataSourceChange()
+        iv_play.isClickable = true
+        iv_play_bottom.isClickable = true
     }
 
     /**

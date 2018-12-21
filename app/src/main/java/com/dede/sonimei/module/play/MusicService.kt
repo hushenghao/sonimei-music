@@ -188,6 +188,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun pause() {
         musicPlayer.pause()
+        stopForeground(false)
         notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
     }
 
@@ -418,6 +419,13 @@ class MusicService : Service(), IPlayControllerListenerI,
     }
 
     /**
+     * 加载播放列表完成
+     */
+    private fun loadPlayListFinish() {
+        binder?.onLoadPlayListFinishListener?.onLoadFinish()
+    }
+
+    /**
      * 接收耳机断开广播，包括蓝牙
      */
     private val headsetPlugReceiver = object : BroadcastReceiver() {
@@ -540,7 +548,6 @@ class MusicService : Service(), IPlayControllerListenerI,
                 .setCategory(NotificationCompat.CATEGORY_TRANSPORT)// 播放控制类型，好像没有什么用
         builder.setUsesChronometer(true)
                 .setStyle(mediaStyle)
-                .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
 
         addNotificationAction(builder)
 
@@ -549,18 +556,6 @@ class MusicService : Service(), IPlayControllerListenerI,
         builder.setContentIntent(pendingIntent)// 内容点击intent
 
         if (song is SearchSong) {
-//            val bitmap = GlideApp.with(this)
-//                    .asBitmap()
-//                    .load(song.pic)
-//                    .onlyRetrieveFromCache(true)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                    .submit()
-//                    .get()
-//            if (bitmap != null) {
-//                builder.setLargeIcon(bitmap)
-//                return builder.build()
-//            }
-
             GlideApp.with(this)
                     .asBitmap()
                     .load(song.pic)
@@ -573,6 +568,8 @@ class MusicService : Service(), IPlayControllerListenerI,
                                             .build())
                         }
                     })
+        } else {
+            builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
         }
         return builder.build()
     }
@@ -630,7 +627,7 @@ class MusicService : Service(), IPlayControllerListenerI,
                     if (this@MusicService.playIndex >= size) {
                         this@MusicService.playIndex = size - 1
                     }
-                    binder?.onLoadPlayListFinishListener?.onFinish()
+                    loadPlayListFinish()
                 }
             }
         }
