@@ -61,11 +61,7 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
             val playing = helper!!.layoutPosition == index
             helper.setGone(R.id.iv_playing, playing)
                     .setText(R.id.tv_content, item?.getName())
-                    .setTextColor(R.id.tv_content,
-                            if (playing)
-                                context.color(R.color.text1)
-                            else
-                                context.color(R.color.text2))
+                    .setTextColor(R.id.tv_content, context.color(R.color.text1))
                     .addOnClickListener(R.id.iv_delete)
         }
     }

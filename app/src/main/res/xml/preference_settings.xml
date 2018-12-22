@@ -26,13 +26,11 @@
     <PreferenceCategory android:title="@string/setting_group_other">
 
         <Preference
-            android:key="qq_group"
-            android:summary="@string/qq_group"
-            android:title="@string/setting_other_qqgroup" />
+            android:key="bug_report"
+            android:title="@string/setting_other_debug_sum" />
 
         <Preference
-            android:key="bug_report"
-            android:summary="@string/setting_other_debug_sum"
-            android:title="@string/setting_other_debug_title" />
+            android:key="qq_group"
+            android:title="@string/menu_about" />
     </PreferenceCategory>
 </PreferenceScreen>

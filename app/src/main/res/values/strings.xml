@@ -5,11 +5,19 @@
     <string name="select_source_label">选择搜索来源</string>
 
     <string name="about_author">作者：de得得de</string>
-    <string name="about_github">Github：https://github.com/hushenghao/music/</string>
-    <string name="about_group">加入QQ群：296513604</string>
+    <string name="about_github">
+        Github&lt;br/&gt;
+        &lt;a href=&quot;https://github.com/hushenghao/music&quot;&gt;https://github.com/hushenghao/music&lt;/a&gt;
+    </string>
+    <string name="about_group">
+        🐧🐧群&lt;br/&gt;
+        &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=58sVWJP&quot;&gt;296513604&lt;/a&gt;&lt;br/&gt;
+        &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=5liAgW0&quot;&gt;451745602&lt;/a&gt;
+    </string>
     <string name="qq_group">296513604</string>
     <string name="about_version">版本：%1$s(%2$d)</string>
     <string name="about_market">喜欢，给个好评</string>
+    <string name="about_msg">本项目仅供学习交流，禁止用于任何商业用途！</string>
 
     <string name="net_error">网络开小差儿！</string>
 
@@ -77,9 +85,7 @@
     <string name="setting_down_wifionly">仅在Wi-Fi下下载</string>
     <string name="setting_down_path">自定义下载路径</string>
     <string name="setting_group_other">其他</string>
-    <string name="setting_other_qqgroup">加入QQ群</string>
-    <string name="setting_other_debug_sum">如有bug，欢迎反馈</string>
-    <string name="setting_other_debug_title">正在开发中…</string>
+    <string name="setting_other_debug_sum">意见反馈</string>
 
     <string name="download_sd_error">读写SD卡权限被拒绝</string>
     <string name="download_file_downed">文件已经下载过了…</string>
@@ -132,4 +138,8 @@
     <string name="notify_next">下一首</string>
     <string name="notify_play">播放</string>
     <string name="notify_pause">暂停</string>
+
+    <!-- %[index$][标识][最少宽度][.精度]转换方式 -->
+    <string name="toast_play_steep">%1$-2.1f倍速度播放</string>
+    <string name="play_steep">%1$-2.1fx</string>
 </resources>

@@ -16,10 +16,6 @@ object ScreenHelper {
      * 获取应用显示区域的顶部到屏幕顶部的距离，可以用来简单的适配齐刘海机型
      */
     fun getFrameTopMargin(activity: Activity?): Int {
-        if (frame.top > 0) {
-            return frame.top
-        }
-
         if (activity == null) {
             return frame.top
         }

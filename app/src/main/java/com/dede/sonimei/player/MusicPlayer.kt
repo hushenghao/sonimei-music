@@ -123,6 +123,11 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
     }
 
+    fun canPlay():Boolean {
+        return state == STATE_PAUSED || state == STATE_PREPARING ||
+                state == STATE_STARTED || state == STATE_PREPARED
+    }
+
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
         try {
             super.setVolume(leftVolume, rightVolume)

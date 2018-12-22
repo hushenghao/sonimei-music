@@ -1,22 +1,19 @@
 package com.dede.sonimei.module.play
 
 import android.os.Binder
+import android.os.Build
+import android.support.annotation.RequiresApi
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.player.MusicPlayer
 
 /**
  * Created by hsh on 2018/8/6.
  */
-class MusicBinder(private val service: MusicService) : Binder(), IPlayControllerListenerI {
+class MusicBinder(private val service: MusicService) : Binder(), IPlayControllerListenerI, ILoadPlayList {
 
-    /**
-     * 读取播放列表完成的回调
-     */
-    interface OnLoadPlayListFinishListener {
-        fun onLoadFinish()
+    override fun setLoadPlayListListener(loadPlayListListener: ILoadPlayList.OnLoadPlayListListener?) {
+        service.setLoadPlayListListener(loadPlayListListener)
     }
-
-    var onLoadPlayListFinishListener: OnLoadPlayListFinishListener? = null
 
     override fun getPlayIndex(): Int {
         return service.getPlayIndex()
@@ -105,6 +102,11 @@ class MusicBinder(private val service: MusicService) : Binder(), IPlayController
 
     override fun last() {
         service.last()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun sheep(sheep: Float): Float {
+        return service.sheep(sheep)
     }
 
     override fun addOnPlayStateChangeListener(listener: MusicPlayer.OnPlayStateChangeListener?) {

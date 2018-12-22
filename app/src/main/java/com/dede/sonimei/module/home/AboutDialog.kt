@@ -5,16 +5,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.support.v7.app.AlertDialog
-import android.text.Spannable
-import android.text.SpannableString
+import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import com.dede.sonimei.GITHUB_LINK
-import com.dede.sonimei.GROUP_LINK
 import com.dede.sonimei.R
-import com.dede.sonimei.component.LinkTagClickableSpan
 
 /**
  * Created by hsh on 2018/6/28.
@@ -47,18 +43,12 @@ class AboutDialog(context: Context) {
         }
 
         val tvGithub = view.findViewById<TextView>(R.id.tv_github)
-        tvGithub.tag = GITHUB_LINK
-        val github = SpannableString(tvGithub.text)
-        github.setSpan(LinkTagClickableSpan(), 7, github.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         tvGithub.movementMethod = LinkMovementMethod.getInstance()
-        tvGithub.text = github
+        tvGithub.text = Html.fromHtml(context.getString(R.string.about_github))
 
         val tvQQGroup = view.findViewById<TextView>(R.id.tv_group)
-        tvQQGroup.tag = GROUP_LINK
-        val qqGroup = SpannableString(tvQQGroup.text)
-        qqGroup.setSpan(LinkTagClickableSpan(false), 6, qqGroup.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         tvQQGroup.movementMethod = LinkMovementMethod.getInstance()
-        tvQQGroup.text = qqGroup
+        tvQQGroup.text = Html.fromHtml(context.getString(R.string.about_group))
 
         return view
     }

@@ -2,6 +2,8 @@ package com.dede.sonimei.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
@@ -66,7 +68,10 @@ object ImageUtil {
     }
 
     fun getPlayBitmap(context: Context, source: Bitmap): Bitmap {
-        return ImageUtil.rsBlur(context, ImageUtil.getScreenScaleBitmap(source, context), 15, .8f)
+        val rsBlur = ImageUtil.rsBlur(context, ImageUtil.getScreenScaleBitmap(source, context), 15, .8f)
+        val canvas = Canvas(rsBlur)
+        canvas.drawColor(0x55000000)// 画个颜色，防止部分图片颜色较浅使文字不明显
+        return rsBlur
     }
 
     /**

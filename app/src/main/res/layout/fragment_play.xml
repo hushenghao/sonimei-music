@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -26,7 +25,7 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
                 android:textColor="@color/white"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="不要说话" />
 
@@ -39,21 +38,8 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/play_icon_tint"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:text="陈奕迅" />
-
-            <ImageView
-                android:id="@+id/iv_download"
-                android:layout_width="26dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:adjustViewBounds="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_music_download"
-                android:tint="@color/play_icon_tint"
-                android:visibility="gone"
-                tools:visibility="visible" />
 
         </RelativeLayout>
 
@@ -61,6 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -80,22 +67,12 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <!--和父View有滑动冲突，内部重写了onTouchEvent方法-->
-        <com.dede.sonimei.component.MyLrcView
-            android:id="@+id/lrc_view"
+        <fragment
+            android:id="@+id/fragment_play_content"
+            android:name="com.dede.sonimei.module.play.PlayContentFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            app:lrcAnimationDuration="220"
-            app:lrcCurrentTextColor="@color/white"
-            app:lrcDividerHeight="20dp"
-            app:lrcLabel="@string/no_lrc"
-            app:lrcNormalTextColor="#b5b5b5"
-            app:lrcPadding="20dp"
-            app:lrcTextSize="15sp"
-            app:lrcTimeTextSize="12sp" />
+            android:layout_weight="1" />
 
         <LinearLayout
             android:layout_width="match_parent"

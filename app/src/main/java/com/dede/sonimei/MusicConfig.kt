@@ -103,3 +103,16 @@ fun searchType(searchType: String): String {
 
 /** 默认下载路径 */
 val defaultDownloadPath: File by lazy { File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei") }
+
+const val defaultSheepIndex = 2
+const val defaultSheep = 1f
+
+/**
+ * 播放速度集合
+ */
+val sheepList = arrayListOf(
+        0.5f,
+        1f,
+        1.5f,
+        2f
+)

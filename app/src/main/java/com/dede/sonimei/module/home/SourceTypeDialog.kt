@@ -124,11 +124,10 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
             textView.text = item?.name
             if (helper.layoutPosition - this.headerLayoutCount == selectPosition) {
                 helper.getView<ImageView>(R.id.iv_done).show()
-                textView.setTextColor(context.color(R.color.text1))
             } else {
                 helper.getView<ImageView>(R.id.iv_done).hide()
-                textView.setTextColor(context.color(R.color.text2))
             }
+            textView.setTextColor(context.color(R.color.text1))
         }
     }
 }

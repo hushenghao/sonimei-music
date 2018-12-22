@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--和父View有滑动冲突，内部重写了onTouchEvent方法-->
+    <com.dede.sonimei.component.MyLrcView
+        android:id="@+id/lrc_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="5dp"
+        app:lrcAnimationDuration="220"
+        app:lrcCurrentTextColor="@color/white"
+        app:lrcDividerHeight="22dp"
+        app:lrcLabel="@string/no_lrc"
+        app:lrcNormalTextColor="@color/play_text2"
+        app:lrcPadding="20dp"
+        app:lrcTextSize="16sp"
+        app:lrcTimeTextSize="11sp" />
+
+    <ImageView
+        android:id="@+id/iv_close_sheet_1"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="30dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/play_icon_tint" />
+</FrameLayout>

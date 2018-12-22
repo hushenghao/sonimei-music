@@ -14,6 +14,7 @@ import android.preference.PreferenceFragment
 import android.support.v7.app.AlertDialog
 import com.dede.sonimei.*
 import com.dede.sonimei.data.Source
+import com.dede.sonimei.module.home.AboutDialog
 import com.dede.sonimei.util.extends.isNull
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.*
@@ -71,9 +72,7 @@ class Settings : PreferenceFragment(),
                 true
             }
             KEY_QQ_GROUP -> {
-                startActivity(Intent.createChooser(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(GROUP_LINK)),
-                        getString(R.string.chooser_browser)))
+                AboutDialog(activity).show()
                 true
             }
             else -> false
@@ -125,7 +124,6 @@ class Settings : PreferenceFragment(),
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             KEY_WIFI_DOWNLOAD -> {
-
             }
             KEY_CUSTOM_PATH -> {
                 findPreference(KEY_CUSTOM_PATH).summary = defaultSharedPreferences

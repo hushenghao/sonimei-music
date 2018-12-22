@@ -1,5 +1,6 @@
 package com.dede.sonimei.module.search.netresult
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import com.dede.sonimei.*
 import com.dede.sonimei.data.BaseData
@@ -78,6 +79,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
         loadList(true, this.search)
     }
 
+    @SuppressLint("CheckResult")
     private fun loadList(isLoadMore: Boolean, search: String) {
         HttpUtil.Builder()
                 .header("X-Requested-With", "XMLHttpRequest")

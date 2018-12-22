@@ -7,18 +7,22 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
+import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
+import android.support.v7.graphics.Palette
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.defaultSheep
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
@@ -43,7 +47,7 @@ private const val SP_KEY_PLAY_LIST = "play_list"
 /**
  * Created by hsh on 2018/8/2.
  */
-class MusicService : Service(), IPlayControllerListenerI,
+class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         AudioManager.OnAudioFocusChangeListener, AnkoLogger {
 
     /** implement [IPlayControllerListenerI] */
@@ -179,6 +183,9 @@ class MusicService : Service(), IPlayControllerListenerI,
         requestAudioFocus()
 
         if (musicPlayer.state == STATE_PREPARED || musicPlayer.state == STATE_PAUSED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                musicPlayer.playbackParams = musicPlayer.playbackParams.setSpeed(playSpeed)
+            }
             musicPlayer.start()
             notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
         } else {
@@ -264,6 +271,18 @@ class MusicService : Service(), IPlayControllerListenerI,
         }
 
         play(path!!)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun sheep(sheep: Float): Float {
+        if (sheep <= 0) {// 小于0说明是get方法
+            return playSpeed
+        }
+        this.playSpeed = sheep
+        if (musicPlayer.isPlaying) {
+            musicPlayer.playbackParams = musicPlayer.playbackParams.setSpeed(sheep)
+        }
+        return this.playSpeed
     }
 
     override fun getPlayInfo(): BaseSong? {
@@ -402,7 +421,6 @@ class MusicService : Service(), IPlayControllerListenerI,
         super.onCreate()
         playIndex = sp.getInt(SP_KEY_PLAY_INDEX, 0)
         playMode = sp.getInt("play_mode", MODE_ORDER)
-        loadPlayList()
 
         initMusicPlayer()
 
@@ -422,7 +440,7 @@ class MusicService : Service(), IPlayControllerListenerI,
      * 加载播放列表完成
      */
     private fun loadPlayListFinish() {
-        binder?.onLoadPlayListFinishListener?.onLoadFinish()
+        loadPlayListListener?.onLoadFinish()
     }
 
     /**
@@ -438,6 +456,9 @@ class MusicService : Service(), IPlayControllerListenerI,
             }
         }
     }
+
+    // 播放速度
+    private var playSpeed = defaultSheep
 
     /**
      * 初始化MediaPlayer
@@ -493,8 +514,12 @@ class MusicService : Service(), IPlayControllerListenerI,
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
+        loadPlayListListener = null
         savePlayList()
-        startForeground(PLAY_NOTIFICATION_ID, createNotification())
+        if (musicPlayer.isPlaying) {
+            // 如果不是可播放状态就不显示通知
+            startForeground(PLAY_NOTIFICATION_ID, createNotification())
+        }
         return false
     }
 
@@ -552,7 +577,8 @@ class MusicService : Service(), IPlayControllerListenerI,
         addNotificationAction(builder)
 
         val click = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 1, click, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getActivity(this, 1,
+                click, PendingIntent.FLAG_UPDATE_CURRENT)
         builder.setContentIntent(pendingIntent)// 内容点击intent
 
         if (song is SearchSong) {
@@ -562,15 +588,21 @@ class MusicService : Service(), IPlayControllerListenerI,
                     .error(R.mipmap.ic_launcher)
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                            info(resource.toString())
-                            notificationManager.notify(PLAY_NOTIFICATION_ID,
-                                    builder.setLargeIcon(resource)
-                                            .build())
+                            // 获取图片主色调
+                            Palette.from(resource).generate {
+                                notificationManager.notify(PLAY_NOTIFICATION_ID,
+                                        builder.setLargeIcon(resource)
+                                                .setColor(it?.mutedSwatch?.rgb ?: Color.WHITE)
+                                                .setColorized(true)
+                                                .build())
+                            }
                         }
                     })
         } else {
-            builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+            builder.setColor(-5205824)
+                    .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
         }
+        builder.setColorized(true)
         return builder.build()
     }
 
@@ -597,6 +629,7 @@ class MusicService : Service(), IPlayControllerListenerI,
 
     override fun onDestroy() {
         stopForeground(true)
+        notificationManager.cancel(PLAY_NOTIFICATION_ID)
         unregisterReceiver(headsetPlugReceiver)
         unregisterReceiver(notificationActionReceiver)
         musicPlayer.release()
@@ -614,7 +647,14 @@ class MusicService : Service(), IPlayControllerListenerI,
         }
     }
 
-    private fun loadPlayList() {
+    private var loadPlayListListener: ILoadPlayList.OnLoadPlayListListener? = null
+
+    override fun setLoadPlayListListener(loadPlayListListener: ILoadPlayList.OnLoadPlayListListener?) {
+        this.loadPlayListListener = loadPlayListListener
+        if (playList.isNotEmpty()) {
+            loadPlayListFinish()
+            return
+        }
         doAsync({
             it.printStackTrace()
         }) {

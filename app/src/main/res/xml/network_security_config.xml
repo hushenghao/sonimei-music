@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Android P & targetVersion=28+ ,禁用了明文网络请求,在这里允许http非加密请求 -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

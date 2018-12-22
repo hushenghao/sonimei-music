@@ -1,5 +1,7 @@
 package com.dede.sonimei.module.play
 
+import android.os.Build
+import android.support.annotation.RequiresApi
 import com.dede.sonimei.data.BaseSong
 
 /**
@@ -64,6 +66,12 @@ interface IPlayControllerListenerI : IReviseOnPlayStateChangeListener {
      * 上一首
      */
     fun last()
+
+    /**
+     * 播放速度get set方法，传null就是get方法
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun sheep(sheep: Float = -1f): Float
 
     /**
      * 修改列表播放模式，循序播放，单曲循环，随机播放

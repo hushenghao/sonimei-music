@@ -32,7 +32,7 @@
     </style>
 
     <!--底部播放控件高度-->
-    <dimen name="dimen_bottom_play_controller_height">55dp</dimen>
+    <dimen name="dimen_bottom_play_controller_height">58dp</dimen>
 
     <style name="volumeSeekBar" parent="Widget.AppCompat.SeekBar">
         <item name="android:thumb">@drawable/shape_volume_seek_thumb</item>

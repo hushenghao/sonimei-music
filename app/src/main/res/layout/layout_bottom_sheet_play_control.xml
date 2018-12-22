@@ -11,9 +11,9 @@
 
     <ImageView
         android:id="@+id/iv_album_img"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="15dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="13dp"
         android:layout_marginRight="10dp" />
 
     <LinearLayout

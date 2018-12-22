@@ -94,9 +94,11 @@ public class LrcView extends View {
         init(attrs);
     }
 
+    private float lrcTextSize;
+
     private void init(AttributeSet attrs) {
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LrcView);
-        float lrcTextSize = ta.getDimension(R.styleable.LrcView_lrcTextSize, getResources().getDimension(R.dimen.lrc_text_size));
+        lrcTextSize = ta.getDimension(R.styleable.LrcView_lrcTextSize, getResources().getDimension(R.dimen.lrc_text_size));
         mDividerHeight = ta.getDimension(R.styleable.LrcView_lrcDividerHeight, getResources().getDimension(R.dimen.lrc_divider_height));
         int defDuration = getResources().getInteger(R.integer.lrc_animation_duration);
         mAnimationDuration = ta.getInt(R.styleable.LrcView_lrcAnimationDuration, defDuration);
@@ -347,10 +349,13 @@ public class LrcView extends View {
             }
             if (i == mCurrentLine) {
                 mLrcPaint.setColor(mCurrentTextColor);
+                mLrcPaint.setTextSize(lrcTextSize + lrcTextSize * .1f);
             } else if (isShowTimeline && i == centerLine) {
                 mLrcPaint.setColor(mTimelineTextColor);
+                mLrcPaint.setTextSize(lrcTextSize);
             } else {
                 mLrcPaint.setColor(mNormalTextColor);
+                mLrcPaint.setTextSize(lrcTextSize);
             }
             drawText(canvas, mLrcEntryList.get(i).getStaticLayout(), y);
         }
@@ -538,6 +543,11 @@ public class LrcView extends View {
         if (mAnimator != null && mAnimator.isRunning()) {
             mAnimator.end();
         }
+    }
+
+    public String findLine(long time) {
+        if (!hasLrc()) return null;
+        return mLrcEntryList.get(findShowLine(time)).getText();
     }
 
     /**

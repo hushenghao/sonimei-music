@@ -3,10 +3,8 @@ package com.dede.sonimei.module.setting
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.RadioButton
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
-import com.dede.sonimei.NETEASE
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.data.Source
@@ -30,7 +28,7 @@ class SelectSourceActivity : BaseActivity() {
             override fun convert(helper: BaseViewHolder?, item: Source?) {
                 val s = item?.source == selected
                 helper!!.setText(R.id.tv_source, item?.name)
-                        .setTextColor(R.id.tv_source, if (s) color(R.color.text1) else color(R.color.text2))
+                        .setTextColor(R.id.tv_source, color(R.color.text1))
                         .setVisible(R.id.iv_done, s)
             }
         }

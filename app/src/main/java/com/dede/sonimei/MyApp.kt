@@ -1,10 +1,21 @@
 package com.dede.sonimei
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
+import android.view.View
 import android.view.ViewConfiguration
+import android.view.WindowManager
+import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.HttpUtil
 import com.squareup.leakcanary.LeakCanary
-import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.bugly.Bugly
+import com.tencent.bugly.BuglyStrategy
+import com.tencent.bugly.beta.Beta
+import com.tencent.bugly.beta.UpgradeInfo
+import com.tencent.bugly.beta.ui.UILifecycleListener
 
 
 /**
@@ -21,15 +32,60 @@ class MyApp : Application() {
             LeakCanary.install(this)
         }
 
-        if (!BuildConfig.DEBUG)
-            CrashHandler.init(this)
+        if (!BuildConfig.DEBUG) CrashHandler.init(this)
 
-        // 除了开发渠道以外
-        if ("dev" != BuildConfig.FLAVOR) {
-            // bugly 第三个参数调试开关
-            CrashReport.initCrashReport(applicationContext, BuildConfig.BUGLY_APPID, BuildConfig.DEBUG)
-        }
+        initBugly()
+
         HttpUtil.init(this)
+    }
+
+    private fun initBugly() {
+        // 除了开发渠道以外都开启Bugly
+        if ("dev" == BuildConfig.FLAVOR) return
+
+        Beta.largeIconId = R.mipmap.ic_launcher
+        Beta.smallIconId = R.mipmap.ic_launcher
+        Beta.enableNotification = true
+        Beta.defaultBannerId = R.mipmap.ic_launcher
+        Beta.autoCheckUpgrade = true
+        Beta.canShowUpgradeActs.add(MainActivity::class.java)
+        Beta.enableHotfix = false
+        Beta.autoDownloadOnWifi = true
+        Beta.upgradeDialogLayoutId = R.layout.dialog_update_layout
+        Beta.upgradeDialogLifecycleListener = object : UILifecycleListener<UpgradeInfo> {
+            override fun onCreate(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+                val activity = p0 as? Activity ?: return
+                // 透明状态栏
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    activity.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    activity.window.statusBarColor = Color.TRANSPARENT
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    activity.window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                }
+            }
+
+            override fun onResume(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+            }
+
+            override fun onPause(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+            }
+
+            override fun onStart(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+            }
+
+            override fun onStop(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+            }
+
+            override fun onDestroy(p0: Context?, p1: View?, p2: UpgradeInfo?) {
+            }
+        }
+
+        Bugly.init(applicationContext,
+                BuildConfig.BUGLY_APPID,
+                BuildConfig.DEBUG,
+                BuglyStrategy().setAppChannel(BuildConfig.CHANNEL))
     }
 
     /**

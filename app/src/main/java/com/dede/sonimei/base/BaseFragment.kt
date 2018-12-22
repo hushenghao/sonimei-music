@@ -1,7 +1,9 @@
 package com.dede.sonimei.base
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,27 +16,19 @@ import org.jetbrains.anko.info
  */
 abstract class BaseFragment : RxFragment(), AnkoLogger {
 
-    private var contentView: View? = null
-    private var viewFirstCreated = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         info("onCreate")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (contentView == null) {
-            viewFirstCreated = true
-            contentView = inflater.inflate(getLayoutId(), container, false)
-        } else {
-            viewFirstCreated = false
-            val parent = contentView!!.parent
-            if (parent != null) {
-                (parent as ViewGroup).removeView(contentView)
-            }
-        }
+        val layoutId = getLayoutId()
         info("onCreateView")
-        return contentView
+        return if (layoutId > 0) {
+            inflater.inflate(layoutId, container, false)
+        } else {
+            super.onCreateView(inflater, container, savedInstanceState)
+        }
     }
 
     @LayoutRes
@@ -43,10 +37,12 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         info("onViewCreated")
-        if (viewFirstCreated) {
-            info("initView")
-            initView(savedInstanceState)
-        }
+        info("initView")
+        initView(savedInstanceState)
+    }
+
+    fun <T : FragmentActivity> asActivity(): T {
+        return activity as T
     }
 
     open fun initView(savedInstanceState: Bundle?) {}

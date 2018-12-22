@@ -24,7 +24,6 @@ import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
@@ -44,6 +43,13 @@ class MainActivity : BaseActivity() {
     }
 
     override fun initView(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // 允许刘海区域绘制
+            window.attributes = window.attributes.apply {
+                layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // 全透明状态栏
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
@@ -72,6 +78,7 @@ class MainActivity : BaseActivity() {
         playBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             var lastOffset = 0f
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                playFragment.onBottomSheetSlideOffsetChange(slideOffset)
                 if (playBehavior.state == BottomSheetBehavior.STATE_SETTLING) {
                     if (lastOffset > slideOffset) {
                         caretDrawable.caretProgress = CaretDrawable.PROGRESS_CARET_POINTING_DOWN
@@ -81,13 +88,7 @@ class MainActivity : BaseActivity() {
                 }
                 lastOffset = slideOffset
 
-                bottom_sheet.open = if (slideOffset > 0.85f) {
-                    ll_bottom_play.hide()
-                    true
-                } else {
-                    ll_bottom_play.show()
-                    false
-                }
+                bottom_sheet.open = slideOffset > 0.85f
 
                 // 隐藏fragment 优化过度绘制
                 if (slideOffset >= 1f) {
@@ -95,10 +96,6 @@ class MainActivity : BaseActivity() {
                 } else {
                     fl_content.show()
                 }
-
-                var b = 1 - slideOffset * 2f
-                if (b < 0f) b = 0f
-                ll_bottom_play.alpha = b
             }
 
             @SuppressLint("RestrictedApi")
@@ -142,7 +139,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        ll_bottom_play.onClick {
+        ll_bottom_play.setOnClickListener {
             toggleBottomSheet()
         }
 

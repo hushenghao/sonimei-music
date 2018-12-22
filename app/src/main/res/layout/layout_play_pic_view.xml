@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_music"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@drawable/shape_play_pic_bg"
+        android:padding="5dp"
+        android:src="@drawable/ic_music"
+        app:layout_constraintBottom_toTopOf="@+id/iv_download"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".6"
+        app:layout_constraintWidth_percent=".7" />
+
+    <TextView
+        android:id="@+id/tv_music_content_lrc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:maxLines="1"
+        android:textColor="@color/play_text2"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_play_speed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_music"
+        tools:text="我是歌词" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="50dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="50dp" />
+
+    <TextView
+        android:id="@+id/tv_play_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_play_speed_tv_bg"
+        android:includeFontPadding="false"
+        android:textColor="@color/play_text2"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_play_lrc"
+        app:layout_constraintLeft_toLeftOf="@+id/line_left"
+        app:layout_constraintRight_toLeftOf="@+id/tv_play_lrc"
+        app:layout_constraintTop_toTopOf="@+id/tv_play_lrc"
+        tools:text="1x"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_play_lrc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_play_speed_tv_bg"
+        android:includeFontPadding="false"
+        android:text="词"
+        android:textColor="@color/play_text2"
+        android:textSize="13.5sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tv_play_speed"
+        app:layout_constraintRight_toLeftOf="@+id/iv_download"
+        app:layout_constraintTop_toBottomOf="@id/tv_music_content_lrc" />
+
+    <ImageView
+        android:id="@+id/iv_download"
+        android:layout_width="26dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_music_download"
+        android:tint="@color/play_icon_tint"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_play_lrc"
+        app:layout_constraintLeft_toRightOf="@id/tv_play_lrc"
+        app:layout_constraintRight_toLeftOf="@+id/iv_close_sheet_2"
+        app:layout_constraintTop_toTopOf="@id/tv_play_lrc"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_close_sheet_2"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_arrow_down"
+        android:tint="@color/play_icon_tint"
+        app:layout_constraintBottom_toBottomOf="@id/tv_play_lrc"
+        app:layout_constraintLeft_toRightOf="@id/iv_download"
+        app:layout_constraintRight_toRightOf="@id/line_right"
+        app:layout_constraintTop_toTopOf="@id/tv_play_lrc" />
+
+
+</android.support.constraint.ConstraintLayout>
