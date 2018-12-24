@@ -16,6 +16,8 @@ const val MODE_RANDOM = 2// 随机播放
 @IntDef(MODE_ORDER, MODE_SINGLE, MODE_RANDOM)
 annotation class PlayMode
 
+fun isPlayMode(@PlayMode mode:Int) = mode in MODE_ORDER..MODE_RANDOM
+
 /**
  * 获取播放模式对应的图片资源id
  */

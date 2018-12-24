@@ -134,10 +134,15 @@ class SearchResultResultFragment : BaseFragment(), ISearchResultView {
                             }
                         }
                         1 -> {
+                            if (activity != null && activity is MainActivity) {
+                                (activity as MainActivity).add2PlayList(song)
+                            }
+                        }
+                        2 -> {
                             DownloadHelper.download(activity, song)
                         }
-                        2 -> copy(song.link)
-                        3 -> copy(song.path)
+                        3 -> copy(song.link)
+                        4 -> copy(song.path)
                     }
                 }
                 .create()

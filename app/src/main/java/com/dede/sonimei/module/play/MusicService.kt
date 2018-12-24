@@ -43,6 +43,7 @@ private const val PLAY_NOTIFICATION_CHANNEL = "sonimei_music_channel"
 
 private const val SP_KEY_PLAY_INDEX = "play_index"
 private const val SP_KEY_PLAY_LIST = "play_list"
+private const val SP_KEY_PLAY_MODE = "play_mode"
 
 /**
  * Created by hsh on 2018/8/2.
@@ -135,25 +136,17 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             savePlayList()
         }
 
-        if (index > 0 && index < this.playList.size) {
-            playIndex = index
+        playIndex = if (index in 0..this.playList.size) {
+            index
         } else {
-            playIndex = 0
+            0
         }
 
-        when (playMode) {
-            MODE_SINGLE, MODE_ORDER -> {
-                playIndex--// 在next中++后值不变
-                next()
-            }
-            MODE_RANDOM -> {
-                val song = this.playList[playIndex]
-                if (song.path.notNull()) {
-                    play(song.path!!)
-                } else {
-                    toast(R.string.play_path_empty)
-                }
-            }
+        val song = this.playList[playIndex]
+        if (song.path.notNull()) {
+            play(song.path!!)
+        } else {
+            toast(R.string.play_path_empty)
         }
     }
 
@@ -200,18 +193,19 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     }
 
     override fun next() {
-        var path: String? = null
         val size = playList.size
         if (size == 0) return
+        var path: String? = null
         if (size == 1) {
-            path = playList[0].path
+            playIndex = 0
+            if (musicPlayer.isPlaying) return
+            path = playList[playIndex].path
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
                     var i = playIndex
                     do {
-                        i++
-                        if (i >= size) {
+                        if (++i >= size) {
                             i = 0
                         }
                         path = playList[i].path
@@ -237,18 +231,19 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     }
 
     override fun last() {
-        var path: String? = null
         val size = playList.size
         if (size == 0) return
+        var path: String? = null
         if (size == 1) {
-            path = playList[0].path
+            playIndex = 0
+            if (musicPlayer.isPlaying) return
+            path = playList[playIndex].path
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
                     var i = playIndex
                     do {
-                        i--
-                        if (i < 0) {
+                        if (--i < 0) {
                             i = size - 1
                         }
                         path = playList[i].path
@@ -300,7 +295,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         toast(getPlayModeStrRes(this.playMode))
         musicPlayer.isLooping = this.playMode == MODE_SINGLE// 是否是单曲循环
 
-        sp.edit().putInt("play_mode", playMode).apply()
+        sp.edit().putInt(SP_KEY_PLAY_MODE, playMode).apply()
     }
 
     @PlayMode
@@ -420,7 +415,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     override fun onCreate() {
         super.onCreate()
         playIndex = sp.getInt(SP_KEY_PLAY_INDEX, 0)
-        playMode = sp.getInt("play_mode", MODE_ORDER)
+        if (playIndex < 0) playIndex = 0
+        playMode = sp.getInt(SP_KEY_PLAY_MODE, MODE_ORDER)
+        if (!isPlayMode(playMode)) playMode = MODE_ORDER
 
         initMusicPlayer()
 
@@ -440,6 +437,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
      * 加载播放列表完成
      */
     private fun loadPlayListFinish() {
+        val size = playList.size
+        if (playIndex >= size - 1) playIndex = size - 1
+
         loadPlayListListener?.onLoadFinish()
     }
 
@@ -478,7 +478,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     return@setOnErrorListener true
                 }
                 -38 -> {
-                    // getDuration error
+                    // getDuration error ,ignore
                     return@setOnErrorListener true
                 }
             }

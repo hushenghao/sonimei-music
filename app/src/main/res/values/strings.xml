@@ -104,10 +104,13 @@
     <string name="dialog_option">选项</string>
     <string-array name="dialog_items">
         <item>播放</item>
+        <item>添加到播放列表</item>
         <item>下载</item>
         <item>复制下载链接</item>
         <item>复制音乐链接</item>
     </string-array>
+
+    <string name="toast_has_in_list">已经添加过播放列表了</string>
 
     <string name="copy_empty">内容为空</string>
     <string name="copy_succ">已复制到剪切板</string>

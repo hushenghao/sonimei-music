@@ -30,8 +30,8 @@ import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
-import me.wcy.lrcview.LrcView
 import org.jetbrains.anko.support.v4.dip
+import org.jetbrains.anko.support.v4.toast
 
 
 /**
@@ -269,9 +269,17 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         musicBinder!!.plays(list, indexOf)
     }
 
-    fun playSongs(list: List<BaseSong>, index: Int) {
+    /**
+     * 添加到播放列表
+     */
+    fun add2PlayList(song: BaseSong) {
         if (musicBinder == null) return
-        musicBinder!!.plays(list, index)
+        val indexOf = musicBinder!!.getPlayList().indexOf(song)
+        if (indexOf >= 0) {
+            toast(R.string.toast_has_in_list)
+            return
+        }
+        musicBinder!!.add(song)
     }
 
     /**
@@ -367,6 +375,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     }
 
     override fun onPrepared(mp: MusicPlayer) {
+        // todo 关闭缓冲loading
     }
 
     override fun onDataSourceChange() {
@@ -381,6 +390,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
         val song = musicBinder?.getPlayInfo()
         if (song != null) {
+            // todo 显示缓冲loading
             tv_name.text = song.getName()
             tv_name.isSelected = true
             tv_lrc.gone()

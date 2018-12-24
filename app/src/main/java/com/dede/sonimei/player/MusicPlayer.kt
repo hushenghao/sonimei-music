@@ -2,7 +2,6 @@ package com.dede.sonimei.player
 
 import android.media.MediaPlayer
 import com.dede.sonimei.module.play.*
-import java.lang.IllegalStateException
 
 /**
  * Created by hsh on 2018/8/1.
@@ -10,6 +9,7 @@ import java.lang.IllegalStateException
 class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnErrorListener,
         IReviseOnPlayStateChangeListener {
 
     /**
@@ -20,6 +20,7 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
             val mediaPlayer = MusicPlayer()
 
             mediaPlayer.onPlayStateChangeListeners = this@MusicPlayer.onPlayStateChangeListeners
+            mediaPlayer.onErrorListener = this@MusicPlayer.onErrorListener
             mediaPlayer.isLooping = this@MusicPlayer.isLooping
 
             this@MusicPlayer.release()
@@ -29,7 +30,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
 
     fun getRecreateHelper() = RecreateHelper()
 
-    var onPlayStateChangeListeners = ArrayList<MusicPlayer.OnPlayStateChangeListener>()
+    private var onPlayStateChangeListeners = ArrayList<MusicPlayer.OnPlayStateChangeListener>()
+    private var onErrorListener: MediaPlayer.OnErrorListener? = null
 
     /**  ========= implement [IReviseOnPlayStateChangeListener] =========  */
 
@@ -56,6 +58,22 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         setOnCompletionListener(this)
         setOnBufferingUpdateListener(this)
         setOnPreparedListener(this)
+        super.setOnErrorListener(this)
+    }
+
+    /**
+     * 发生错误时回调 implement [MediaPlayer.OnErrorListener]
+     */
+    override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        val error = this.onErrorListener?.onError(mp, what, extra) ?: false
+        if (!error) {
+            state = STATE_ERROR
+        }
+        return error
+    }
+
+    override fun setOnErrorListener(listener: OnErrorListener?) {
+        this.onErrorListener = listener
     }
 
     override fun start() {
@@ -123,7 +141,7 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
     }
 
-    fun canPlay():Boolean {
+    fun canPlay(): Boolean {
         return state == STATE_PAUSED || state == STATE_PREPARING ||
                 state == STATE_STARTED || state == STATE_PREPARED
     }

@@ -184,6 +184,17 @@ class MainActivity : BaseActivity() {
         playFragment.playSongs(songs, song)
     }
 
+    fun add2PlayList(song: BaseSong?) {
+        if (song == null || song.path.isNull()) {
+            toast(R.string.play_path_empty)
+            return
+        }
+        playBehavior.isHideable = false
+        playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        playFragment.add2PlayList(song)
+    }
+
     fun toggleBottomSheet() {
         if (playBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
             playBehavior.state = BottomSheetBehavior.STATE_EXPANDED
