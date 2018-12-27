@@ -98,7 +98,7 @@
 
     <ImageView
         android:id="@+id/iv_close_sheet_2"
-        android:layout_width="25dp"
+        android:layout_width="23dp"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_arrow_down"

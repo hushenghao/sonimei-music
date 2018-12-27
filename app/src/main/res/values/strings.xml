@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">搜你妹</string>
-    <string name="music_service_name">搜你妹后台播放服务</string>
+    <string name="app_name">轻心搜</string>
+    <!--包含敏感词，还是改了吧-->
+    <string name="app_name_old">原：搜你妹</string>
+    <string name="music_service_name">轻心搜后台播放服务</string>
     <string name="setting_label">设置</string>
     <string name="select_source_label">选择搜索来源</string>
 
@@ -127,7 +129,7 @@
     <string name="play_list_count">共(%1$d)首</string>
 
     <string name="email">dede.hu@qq.com</string>
-    <string name="emile_theme">搜你妹问题反馈</string>
+    <string name="emile_theme">轻心搜问题反馈</string>
     <string name="email_text">输入您的建议、意见或者使用中的问题，如果反馈问题最好注明版本和复现步骤</string>
     <string name="email_chooser">发送反馈邮件</string>
     <string name="dialog_bug_report">是否将最近的应用日志作为附件发送</string>
