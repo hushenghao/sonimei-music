@@ -64,6 +64,7 @@ android {
         dev {}
         preview {}
         coolapk {}
+        wandoujia {}
     }
 
     productFlavors.all { flavor ->
