@@ -65,6 +65,7 @@ android {
         preview {}
         coolapk {}
         wandoujia {}
+        xiaomi {}
     }
 
     productFlavors.all { flavor ->
