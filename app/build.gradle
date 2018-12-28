@@ -65,7 +65,9 @@ android {
         preview {}
         coolapk {}
         wandoujia {}
-        xiaomi {}
+        xiaomi {
+            applicationId "com.dede.sonimei_mi"
+        }
     }
 
     productFlavors.all { flavor ->
