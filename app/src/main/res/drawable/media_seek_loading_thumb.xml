@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:innerRadius="1.3dp"
+            android:shape="ring"
+            android:thickness="6dp"
+            android:useLevel="false">
+            <solid android:color="@color/white" />
+            <size
+                android:width="15dp"
+                android:height="15dp" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/drawable_rotate"
+        android:gravity="center">
+        <animated-rotate
+            android:drawable="@drawable/ic_seek_thumb_loading"
+            android:fromDegrees="0"
+            android:pivotX="50.0%"
+            android:pivotY="50.0%"
+            android:toDegrees="360" />
+    </item>
+</layer-list>

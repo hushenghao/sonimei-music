@@ -1,7 +1,11 @@
 package com.dede.sonimei.player
 
 import android.media.MediaPlayer
+import android.support.annotation.IntRange
+import android.util.Log
 import com.dede.sonimei.module.play.*
+
+private const val TAG = "MusicPlayer"
 
 /**
  * Created by hsh on 2018/8/1.
@@ -10,6 +14,7 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener,
+        MediaPlayer.OnInfoListener,
         IReviseOnPlayStateChangeListener {
 
     /**
@@ -59,6 +64,33 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         setOnBufferingUpdateListener(this)
         setOnPreparedListener(this)
         super.setOnErrorListener(this)
+        setOnInfoListener(this)
+        setOnSeekCompleteListener {
+            Log.i(TAG, "OnSeekCompleteListener: ")
+        }
+    }
+
+    /**
+     * implement [MediaPlayer.OnInfoListener] 主要处理缓冲状态的loading状态
+     */
+    override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        return when (what) {
+            MEDIA_INFO_BUFFERING_START -> {
+                for (listener in onPlayStateChangeListeners) {
+                    listener.onBuffer(true)
+                }
+                true
+            }
+            MEDIA_INFO_BUFFERING_END -> {
+                for (listener in onPlayStateChangeListeners) {
+                    listener.onBuffer(false)
+                }
+                true
+            }
+            else -> {
+                false// 返回值没什么用 android-28
+            }
+        }
     }
 
     /**
@@ -82,8 +114,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
         state = STATE_STARTED
         super.start()
-        onPlayStateChangeListeners.forEach {
-            it.onPlayStart(this@MusicPlayer)
+        for (listener in onPlayStateChangeListeners) {
+            listener.onPlayStart(this@MusicPlayer)
         }
     }
 
@@ -94,8 +126,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
         state = STATE_STOPED
         super.stop()
-        onPlayStateChangeListeners.forEach {
-            it.onPlayStop()
+        for (listener in onPlayStateChangeListeners) {
+            listener.onPlayStop()
         }
     }
 
@@ -105,8 +137,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
         state = STATE_PAUSED
         super.pause()
-        onPlayStateChangeListeners.forEach {
-            it.onPlayPause()
+        for (listener in onPlayStateChangeListeners) {
+            listener.onPlayPause()
         }
     }
 
@@ -121,6 +153,9 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
             return
         }
         state = STATE_PREPARING
+        for (listener in onPlayStateChangeListeners) {
+            listener.onBuffer(true)
+        }
         super.prepareAsync()
     }
 
@@ -129,6 +164,9 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
             return
         }
         state = STATE_PREPARED
+        for (listener in onPlayStateChangeListeners) {
+            listener.onBuffer(false)
+        }
         super.prepare()
     }
 
@@ -139,11 +177,6 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         } else {
             super.isPlaying()
         }
-    }
-
-    fun canPlay(): Boolean {
-        return state == STATE_PAUSED || state == STATE_PREPARING ||
-                state == STATE_STARTED || state == STATE_PREPARED
     }
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
@@ -185,8 +218,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         }
         state = STATE_INITIALIZED
         super.setDataSource(path)
-        onPlayStateChangeListeners.forEach {
-            it.onDataSourceChange()
+        for (listener in onPlayStateChangeListeners) {
+            listener.onDataSourceChange()
         }
     }
 
@@ -195,8 +228,9 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
      */
     override fun onPrepared(mp: MediaPlayer?) {
         state = STATE_PREPARED
-        onPlayStateChangeListeners.forEach {
-            it.onPrepared(this@MusicPlayer)
+        for (listener in onPlayStateChangeListeners) {
+            listener.onPrepared(this@MusicPlayer)
+            listener.onBuffer(false)
         }
     }
 
@@ -206,8 +240,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
         if (percent >= 100)
             this.setOnBufferingUpdateListener(null)// 清除回调，到100还会不停回调
-        onPlayStateChangeListeners.forEach {
-            it.onBufferUpdate(percent)
+        for (listener in onPlayStateChangeListeners) {
+            listener.onBufferUpdate(percent)
         }
     }
 
@@ -216,8 +250,8 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
      */
     override fun onCompletion(mp: MediaPlayer?) {
         state = STATE_PLAYBACK_COMPLETED
-        onPlayStateChangeListeners.forEach {
-            it.onCompletion()
+        for (listener in onPlayStateChangeListeners) {
+            listener.onCompletion()
         }
     }
 
@@ -259,37 +293,19 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
 
         /**
          * 缓冲流更新
+         * @param percent 缓冲进度
          */
-        fun onBufferUpdate(percent: Int)
+        fun onBufferUpdate(@IntRange(from = 0, to = 100) percent: Int)
+
+        /**
+         * 缓冲状态
+         */
+        fun onBuffer(inBuffer: Boolean)
 
         /**
          * 数据源改变
          */
         fun onDataSourceChange()
 
-    }
-
-    open class SimplePlayStateChangeListener : OnPlayStateChangeListener {
-
-        override fun onDataSourceChange() {
-        }
-
-        override fun onPlayStart(mp: MusicPlayer) {
-        }
-
-        override fun onPlayPause() {
-        }
-
-        override fun onPlayStop() {
-        }
-
-        override fun onPrepared(mp: MusicPlayer) {
-        }
-
-        override fun onCompletion() {
-        }
-
-        override fun onBufferUpdate(percent: Int) {
-        }
     }
 }

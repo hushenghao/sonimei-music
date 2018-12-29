@@ -3,7 +3,9 @@ package com.dede.sonimei.module.play
 import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.LayerDrawable
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -177,7 +179,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             }
             true
         }
-
+        onBuffer(false)
         disablePlayController()
     }
 
@@ -375,7 +377,6 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     }
 
     override fun onPrepared(mp: MusicPlayer) {
-        // todo 关闭缓冲loading
     }
 
     override fun onDataSourceChange() {
@@ -390,7 +391,6 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
 
         val song = musicBinder?.getPlayInfo()
         if (song != null) {
-            // todo 显示缓冲loading
             tv_name.text = song.getName()
             tv_name.isSelected = true
             tv_lrc.gone()
@@ -408,6 +408,19 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
                 tv_singer.text = song.author
             }
             (activity as MainActivity).showBottomController()
+        }
+    }
+
+    override fun onBuffer(inBuffer: Boolean) {
+        val layerDrawable = sb_progress.thumb as LayerDrawable
+        val drawable = layerDrawable.findDrawableByLayerId(R.id.drawable_rotate)
+        if (inBuffer) {
+            // 进度条没有变化，缓冲卡顿
+            drawable.alpha = 255
+            (drawable as Animatable).start()
+        } else {
+            // 进度条变化，正在缓冲
+            drawable.alpha = 0
         }
     }
 

@@ -34,9 +34,24 @@
 ```
 
 
+#### 编译报(xxx/Java/sonimei/key.properties (No such file or directory))错误怎么办
+```
+在项目根目录新建文件key.properties，内容如下：
+storePassword=
+keyPassword=
+keyAlias=
+storeFile=签名路径
+buglyAppId=buglyId
+------------------
+等号后的内容可以随便填
+```
+
+
 ## 免责声明
 
 1. 音频文件来自各网站接口，本应用不会修改任何音频文件
 2. 音频版权来自各网站，本应用只提供数据查询服务，不提供任何音频存储和贩卖服务
 
+-----
 
+#### 本项目仅供学习交流，禁止二次打包上传

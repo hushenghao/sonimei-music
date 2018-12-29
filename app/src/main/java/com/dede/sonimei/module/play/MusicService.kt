@@ -16,7 +16,9 @@ import android.os.Build
 import android.os.IBinder
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.support.v7.graphics.Palette
+import android.view.KeyEvent
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
@@ -26,6 +28,8 @@ import com.dede.sonimei.defaultSheep
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
+import com.dede.sonimei.player.SimplePlayStateChangeListener
+import com.dede.sonimei.util.ClickEventHelper
 import com.dede.sonimei.util.extends.*
 import org.jetbrains.anko.*
 import java.io.File
@@ -155,6 +159,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
      */
     private fun play(path: String) {
         info("index:" + playIndex + "  path:" + path)
+        sp.edit().putInt(SP_KEY_PLAY_INDEX, playIndex).apply()
         try {
             this.musicPlayer.reset()
             this.musicPlayer.isLooping = playMode == MODE_SINGLE // fix single loop mode
@@ -398,6 +403,8 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             AudioManager.AUDIOFOCUS_LOSS -> {
                 if (musicPlayer.isPlaying) {
                     musicPlayer.stop()
+                    stopForeground(false)
+                    notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
                 }
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
@@ -411,6 +418,8 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     fun getMusicPlayer(): MusicPlayer {
         return musicPlayer
     }
+
+    private lateinit var sessionCompat: MediaSessionCompat
 
     override fun onCreate() {
         super.onCreate()
@@ -431,6 +440,46 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         notifyFilter.addAction(ACTION_NOTIFICATION_PAUSE)
         notifyFilter.addAction(ACTION_NOTIFICATION_PLAY)
         registerReceiver(notificationActionReceiver, notifyFilter)
+
+        setLoadPlayListListener(loadPlayListListener)// 预加载播放列表
+
+        val clickEventHelper = ClickEventHelper(object : ClickEventHelper.Callback {
+            override fun onClick() {
+                if (musicPlayer.isPlaying) {
+                    pause()
+                } else {
+                    start()
+                }
+            }
+
+            override fun onDoubleClick() {
+                next()
+            }
+
+            override fun onTripleClick() {
+                last()
+            }
+
+        })
+
+        sessionCompat = MediaSessionCompat(this, "com.dede.sonimei_mediasession")
+        sessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS)
+        sessionCompat.setCallback(object : MediaSessionCompat.Callback() {
+            override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+                val keyEvent = mediaButtonEvent?.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
+                        ?: return false
+                if (keyEvent.action == KeyEvent.ACTION_UP) {
+                    when (keyEvent.keyCode) {
+                        KeyEvent.KEYCODE_HEADSETHOOK -> {
+                            clickEventHelper.sendClickEvent()
+                        }
+                    }
+                }
+                info("onMediaButtonEvent" + keyEvent.keyCode)
+                return false
+            }
+        })
+        sessionCompat.isActive = true
     }
 
     /**
@@ -485,7 +534,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             false
         }
 
-        musicPlayer.addOnPlayStateChangeListener(object : MusicPlayer.SimplePlayStateChangeListener() {
+        musicPlayer.addOnPlayStateChangeListener(object : SimplePlayStateChangeListener() {
             override fun onPrepared(mp: MusicPlayer) {
                 if (autoStart) {
                     start()// 准备完成自动播放
@@ -516,6 +565,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     override fun onUnbind(intent: Intent?): Boolean {
         loadPlayListListener = null
         savePlayList()
+        sp.edit().putInt(SP_KEY_PLAY_INDEX, playIndex).apply()
         if (musicPlayer.isPlaying) {
             // 如果不是可播放状态就不显示通知
             startForeground(PLAY_NOTIFICATION_ID, createNotification())
@@ -561,6 +611,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
         val mediaStyle = android.support.v4.media.app.NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(1, 2)
+                .setMediaSession(sessionCompat.sessionToken)
         builder.setContentTitle(song.getName())
                 .setContentText(song.title)
                 .setChannelId(PLAY_NOTIFICATION_CHANNEL)// channel Id 兼容8.0+
@@ -635,7 +686,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         musicPlayer.release()
         releaseAudioFocus()
         sp.edit().putInt(SP_KEY_PLAY_INDEX, playIndex).apply()
-
+        sessionCompat.release()
         super.onDestroy()
     }
 
