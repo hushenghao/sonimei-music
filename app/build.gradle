@@ -68,6 +68,7 @@ android {
         xiaomi {
             applicationId "com.dede.sonimei_mi"
         }
+		huawei {}
     }
 
     productFlavors.all { flavor ->

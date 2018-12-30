@@ -9,9 +9,7 @@
             android:title="@string/setting_search_source" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:key="download_setting"
-        android:title="@string/setting_group_down">
+    <PreferenceCategory android:title="@string/setting_group_down">
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -28,6 +26,10 @@
         <Preference
             android:key="bug_report"
             android:title="@string/setting_other_debug_sum" />
+
+        <Preference
+            android:key="open_source"
+            android:title="@string/label_open_source" />
 
         <Preference
             android:key="qq_group"

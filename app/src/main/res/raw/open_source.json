@@ -1,0 +1,74 @@
+[
+  {
+    "title": "RxJava",
+    "desc": "RxJava – Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.",
+    "author": "ReactiveX",
+    "link": "https://github.com/ReactiveX/RxJava"
+  },
+  {
+    "title": "RxAndroid",
+    "desc": "Android specific bindings for RxJava 2.\nThis module adds the minimum classes to RxJava that make writing reactive components in Android applications easy and hassle-free. More specifically, it provides a Scheduler that schedules on the main thread or any given Looper.",
+    "author": "ReactiveX",
+    "link": "https://github.com/ReactiveX/RxAndroid"
+  },
+  {
+    "title": "retrofit",
+    "desc": "Type-safe HTTP client for Android and Java by Square, Inc.",
+    "author": "square",
+    "link": "https://github.com/square/retrofit"
+  },
+  {
+    "title": "okhttp",
+    "desc": "An HTTP & HTTP/2 client for Android and Java applications.",
+    "author": "square",
+    "link": "https://github.com/square/okhttp"
+  },
+  {
+    "title": "RxLifecycle",
+    "desc": "This library allows one to automatically complete sequences based on a second lifecycle stream.\nThis capability is useful in Android, where incomplete subscriptions can cause memory leaks.",
+    "author": "trello",
+    "link": "https://github.com/trello/RxLifecycle"
+  },
+  {
+    "title": "RxPermissions",
+    "desc": "Android runtime permissions powered by RxJava2.\nThis library allows the usage of RxJava with the new Android M permission model.",
+    "author": "tbruyelle",
+    "link": "https://github.com/tbruyelle/RxPermissions"
+  },
+  {
+    "title": "kotlin",
+    "desc": "Kotlin is an OSS statically typed programming language that targets the JVM, Android, JavaScript and Native. It’s developed by JetBrains. The project started in 2010 and was open source from very early on. The first official 1.0 release was in February 2016.",
+    "author": "JetBrains",
+    "link": "http://kotlinlang.org/"
+  },
+  {
+    "title": "anko",
+    "desc": "Anko is a Kotlin library which makes Android application development faster and easier. It makes your code clean and easy to read, and lets you forget about rough edges of the Android SDK for Java.",
+    "author": "Kotlin",
+    "link": "https://github.com/Kotlin/anko"
+  },
+  {
+    "title": "gson",
+    "desc": "Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. Gson can work with arbitrary Java objects including pre-existing objects that you do not have source-code of.",
+    "author": "google",
+    "link": "https://github.com/google/gson"
+  },
+  {
+    "title": "glide",
+    "desc": "Glide is a fast and efficient open source media management and image loading framework for Android that wraps media decoding, memory and disk caching, and resource pooling into a simple and easy to use interface.",
+    "author": "bumptech",
+    "link": "https://github.com/bumptech/glide"
+  },
+  {
+    "title": "BaseRecyclerViewAdapterHelper",
+    "desc": "Powerful and flexible RecyclerAdapter, Please feel free to use this. (Welcome to Star and Fork)",
+    "author": "CymChad",
+    "link": "https://github.com/CymChad/BaseRecyclerViewAdapterHelper"
+  },
+  {
+    "title": "lrcview",
+    "desc": "Android beautiful draggable lyric view library.",
+    "author": "wangchenyan",
+    "link": "https://github.com/wangchenyan/lrcview"
+  }
+]

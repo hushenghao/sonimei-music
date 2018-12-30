@@ -117,7 +117,6 @@
     <string name="copy_empty">内容为空</string>
     <string name="copy_succ">已复制到剪切板</string>
     <string name="source_error"><![CDATA[&nbsp;&nbsp;&nbsp;(QAQ)资源不可用！]]></string>
-    <string name="choose_file_dir">选择文件路径</string>
     <string name="app_crash">喵，很抱歉，程序出现异常，即将退出！</string>
 
     <string name="play_mode_order">顺序播放</string>
@@ -147,4 +146,9 @@
     <!-- %[index$][标识][最少宽度][.精度]转换方式 -->
     <string name="toast_play_steep">%1$-2.1f倍速度播放</string>
     <string name="play_steep">%1$-2.1fx</string>
+
+    <string name="label_open_source">开源许可</string>
+    <string name="return_parent_dir">…返回上级目录</string>
+    <string name="toast_root_dir">已经到最上层目录了</string>
+    <string name="label_file_selector">选择路径</string>
 </resources>

@@ -49,6 +49,14 @@
             android:name=".module.setting.SelectSourceActivity"
             android:label="@string/select_source_label" />
 
+        <activity
+            android:name=".module.opensource.OpenSourceActivity"
+            android:label="@string/label_open_source" />
+
+        <activity
+            android:name=".module.selector.FileSelectorActivity"
+            android:label="@string/label_file_selector" />
+
         <service
             android:name=".module.play.MusicService"
             android:label="@string/app_name" />
