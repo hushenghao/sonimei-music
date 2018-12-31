@@ -30,17 +30,19 @@ const val LIZHI: Int = 11// 荔枝
 const val QINGTING: Int = 12// 蜻蜓
 const val XIMALAYA: Int = 13// 喜马拉雅
 const val KG: Int = 14// 全民k歌
+const val NETEASE_WEB: Int = 15// 网易云web接口
 
 /**
  * 音乐来源
  */
 @Retention(AnnotationRetention.RUNTIME)
-@IntDef(NETEASE, _1TING, BAIDU, KUGOU, KUWO, QQ, XIAMI, _5SINGYC, _5SINGFC, MIGU, LIZHI, QINGTING, XIMALAYA, KG)
+@IntDef(NETEASE, _1TING, BAIDU, KUGOU, KUWO, QQ, XIAMI, _5SINGYC, _5SINGFC, MIGU, LIZHI, QINGTING, XIMALAYA, KG, NETEASE_WEB)
 annotation class MusicSource
 
 private val sourceMap by lazy {
     val array = SparseArray<Source>()
     array.put(NETEASE, Source(NETEASE, "网易云", "netease", 0xffD90C0D.toInt()))
+    array.put(NETEASE_WEB, Source(NETEASE_WEB, "网易云web", "netease_web", 0xffD90C0D.toInt()))
     array.put(QQ, Source(QQ, "QQ", "qq", 0xff30C27C.toInt()))
     array.put(KUGOU, Source(KUGOU, "酷狗", "kugou", 0xff3585FB.toInt()))
     array.put(KUWO, Source(KUWO, "酷我", "kuwo", 0xffFCAB3A.toInt()))
@@ -67,6 +69,7 @@ const val normalType = SEARCH_NAME // 默认搜索类型
 val sourceArray: ArrayList<Int> by lazy {
     arrayListOf(
             NETEASE,
+            NETEASE_WEB,
             QQ,
             KUGOU,
             KUWO,

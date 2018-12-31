@@ -20,7 +20,10 @@ import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
-import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.hide
+import com.dede.sonimei.util.extends.show
+import com.dede.sonimei.util.extends.to
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.startActivity
@@ -175,7 +178,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun playSongs(songs: List<BaseSong>, song: BaseSong?) {
-        if (song == null || song.path.isNull()) {
+        if (song == null) {
             toast(R.string.play_path_empty)
             return
         }
@@ -186,7 +189,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun add2PlayList(song: BaseSong?) {
-        if (song == null || song.path.isNull()) {
+        if (song == null) {
             toast(R.string.play_path_empty)
             return
         }

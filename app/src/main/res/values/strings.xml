@@ -153,4 +153,11 @@
     <string name="label_local_music">本地音乐</string>
     <string name="toast_local_music">本地音频无需下载</string>
     <string name="local_music_empty">没有找到本地音乐</string>
+    <string name="label_ignore_manager">扫描设置</string>
+    <string name="ignore_music_file">过滤小于60s的音频文件</string>
+    <string name="file_path_filter">文件路径过滤</string>
+    <string name="file_long_filter">文件时长过滤</string>
+    <string name="menu_filter_file">本地扫描设置</string>
+    <string name="add_ignore_path">添加路径</string>
+    <string name="load_play_path_error">加载播放链接出错</string>
 </resources>

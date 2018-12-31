@@ -117,7 +117,7 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
         return this
     }
 
-    inner class Adapter(list: List<Source>) : BaseQuickAdapter<Source,
+    private inner class Adapter(list: List<Source>) : BaseQuickAdapter<Source,
             BaseViewHolder>(R.layout.item_search_source, list) {
         override fun convert(helper: BaseViewHolder?, item: Source?) {
             val textView = helper!!.getView<TextView>(R.id.tv_source)

@@ -2,14 +2,13 @@ package com.dede.sonimei.module.local
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
+import android.view.*
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
@@ -24,9 +23,11 @@ import com.turingtechnologies.materialscrollbar.CustomIndicator
 import com.turingtechnologies.materialscrollbar.ICustomAdapter
 import kotlinx.android.synthetic.main.fragment_local_music.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.info
+import org.jetbrains.anko.support.v4.defaultSharedPreferences
+import org.jetbrains.anko.support.v4.startActivityForResult
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
+import java.io.File
 
 class LocalMusicFragment : BaseFragment() {
 
@@ -78,19 +79,39 @@ class LocalMusicFragment : BaseFragment() {
         swipe_refresh.isRefreshing = true
         doAsync {
             val list = ArrayList<LocalSong>()
+            val sp = defaultSharedPreferences
+            val b = sp.getBoolean(SP_KEY_IGNORE_60S, true)//忽略时间小于60s的歌曲
+            val ignoreList = (sp.getStringSet(SP_KEY_IGNORE_PATHS, null) ?: emptySet()).toList()
+
+            fun inPath(file: File): Boolean {
+                val parentPath = file.parentFile.absolutePath
+                for (path in ignoreList) {
+                    if (parentPath.startsWith(path)) {
+                        return true
+                    }
+                }
+                return false
+            }
+
             fun load(cursor: Cursor?) {
                 if (cursor == null) return
                 val pinyin = HanziToPinyin.getInstance()
                 while (cursor.moveToNext()) {
                     val duration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
-                    if (duration < 1000 * 30) {//忽略时间小于30s的歌曲
+                    if (b && duration < 1000 * 60) {
                         continue
                     }
+                    val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+
+                    val file = File(path)
+                    if (inPath(file)) {
+                        continue
+                    }
+
                     val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
                     val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
                     val album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM))
                     val artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                    val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
                     val localSong = LocalSong(id, title, artist, album, duration, path)
                     list.add(localSong)
                     val pinYinList = pinyin.get(title)
@@ -101,7 +122,6 @@ class LocalMusicFragment : BaseFragment() {
                         else
                             localSong.pinyin = "#"
                     }
-                    info(localSong.title + "   " + localSong.pinyin)
                 }
                 cursor.close()
             }
@@ -121,7 +141,26 @@ class LocalMusicFragment : BaseFragment() {
         inflater.inflate(R.menu.menu_local_music, menu)
     }
 
-    inner class LocalMusicListAdapter : BaseQuickAdapter<LocalSong, BaseViewHolder>(R.layout.item_local_music), ICustomAdapter {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ignoreSetting && resultCode == Activity.RESULT_OK) {
+            loadPlayList()
+        }
+    }
+
+    private val ignoreSetting = 101
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_filter -> {
+                startActivityForResult<IgnoreManagerActivity>(ignoreSetting)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private inner class LocalMusicListAdapter : BaseQuickAdapter<LocalSong, BaseViewHolder>(R.layout.item_local_music), ICustomAdapter {
 
         override fun getCustomStringForElement(element: Int): String {
             return getItem(element)?.pinyin ?: "#"

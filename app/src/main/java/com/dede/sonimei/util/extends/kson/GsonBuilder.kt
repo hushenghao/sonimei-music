@@ -9,9 +9,9 @@ import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
 
 
-inline fun <reified T: Any> gsonTypeToken(): Type  = object : TypeToken<T>() {} .type
+inline fun <reified T : Any> gsonTypeToken(): Type = object : TypeToken<T>() {}.type
 
-fun ParameterizedType.isWildcard() : Boolean {
+fun ParameterizedType.isWildcard(): Boolean {
     var hasAnyWildCard = false
     var hasBaseWildCard = false
     var hasSpecific = false
@@ -27,11 +27,9 @@ fun ParameterizedType.isWildcard() : Boolean {
                     hasAnyWildCard = true
                 else
                     hasBaseWildCard = true
-            }
-            else
+            } else
                 hasSpecific = true
-        }
-        else
+        } else
             hasSpecific = true
 
     }
@@ -46,9 +44,9 @@ fun removeTypeWildcards(type: Type): Type {
 
     if (type is ParameterizedType) {
         val arguments = type.actualTypeArguments
-            .map { if (it is WildcardType) it.upperBounds[0] else it }
-            .map { removeTypeWildcards(it) }
-            .toTypedArray()
+                .map { if (it is WildcardType) it.upperBounds[0] else it }
+                .map { removeTypeWildcards(it) }
+                .toTypedArray()
         return TypeToken.getParameterized(type.rawType, *arguments).type
     }
 
@@ -56,7 +54,7 @@ fun removeTypeWildcards(type: Type): Type {
 }
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-inline fun <reified T: Any> typeToken(): Type {
+inline fun <reified T : Any> typeToken(): Type {
     val type = gsonTypeToken<T>()
 
     if (type is ParameterizedType && type.isWildcard())
@@ -72,7 +70,7 @@ data class SerializerArg<T>(
         val context: Context
 ) {
     class Context(val gsonContext: JsonSerializationContext) : JsonSerializationContext by gsonContext {
-        inline fun <reified T: Any> typedSerialize(src: T) = gsonContext.serialize(src, typeToken<T>())
+        inline fun <reified T : Any> typedSerialize(src: T) = gsonContext.serialize(src, typeToken<T>())
     }
 }
 
@@ -82,25 +80,22 @@ data class DeserializerArg(
         val context: Context
 ) {
     class Context(val gsonContext: JsonDeserializationContext) : JsonDeserializationContext by gsonContext {
-        inline fun <reified T: Any> deserialize(json: JsonElement) = gsonContext.deserialize<T>(json, typeToken<T>())
+        inline fun <reified T : Any> deserialize(json: JsonElement) = gsonContext.deserialize<T>(json, typeToken<T>())
     }
 }
 
-fun <T: Any> jsonSerializer(serializer: (arg: SerializerArg<T>) -> JsonElement): JsonSerializer<T>
-        = JsonSerializer { src, type, context -> serializer(SerializerArg(src, type, SerializerArg.Context(context))) }
+fun <T : Any> jsonSerializer(serializer: (arg: SerializerArg<T>) -> JsonElement): JsonSerializer<T> = JsonSerializer { src, type, context -> serializer(SerializerArg(src, type, SerializerArg.Context(context))) }
 
-fun <T: Any> jsonDeserializer(deserializer: (arg: DeserializerArg) -> T?): JsonDeserializer<T>
-        = JsonDeserializer<T> { json, type, context -> deserializer(DeserializerArg(json, type, DeserializerArg.Context(context))) }
+fun <T : Any> jsonDeserializer(deserializer: (arg: DeserializerArg) -> T?): JsonDeserializer<T> = JsonDeserializer<T> { json, type, context -> deserializer(DeserializerArg(json, type, DeserializerArg.Context(context))) }
 
-fun <T: Any> instanceCreator(creator: (type: Type) -> T): InstanceCreator<T>
-        = InstanceCreator { creator(it) }
+fun <T : Any> instanceCreator(creator: (type: Type) -> T): InstanceCreator<T> = InstanceCreator { creator(it) }
 
-interface TypeAdapterBuilder<T: Any, R : T?> {
+interface TypeAdapterBuilder<T : Any, R : T?> {
     fun read(function: JsonReader.() -> R)
     fun write(function: JsonWriter.(value: T) -> Unit)
 }
 
-internal class TypeAdapterBuilderImpl<T: Any, R: T?>(
+internal class TypeAdapterBuilderImpl<T : Any, R : T?>(
         init: TypeAdapterBuilder<T, R>.() -> Unit
 ) : TypeAdapterBuilder<T, R> {
 
@@ -127,28 +122,24 @@ internal class TypeAdapterBuilderImpl<T: Any, R: T?>(
     }
 }
 
-fun <T: Any> typeAdapter(init: TypeAdapterBuilder<T, T>.() -> Unit): TypeAdapter<T> = TypeAdapterBuilderImpl(init).build()
-fun <T: Any> nullableTypeAdapter(init: TypeAdapterBuilder<T, T?>.() -> Unit): TypeAdapter<T> = TypeAdapterBuilderImpl<T, T?>(init).build().nullSafe()
+fun <T : Any> typeAdapter(init: TypeAdapterBuilder<T, T>.() -> Unit): TypeAdapter<T> = TypeAdapterBuilderImpl(init).build()
+fun <T : Any> nullableTypeAdapter(init: TypeAdapterBuilder<T, T?>.() -> Unit): TypeAdapter<T> = TypeAdapterBuilderImpl<T, T?>(init).build().nullSafe()
 
-inline fun <reified T: Any> GsonBuilder.registerTypeAdapter(typeAdapter: Any): GsonBuilder
-        = this.registerTypeAdapter(typeToken<T>(), typeAdapter)
-inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(serializer: JsonSerializer<T>): GsonBuilder
-        = this.registerTypeAdapter<T>(serializer as Any)
-inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(deserializer: JsonDeserializer<T>): GsonBuilder
-        = this.registerTypeAdapter<T>(deserializer as Any)
+inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(typeAdapter: Any): GsonBuilder = this.registerTypeAdapter(typeToken<T>(), typeAdapter)
+inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(serializer: JsonSerializer<T>): GsonBuilder = this.registerTypeAdapter<T>(serializer as Any)
+inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(deserializer: JsonDeserializer<T>): GsonBuilder = this.registerTypeAdapter<T>(deserializer as Any)
 
-inline fun <reified T: Any> GsonBuilder.registerTypeHierarchyAdapter(typeAdapter: Any): GsonBuilder
-        = this.registerTypeHierarchyAdapter(T::class.java, typeAdapter)
+inline fun <reified T : Any> GsonBuilder.registerTypeHierarchyAdapter(typeAdapter: Any): GsonBuilder = this.registerTypeHierarchyAdapter(T::class.java, typeAdapter)
 
 
-interface RegistrationBuilder<T: Any, R : T?> : TypeAdapterBuilder<T, R> {
+interface RegistrationBuilder<T : Any, R : T?> : TypeAdapterBuilder<T, R> {
     fun serialize(serializer: (arg: SerializerArg<T>) -> JsonElement)
     fun deserialize(deserializer: (DeserializerArg) -> T?)
     fun createInstances(creator: (type: Type) -> T)
 }
 
 
-internal class RegistrationBuilderImpl<T: Any>(
+internal class RegistrationBuilderImpl<T : Any>(
         val registeredType: Type,
         init: RegistrationBuilder<T, T>.() -> Unit,
         protected val register: (typeAdapter: Any) -> Unit
@@ -185,7 +176,7 @@ internal class RegistrationBuilderImpl<T: Any>(
         val writeFunction = _writeFunction
         if (readFunction == null || writeFunction == null)
             return
-        register(typeAdapter<T> { read(readFunction) ; write(writeFunction) })
+        register(typeAdapter<T> { read(readFunction); write(writeFunction) })
         _readFunction = null
         _writeFunction = null
     }
@@ -210,37 +201,33 @@ internal class RegistrationBuilderImpl<T: Any>(
 }
 
 
-fun <T: Any> GsonBuilder.registerTypeAdapterBuilder(type: Type, init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder {
+fun <T : Any> GsonBuilder.registerTypeAdapterBuilder(type: Type, init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder {
     RegistrationBuilderImpl(type, init) { registerTypeAdapter(type, it) }
     return this
 }
 
-inline fun <reified T: Any> GsonBuilder.registerTypeAdapter(noinline init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder
-        = registerTypeAdapterBuilder(typeToken<T>(), init)
+inline fun <reified T : Any> GsonBuilder.registerTypeAdapter(noinline init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder = registerTypeAdapterBuilder(typeToken<T>(), init)
 
 
-fun <T: Any> GsonBuilder.registerNullableTypeAdapterBuilder(type: Type, init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder {
+fun <T : Any> GsonBuilder.registerNullableTypeAdapterBuilder(type: Type, init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder {
     registerTypeAdapter(type, nullableTypeAdapter(init))
     return this
 }
 
-inline fun <reified T: Any> GsonBuilder.registerNullableTypeAdapter(noinline init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder
-        = registerNullableTypeAdapterBuilder(typeToken<T>(), init)
+inline fun <reified T : Any> GsonBuilder.registerNullableTypeAdapter(noinline init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder = registerNullableTypeAdapterBuilder(typeToken<T>(), init)
 
 
-fun <T: Any> GsonBuilder.registerTypeHierarchyAdapterBuilder(type: Class<T>, init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder {
+fun <T : Any> GsonBuilder.registerTypeHierarchyAdapterBuilder(type: Class<T>, init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder {
     RegistrationBuilderImpl(type, init) { registerTypeHierarchyAdapter(type, it) }
     return this
 }
 
-inline fun <reified T: Any> GsonBuilder.registerTypeHierarchyAdapter(noinline init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder
-        = registerTypeHierarchyAdapterBuilder(T::class.java, init)
+inline fun <reified T : Any> GsonBuilder.registerTypeHierarchyAdapter(noinline init: RegistrationBuilder<T, T>.() -> Unit): GsonBuilder = registerTypeHierarchyAdapterBuilder(T::class.java, init)
 
 
-fun <T: Any> GsonBuilder.registerNullableTypeHierarchyAdapterBuilder(type: Class<T>, init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder {
+fun <T : Any> GsonBuilder.registerNullableTypeHierarchyAdapterBuilder(type: Class<T>, init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder {
     registerTypeHierarchyAdapter(type, nullableTypeAdapter(init))
     return this
 }
 
-inline fun <reified T: Any> GsonBuilder.registerNullableTypeHierarchyAdapter(noinline init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder
-        = registerNullableTypeHierarchyAdapterBuilder(T::class.java, init)
+inline fun <reified T : Any> GsonBuilder.registerNullableTypeHierarchyAdapter(noinline init: TypeAdapterBuilder<T, T?>.() -> Unit): GsonBuilder = registerNullableTypeHierarchyAdapterBuilder(T::class.java, init)

@@ -1,11 +1,10 @@
 package com.dede.sonimei.net.converter
 
-import java.lang.reflect.Type
-
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
+import java.lang.reflect.Type
 
 /**
  * Created by hsh on 2016/9/6.

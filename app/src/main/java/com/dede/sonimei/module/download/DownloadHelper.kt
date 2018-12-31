@@ -42,6 +42,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
         /**
          * 判断运行时权限后下载，没有权限时申请后再下载
          */
+        @SuppressLint("CheckResult")
         fun download(activity: Activity?, song: SearchSong) {
             if (activity == null) {
                 instance?.download(song)
@@ -136,9 +137,23 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
     }
 
     /**
+     * 获取链接下载，忽略运行时权限
+     */
+    @SuppressLint("CheckResult")
+    fun download(song: SearchSong) {
+        song.loadPlayLink()
+                .subscribe({
+                    _download(song)
+                }) {
+                    toast(R.string.load_play_path_error)
+                    it.printStackTrace()
+                }
+    }
+
+    /**
      * 直接下载，忽略运行时权限
      */
-    fun download(song: SearchSong) {
+    private fun _download(song: SearchSong) {
         if (song.path.isNull()) {
             toast(R.string.download_link_empty)
             return

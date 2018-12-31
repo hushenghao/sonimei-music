@@ -162,20 +162,20 @@ class FileSelectorActivity : BaseActivity() {
         outState?.putString(EXTRA_SELECTOR_TITLE, intent.getStringExtra(EXTRA_SELECTOR_TITLE))
     }
 
-    inner class FileAdapter : BaseQuickAdapter<File, BaseViewHolder>(R.layout.item_file_selector) {
+    private inner class FileAdapter : BaseQuickAdapter<File, BaseViewHolder>(R.layout.item_file_selector) {
         override fun convert(helper: BaseViewHolder?, item: File?) {
             helper?.setText(R.id.tv_path_name, item?.name)
                     ?.setVisible(R.id.iv_dir_icon, item?.isDirectory ?: false)
         }
     }
 
-    class CFileFilter : FileFilter {
+    private class CFileFilter : FileFilter {
         override fun accept(pathname: File?): Boolean {
             return pathname != null && pathname.canExecute()
         }
     }
 
-    class PathFilter : FileFilter {
+    private class PathFilter : FileFilter {
         override fun accept(pathname: File?): Boolean {
             return pathname != null && pathname.canExecute() && pathname.isDirectory
         }

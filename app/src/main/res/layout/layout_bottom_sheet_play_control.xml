@@ -51,9 +51,9 @@
 
     <ImageView
         android:id="@+id/iv_play"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginRight="12dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="13dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_pause_status"
         android:tint="@color/icon_tint" />
@@ -62,7 +62,7 @@
         android:id="@+id/iv_play_list"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="13dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_play_list"
         android:tint="@color/icon_tint" />

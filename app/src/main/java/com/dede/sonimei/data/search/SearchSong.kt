@@ -2,21 +2,24 @@ package com.dede.sonimei.data.search
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.dede.sonimei.NETEASE_WEB
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.sourceKey
+import com.dede.sonimei.util.extends.notNull
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 /**
  * Created by hsh on 2018/5/15.
  */
-data class SearchSong(@Expose val type: String?,
-                      @Expose val link: String?,// 原链接
-                      @Expose val songId: String?,
+open class SearchSong(@Expose open val type: String?,
+                      @Expose open val link: String?,// 原链接
+                      @Expose open val songId: String?,
                       @Expose override val title: String?,
-                      @Expose val author: String?,
-                      @Expose @SerializedName("url") override val path: String?,// 下载链接
-                      @Expose val lrc: String?,
-                      @Expose val pic: String?
+                      @Expose open val author: String?,
+                      @Expose @SerializedName("url") override var path: String?,// 下载链接
+                      @Expose open val lrc: String?,
+                      @Expose open val pic: String?
 ) : BaseSong(title, path), Parcelable {
 
     constructor(parcel: Parcel) : this(parcel.readString(),
@@ -31,6 +34,10 @@ data class SearchSong(@Expose val type: String?,
 
     override fun getName(): String {
         return "$title - $author"
+    }
+
+    open fun canPlay(): Boolean {
+        return path.notNull()
     }
 
     companion object {

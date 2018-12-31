@@ -1,5 +1,6 @@
 package com.dede.sonimei.module.play
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -32,6 +33,7 @@ import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.player.SimplePlayStateChangeListener
 import com.dede.sonimei.util.ClickEventHelper
 import com.dede.sonimei.util.extends.*
+import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.*
 import java.io.File
 import java.util.*
@@ -116,19 +118,38 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         musicPlayer.stop()
     }
 
-    override fun play(song: BaseSong?) {
-        if (song != null && song.path.notNull()) {
-            val indexOf = this.playList.indexOf(song)
-            if (indexOf == -1) {
-                this.playList.add(song)
-                this.playIndex = this.playList.size - 1
+    private var pathSubscribe: Disposable? = null
 
-                savePlayList()
-            } else {
-                this.playIndex = indexOf
-            }
-            play(song.path!!)
+    @SuppressLint("CheckResult")
+    override fun play(song: BaseSong?) {
+        if (song == null) {
+            toast(R.string.play_path_empty)
+            return
         }
+        pathSubscribe?.dispose()
+
+        val indexOf = this.playList.indexOf(song)
+        if (indexOf == -1) {
+            this.playList.add(song)
+            this.playIndex = this.playList.size - 1
+
+            savePlayList()
+        } else {
+            this.playIndex = indexOf
+        }
+        pathSubscribe = song.loadPlayLink()
+                .applySchedulers()
+                .doOnNext { song.path = it }
+                .subscribe({
+                    if (it.isNull()) {
+                        toast(R.string.play_path_empty)
+                    } else {
+                        play(it)
+                    }
+                }) {
+                    toast(R.string.load_play_path_error)
+                    it.printStackTrace()
+                }
     }
 
     override fun plays(playList: List<BaseSong>?, index: Int) {
@@ -147,12 +168,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             0
         }
 
-        val song = this.playList[playIndex]
-        if (song.path.notNull()) {
-            play(song.path!!)
-        } else {
-            toast(R.string.play_path_empty)
-        }
+        play(this.playList[playIndex])
     }
 
     /**
@@ -201,11 +217,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     override fun next() {
         val size = playList.size
         if (size == 0) return
-        var path: String? = null
         if (size == 1) {
             playIndex = 0
             if (musicPlayer.isPlaying) return
-            path = playList[playIndex].path
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
@@ -214,36 +228,27 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                         if (++i >= size) {
                             i = 0
                         }
-                        path = playList[i].path
-                    } while (path.isNull() && i != playIndex)// 循环了一遍，直接break
+                    } while (i != playIndex)// 循环了一遍，直接break
                     playIndex = i
                 }
                 MODE_RANDOM -> {
                     var i: Int
                     do {
                         i = random.nextInt(size)
-                        path = playList[i].path
-                    } while (path.isNull() && i != playIndex)
+                    } while (i == playIndex)
                     playIndex = i
                 }
             }
         }
-        if (path.isNull()) {
-            toast(R.string.play_path_empty)
-            return
-        }
-
-        play(path!!)
+        play(playList[playIndex])
     }
 
     override fun last() {
         val size = playList.size
         if (size == 0) return
-        var path: String? = null
         if (size == 1) {
             playIndex = 0
             if (musicPlayer.isPlaying) return
-            path = playList[playIndex].path
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
@@ -252,26 +257,19 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                         if (--i < 0) {
                             i = size - 1
                         }
-                        path = playList[i].path
-                    } while (path.isNull() && i != playIndex)// 循环了一遍，直接break
+                    } while (i != playIndex)// 循环了一遍，直接break
                     playIndex = i
                 }
                 MODE_RANDOM -> {
                     var i: Int
                     do {
                         i = random.nextInt(size)
-                        path = playList[i].path
-                    } while (path.isNull() && i != playIndex)
+                    } while (i == playIndex)
                     playIndex = i
                 }
             }
         }
-        if (path.isNull()) {
-            toast(R.string.play_path_empty)
-            return
-        }
-
-        play(path!!)
+        play(playList[playIndex])
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -471,12 +469,18 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                         ?: return false
                 if (keyEvent.action == KeyEvent.ACTION_UP) {
                     when (keyEvent.keyCode) {
-                        KeyEvent.KEYCODE_HEADSETHOOK -> {
+                        KeyEvent.KEYCODE_HEADSETHOOK, KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY -> {
                             clickEventHelper.sendClickEvent()
                         }
+                        KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                            next()
+                        }
+                        KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                            last()
+                        }
                     }
+                    info("MediaButtonEvent: " + keyEvent.keyCode)
                 }
-                info("onMediaButtonEvent" + keyEvent.keyCode)
                 return false
             }
         })
@@ -502,7 +506,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             val action = intent.action
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY == action) {
                 info("Headset Disconnected 暂停播放")
-                musicPlayer.pause()
+                pause()
             }
         }
     }
@@ -697,6 +701,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
 
     override fun onDestroy() {
+        pathSubscribe?.dispose()
         stopForeground(true)
         notificationManager.cancel(PLAY_NOTIFICATION_ID)
         unregisterReceiver(headsetPlugReceiver)

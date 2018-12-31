@@ -11,11 +11,11 @@ data class LocalSong(
         val author: String?,
         val album: String?,
         val duration: Long,
-        override val path: String?) : BaseSong(title, path), Parcelable {
+        override var path: String?) : BaseSong(title, path), Parcelable {
 
     var pinyin: String = "#"
 
-    var picByteArray: ByteArray? = null
+    private var picByteArray: ByteArrayWeakReference = ByteArrayWeakReference(null)
 
     constructor(parcel: Parcel) : this(
             parcel.readLong(),
@@ -31,13 +31,15 @@ data class LocalSong(
     }
 
     fun picByteArray(): ByteArray? {
-        if (picByteArray != null) {
-            return picByteArray
+        var bytes = picByteArray.get()
+        if (bytes != null) {
+            return bytes
         }
         val metadataRetriever = MediaMetadataRetriever()
         metadataRetriever.setDataSource(path)
-        picByteArray = metadataRetriever.embeddedPicture
-        return picByteArray
+        bytes = metadataRetriever.embeddedPicture
+        picByteArray = ByteArrayWeakReference(bytes)
+        return bytes
     }
 
     companion object {

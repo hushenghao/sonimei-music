@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CoordinatorLayout
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
@@ -36,9 +34,9 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
         }
         params.height = (context.resources.displayMetrics.heightPixels * .6).toInt()
 
-
         adapter = Adapter()
         recycler_view.adapter = adapter
+        recycler_view.scrollToPosition(index)
         adapter.setOnItemClickListener { _, _, position ->
             callback?.onItemClick(position, list[position])
             dismiss()
@@ -50,7 +48,6 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
                     callback?.onItemRemove(position, list[position])
                     adapter.remove(position)
                     tv_list_count.text = context.getString(R.string.play_list_count, adapter.itemCount)
-//                    dismiss()
                 }
             }
         }
@@ -58,7 +55,7 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
         tv_list_count.text = context.getString(R.string.play_list_count, adapter.itemCount)
     }
 
-    inner class Adapter : BaseQuickAdapter<BaseSong, BaseViewHolder>(R.layout.item_play_list, list) {
+    private inner class Adapter : BaseQuickAdapter<BaseSong, BaseViewHolder>(R.layout.item_play_list, list) {
         override fun convert(helper: BaseViewHolder?, item: BaseSong?) {
             val playing = helper!!.layoutPosition == index
             helper.setGone(R.id.iv_playing, playing)

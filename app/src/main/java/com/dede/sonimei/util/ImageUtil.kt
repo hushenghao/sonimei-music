@@ -2,7 +2,6 @@ package com.dede.sonimei.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.renderscript.Allocation
 import android.renderscript.Element

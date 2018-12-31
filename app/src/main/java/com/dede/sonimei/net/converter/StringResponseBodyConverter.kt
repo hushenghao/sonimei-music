@@ -1,9 +1,8 @@
 package com.dede.sonimei.net.converter
 
-import java.io.IOException
-
 import okhttp3.ResponseBody
 import retrofit2.Converter
+import java.io.IOException
 
 /**
  * Created by hsh on 2016/9/6.

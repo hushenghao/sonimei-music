@@ -1,14 +1,12 @@
 package com.dede.sonimei.net.converter
 
-import java.io.IOException
-import java.io.OutputStreamWriter
-import java.io.Writer
-import java.nio.charset.Charset
-
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.Buffer
 import retrofit2.Converter
+import java.io.IOException
+import java.io.OutputStreamWriter
+import java.nio.charset.Charset
 
 /**
  * Created by hsh on 2016/9/6.

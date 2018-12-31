@@ -223,7 +223,7 @@ class SearchResultResultFragment : BaseFragment(), ISearchResultView {
 
         override fun convert(helper: BaseViewHolder, item: SearchSong) {
             helper.addOnClickListener(R.id.iv_download)
-            if (item.path.isNull()) {
+            if (!item.canPlay()) {
                 val errorHtml = helper.itemView.context.getString(R.string.source_error).color(Color.RED)
                 helper.setText(R.id.tv_singer_album,
                         (item.author.del() + errorHtml).toHtml())
