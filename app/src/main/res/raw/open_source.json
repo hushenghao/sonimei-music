@@ -70,5 +70,11 @@
     "desc": "Android beautiful draggable lyric view library.",
     "author": "wangchenyan",
     "link": "https://github.com/wangchenyan/lrcview"
+  },
+  {
+    "title": "MaterialScrollBar",
+    "desc": "An Android library that brings the Material Design 5.1 scrollbar to pre-5.1 devices. Designed for Android's recyclerView.",
+    "author": "turing-tech",
+    "link": "https://github.com/turing-tech/MaterialScrollBar"
   }
 ]

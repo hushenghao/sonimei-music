@@ -68,8 +68,8 @@ class SearchFragment : BaseFragment(), SearchView.OnQueryTextListener {
     private var autoCompleteText: AutoCompleteTextView? = null
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_home, menu)
-        searchView = menu!!.findItem(R.id.menu_search).actionView as SearchView?
+        inflater.inflate(R.menu.menu_search_net, menu)
+        searchView = menu!!.findItem(R.id.menu_search_net).actionView as SearchView?
         val searchType = searchType(SEARCH_NAME)
         tv_search_type.text = searchType
         searchView?.queryHint = searchType
@@ -94,7 +94,7 @@ class SearchFragment : BaseFragment(), SearchView.OnQueryTextListener {
                     v.postDelayed({
                         textView.showDropDown()
                         textView.threshold = -1
-                    }, 250)
+                    }, 300)
                 }
             }
             textView.setOnItemClickListener { _, _, position, _ ->

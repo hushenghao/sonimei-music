@@ -19,7 +19,6 @@ import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.module.play.PlayFragment
-import com.dede.sonimei.module.search.SearchFragment
 import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.util.extends.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,6 +26,9 @@ import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
+/**
+ * 应用主页面
+ */
 class MainActivity : BaseActivity() {
 
     override fun getLayoutId() = R.layout.activity_main
@@ -54,20 +56,18 @@ class MainActivity : BaseActivity() {
             // 全透明状态栏
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = Color.TRANSPARENT
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 
-        val fragment = supportFragmentManager.findFragmentByTag("search_fragment")
-        if (savedInstanceState == null) {
-            val searchFragment = fragment as? SearchFragment ?: SearchFragment()
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.fl_content, searchFragment, "search_fragment")
-//                .addToBackStack(null)
-                    .commit()
-        }
-
+        val homeFragmentContent = findViewById<View>(R.id.home_fragment)
+        val homeFragment = supportFragmentManager.findFragmentById(R.id.home_fragment) as HomeFragment
+        supportFragmentManager.beginTransaction()
+                .setPrimaryNavigationFragment(homeFragment)// 使子Fragment接收到返回事件
+//                .disallowAddToBackStack()
+                .commit()
         playFragment = supportFragmentManager.findFragmentById(R.id.play_fragment) as PlayFragment
 
         val caretDrawable = CaretDrawable(this)
@@ -92,9 +92,9 @@ class MainActivity : BaseActivity() {
 
                 // 隐藏fragment 优化过度绘制
                 if (slideOffset >= 1f) {
-                    fl_content.hide()
+                    homeFragmentContent.hide()
                 } else {
-                    fl_content.show()
+                    homeFragmentContent.show()
                 }
             }
 
@@ -148,7 +148,6 @@ class MainActivity : BaseActivity() {
             showBottomController()
             playBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             ll_bottom_play.hide()
-            fl_content.hide()
         } else {
             hideBottomController()
         }
@@ -158,17 +157,19 @@ class MainActivity : BaseActivity() {
         val height = resources.getDimensionPixelOffset(R.dimen.dimen_bottom_play_controller_height)
         iv_arrow_indicators.show()
         playBehavior.peekHeight = height
-        val params = fl_content.layoutParams as ViewGroup.MarginLayoutParams
+        val homeFragmentContent = findViewById<View>(R.id.home_fragment)
+        val params = homeFragmentContent.layoutParams as ViewGroup.MarginLayoutParams
         params.bottomMargin = height
-        fl_content.layoutParams = params
+        homeFragmentContent.layoutParams = params
     }
 
     fun hideBottomController() {
         iv_arrow_indicators.gone()
         playBehavior.peekHeight = 0
-        val params = fl_content.layoutParams as ViewGroup.MarginLayoutParams
+        val homeFragmentContent = findViewById<View>(R.id.home_fragment)
+        val params = homeFragmentContent.layoutParams as ViewGroup.MarginLayoutParams
         params.bottomMargin = 0
-        fl_content.layoutParams = params
+        homeFragmentContent.layoutParams = params
 
         playBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
@@ -243,23 +244,12 @@ class MainActivity : BaseActivity() {
         outState?.putBoolean("is_open", playBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
     }
 
-    private var lastTime = 0L
-
     override fun onBackPressed() {
         if (playBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             toggleBottomSheet()
             return
         }
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            super.onBackPressed()
-            return
-        }
-        val millis = System.currentTimeMillis()
-        if (lastTime + 2000L < millis) {
-            toast(R.string.reclick_exit)
-            lastTime = millis
-        } else {
-            super.onBackPressed()
-        }
+
+        super.onBackPressed()
     }
 }

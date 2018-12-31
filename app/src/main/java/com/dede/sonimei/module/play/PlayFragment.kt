@@ -22,6 +22,7 @@ import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.SeekBarChangeListener
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultSheep
 import com.dede.sonimei.module.home.MainActivity
@@ -29,7 +30,10 @@ import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.ScreenHelper
-import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.hide
+import com.dede.sonimei.util.extends.show
+import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.support.v4.dip
@@ -73,6 +77,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     // 回调中 修改背景图片，高斯模糊处理
     private val target = object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+            iv_album_img.setImageBitmap(resource)
             val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
             activity?.findViewById<View>(R.id.bottom_sheet)?.background = bitmapDrawable
         }
@@ -397,13 +402,24 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             tv_title.text = song.title
             tv_title.isSelected = true
             playContentFragment.setSongInfo(song)
+            iv_album_img.setImageResource(R.drawable.ic_music_small)
+            val i = dip(45f)
             if (song is SearchSong) {
-                iv_album_img.load(song.pic)
+                GlideApp.with(this)
+                        .asBitmap()
+                        .error(R.drawable.ic_music)
+                        .transform(RoundedCorners(dip(2)))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .override(i, i)
+                        .load(song.pic)
+                        .into<SimpleTarget<Bitmap>>(target)
+                tv_singer.text = song.author
+            } else if (song is LocalSong) {
                 GlideApp.with(this)
                         .asBitmap()
                         .transform(RoundedCorners(dip(2)))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .load(song.pic)
+                        .override(i, i)
+                        .load(song.picByteArray())
                         .into<SimpleTarget<Bitmap>>(target)
                 tv_singer.text = song.author
             }

@@ -25,8 +25,8 @@
         android:layout_toEndOf="@id/iv_playing"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingBottom="12dp"
         android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:textColor="@color/text1"
         android:textSize="15sp"
         tools:text="好心分手" />
@@ -40,12 +40,12 @@
         android:layout_marginEnd="10dp"
         android:adjustViewBounds="true"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:paddingBottom="10dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
         android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:src="@drawable/ic_delete"
-        android:tint="@color/icon_tint" />
+        android:tint="@color/text1" />
 
     <View
         android:layout_width="match_parent"

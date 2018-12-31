@@ -71,7 +71,7 @@ class FileSelectorActivity : BaseActivity() {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe({
                     if (!it) {
-                        toast(R.string.download_sd_error)
+                        toast(R.string.permission_sd_error)
                         return@subscribe
                     }
                     val pathStr = intent.getStringExtra(EXTRA_INIT_PATH)

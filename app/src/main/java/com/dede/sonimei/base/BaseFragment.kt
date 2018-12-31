@@ -1,15 +1,16 @@
 package com.dede.sonimei.base
 
-import android.app.Activity
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.trello.rxlifecycle2.components.support.RxFragment
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
+import org.jetbrains.anko.warn
 
 /**
  * Created by hsh on 2018/5/14.
@@ -27,12 +28,15 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
         return if (layoutId > 0) {
             inflater.inflate(layoutId, container, false)
         } else {
-            super.onCreateView(inflater, container, savedInstanceState)
+            warn("没有设置布局，返回默认FrameLayout")
+            FrameLayout(context)
         }
     }
 
     @LayoutRes
-    abstract fun getLayoutId(): Int
+    open fun getLayoutId(): Int {
+        return -1
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +65,7 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (isVisible && userVisibleHint) {
+        if (userVisibleHint) {
             if (!isLoaded) {
                 info("loadData")
                 loadData()

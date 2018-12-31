@@ -54,7 +54,7 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
                         if (it)
                             getInstance(activity).download(song)
                         else
-                            activity.toast(R.string.download_sd_error)
+                            activity.toast(R.string.permission_sd_error)
                     }
         }
     }

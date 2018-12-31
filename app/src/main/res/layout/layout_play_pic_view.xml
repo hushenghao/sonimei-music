@@ -89,12 +89,10 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_music_download"
         android:tint="@color/play_icon_tint"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tv_play_lrc"
         app:layout_constraintLeft_toRightOf="@id/tv_play_lrc"
         app:layout_constraintRight_toLeftOf="@+id/iv_close_sheet_2"
-        app:layout_constraintTop_toTopOf="@id/tv_play_lrc"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="@id/tv_play_lrc" />
 
     <ImageView
         android:id="@+id/iv_close_sheet_2"

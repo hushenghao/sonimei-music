@@ -37,7 +37,10 @@ abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setContentView(getLayoutId())
+        val layoutId = getLayoutId()
+        if (layoutId > 0) {
+            setContentView(layoutId)
+        }
 
         info("initView")
         initView(savedInstanceState)
@@ -56,7 +59,9 @@ abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
     open fun initView(savedInstanceState: Bundle?) {}
 
     @LayoutRes
-    abstract fun getLayoutId(): Int
+    open fun getLayoutId(): Int {
+        return -1
+    }
 
     override fun onStart() {
         super.onStart()

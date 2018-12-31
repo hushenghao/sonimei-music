@@ -23,6 +23,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultSheep
 import com.dede.sonimei.module.home.MainActivity
@@ -649,9 +650,26 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                             }
                         }
                     })
+        } else if (song is LocalSong && song.picByteArray() != null) {
+            GlideApp.with(this)
+                    .asBitmap()
+                    .load(song.picByteArray())
+                    .error(R.mipmap.ic_launcher)
+                    .into(object : SimpleTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            // 获取图片主色调
+                            Palette.from(resource).generate {
+                                notificationManager.notify(PLAY_NOTIFICATION_ID,
+                                        builder.setLargeIcon(resource)
+                                                .setColor(it?.mutedSwatch?.rgb ?: Color.WHITE)
+                                                .setColorized(true)
+                                                .build())
+                            }
+                        }
+                    })
         } else {
             builder.setColor(-5205824)
-                    .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
+                    .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_launcher))
         }
         builder.setColorized(true)
         return builder.build()

@@ -17,6 +17,7 @@ import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.component.MyLrcView
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultSheepIndex
 import com.dede.sonimei.module.download.DownloadHelper
@@ -134,7 +135,8 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
             }
         }
         picView.findViewById<TextView>(R.id.tv_music_content_lrc).text = song.getName()
-        val download = picView.findViewById<View>(R.id.iv_download)
+        val download = picView.findViewById<ImageView>(R.id.iv_download)
+        download.show()
         if (song is SearchSong) {
             lrcView.loadLrc(song.lrc)
             GlideApp.with(picView)
@@ -143,13 +145,21 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
                     .placeholder(R.drawable.ic_music)
                     .transform(RoundedCorners(dip(200)))
                     .into(imageView)
-            download.setOnClickListener {
-                DownloadHelper.download(activity, song)
-            }
-            download.show()
+            download.setImageResource(R.drawable.ic_music_download)
+            download.setOnClickListener { DownloadHelper.download(activity, song) }
+        } else if (song is LocalSong) {
+            lrcView.loadLrc("")
+            GlideApp.with(picView)
+                    .load(song.picByteArray())
+                    .error(R.drawable.ic_music)
+                    .placeholder(R.drawable.ic_music)
+                    .transform(RoundedCorners(dip(200)))
+                    .into(imageView)
+            download.setImageResource(R.drawable.ic_music_local)
+            download.setOnClickListener { toast(R.string.toast_local_music) }
+            lrcView.loadLrc(null as String?)
         } else {
             download.gone()
-            lrcView.loadLrc(null as String?)
         }
     }
 

@@ -48,7 +48,9 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
             when (view.id) {
                 R.id.iv_delete -> {
                     callback?.onItemRemove(position, list[position])
-                    dismiss()
+                    adapter.remove(position)
+                    tv_list_count.text = context.getString(R.string.play_list_count, adapter.itemCount)
+//                    dismiss()
                 }
             }
         }

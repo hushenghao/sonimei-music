@@ -13,18 +13,17 @@
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@android:color/transparent"
-            app:titleEnabled="false"
-            app:toolbarId="@id/tool_bar">
+            app:toolbarId="@+id/tool_bar">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingTop="?android:attr/actionBarSize"
@@ -70,15 +69,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <!--搜索结果列表-->
-    <FrameLayout
+    <fragment
+        android:id="@+id/search_result_fragment"
+        android:name="com.dede.sonimei.module.search.netresult.SearchResultResultFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <fragment
-            android:id="@+id/search_result_fragment"
-            android:name="com.dede.sonimei.module.search.netresult.SearchResultResultFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </android.support.design.widget.CoordinatorLayout>

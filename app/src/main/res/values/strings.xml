@@ -16,7 +16,6 @@
         &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=58sVWJP&quot;&gt;296513604&lt;/a&gt;&lt;br/&gt;
         &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=5liAgW0&quot;&gt;451745602&lt;/a&gt;
     </string>
-    <string name="qq_group">296513604</string>
     <string name="about_version">版本：%1$s(%2$d)</string>
     <string name="about_market">喜欢，给个好评</string>
     <string name="about_msg">本项目仅供学习交流，禁止用于任何商业用途！</string>
@@ -74,7 +73,7 @@
     <string name="search_id">音乐ID</string>
     <string name="search_url">音乐地址</string>
     <!--menu-->
-    <string name="menu_search">搜索</string>
+    <string name="menu_search">聚合搜索</string>
     <string name="menu_source_type">搜索来源和类型</string>
     <string name="menu_setting">设置</string>
     <string name="menu_ape">无损音乐下载</string>
@@ -89,7 +88,7 @@
     <string name="setting_group_other">其他</string>
     <string name="setting_other_debug_sum">意见反馈</string>
 
-    <string name="download_sd_error">读写SD卡权限被拒绝</string>
+    <string name="permission_sd_error">读写SD卡权限被拒绝</string>
     <string name="download_file_downed">文件已经下载过了…</string>
     <string name="download_isdownloading">已经正在下载了…</string>
     <string name="download_haslinked">已经在下载队列了…</string>
@@ -151,4 +150,7 @@
     <string name="return_parent_dir">…返回上级目录</string>
     <string name="toast_root_dir">已经到最上层目录了</string>
     <string name="label_file_selector">选择路径</string>
+    <string name="label_local_music">本地音乐</string>
+    <string name="toast_local_music">本地音频无需下载</string>
+    <string name="local_music_empty">没有找到本地音乐</string>
 </resources>

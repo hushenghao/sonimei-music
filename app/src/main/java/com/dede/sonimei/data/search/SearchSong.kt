@@ -17,7 +17,7 @@ data class SearchSong(@Expose val type: String?,
                       @Expose @SerializedName("url") override val path: String?,// 下载链接
                       @Expose val lrc: String?,
                       @Expose val pic: String?
-) : BaseSong(title, path) {
+) : BaseSong(title, path), Parcelable {
 
     constructor(parcel: Parcel) : this(parcel.readString(),
             parcel.readString(),

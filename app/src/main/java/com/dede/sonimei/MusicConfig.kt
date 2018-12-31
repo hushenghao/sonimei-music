@@ -4,7 +4,6 @@ import android.os.Environment
 import android.support.annotation.IntDef
 import android.util.SparseArray
 import com.dede.sonimei.data.Source
-import com.dede.sonimei.data.opensource.OpenSource
 import java.io.File
 
 /**
@@ -13,7 +12,7 @@ import java.io.File
 
 /** 一些链接 */
 const val APE_LINK = "http://music.sonimei.cn/ape/"
-const val GITHUB_LINK = "https://github.com/hushenghao/music/"
+//const val GITHUB_LINK = "https://github.com/hushenghao/music/"
 const val WEB_LINK = "http://music.sonimei.cn/"
 
 /** 音乐来源 */
@@ -58,8 +57,12 @@ private val sourceMap by lazy {
     return@lazy array
 }
 
-val normalSource by lazy { QQ }// 默认来源
-val normalType by lazy { SEARCH_NAME }// 默认搜索类型
+const val SEARCH_NAME = "name"
+const val SEARCH_ID = "id"
+const val SEARCH_URL = "path"
+
+const val normalSource = QQ // 默认来源
+const val normalType = SEARCH_NAME // 默认搜索类型
 
 val sourceArray: ArrayList<Int> by lazy {
     arrayListOf(
@@ -88,10 +91,6 @@ fun sourceName(@MusicSource key: Int): String = sourceMap[key].name
 fun sourceKey(@MusicSource key: Int): String = sourceMap[key].key
 fun sourceColor(@MusicSource key: Int): Int = sourceMap[key].color
 
-const val SEARCH_NAME = "name"
-const val SEARCH_ID = "id"
-const val SEARCH_URL = "path"
-
 fun searchType(searchType: String): String {
     return when (searchType) {
         SEARCH_NAME -> "音乐名称"
@@ -104,15 +103,9 @@ fun searchType(searchType: String): String {
 /** 默认下载路径 */
 val defaultDownloadPath: File by lazy { File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "sonimei") }
 
-const val defaultSheepIndex = 2
-const val defaultSheep = 1f
-
 /**
  * 播放速度集合
  */
-val sheepList = arrayListOf(
-        0.5f,
-        1f,
-        1.5f,
-        2f
-)
+val sheepList = arrayListOf(0.5f, 1f, 1.5f, 2f)
+const val defaultSheepIndex = 1
+val defaultSheep = sheepList[defaultSheepIndex]

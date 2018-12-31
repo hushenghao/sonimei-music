@@ -7,8 +7,9 @@
     tools:context=".module.home.MainActivity">
 
     <!--内容容器，刨去mini play controller的高度-->
-    <FrameLayout
-        android:id="@+id/fl_content"
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="com.dede.sonimei.module.home.HomeFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/dimen_bottom_play_controller_height" />
