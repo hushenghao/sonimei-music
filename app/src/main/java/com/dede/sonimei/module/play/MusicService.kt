@@ -223,13 +223,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
-                    var i = playIndex
-                    do {
-                        if (++i >= size) {
-                            i = 0
-                        }
-                    } while (i != playIndex)// 循环了一遍，直接break
-                    playIndex = i
+                    if (++playIndex >= size) {
+                        playIndex = 0
+                    }
                 }
                 MODE_RANDOM -> {
                     var i: Int
@@ -252,13 +248,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         } else {
             when (playMode) {
                 MODE_ORDER, MODE_SINGLE -> {
-                    var i = playIndex
-                    do {
-                        if (--i < 0) {
-                            i = size - 1
-                        }
-                    } while (i != playIndex)// 循环了一遍，直接break
-                    playIndex = i
+                    if (--playIndex < 0) {
+                        playIndex = size - 1
+                    }
                 }
                 MODE_RANDOM -> {
                     var i: Int
