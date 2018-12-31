@@ -164,7 +164,7 @@ class LocalMusicFragment : BaseFragment() {
 
         override fun convert(helper: BaseViewHolder?, item: LocalSong?) {
             helper?.setText(R.id.tv_name, item?.getName())
-                    ?.setText(R.id.tv_singer_album, item?.author)
+                    ?.setText(R.id.tv_singer_album, item?.album)
         }
     }
 }

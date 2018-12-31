@@ -81,12 +81,12 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     if (playIndex > end) {
                         playIndex = end
                     }
-                    musicPlayer.stop()
-                    autoStart = false
                     play(playList[playIndex])
                 }
             }
         }
+        randomLastIndexs.clear()
+        randomNextIndexs.clear()
         savePlayList()
     }
 
@@ -103,18 +103,23 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             }
             playList.add(index, song)
         } else {
-            playList.add(song)
+            playList.add(song)// 加到最后面不用处理历史光标
         }
+
         if (playList.size == 1) {
             playIndex = 0
             play(song)
         }
+        randomNextIndexs.clear()
+        randomLastIndexs.clear()
         savePlayList()
     }
 
     override fun clear() {
         playList.clear()
         playIndex = 0
+        randomNextIndexs.clear()
+        randomLastIndexs.clear()
         musicPlayer.stop()
     }
 
@@ -130,7 +135,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
         val indexOf = this.playList.indexOf(song)
         if (indexOf == -1) {
-            this.playList.add(song)
+            this.playList.add(song)//添加到最后，修改索引直接播放
             this.playIndex = this.playList.size - 1
 
             savePlayList()
@@ -160,6 +165,13 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
             this.playList.addAll(playList)
 
             savePlayList()
+
+            randomNextIndexs.clear()
+            randomLastIndexs.clear()
+        } else {
+            if (index != playIndex) {
+                randomLastIndexs.push(playIndex)
+            }
         }
 
         playIndex = if (index in 0..this.playList.size) {
@@ -228,11 +240,16 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     }
                 }
                 MODE_RANDOM -> {
-                    var i: Int
-                    do {
-                        i = random.nextInt(size)
-                    } while (i == playIndex)
-                    playIndex = i
+                    randomLastIndexs.push(playIndex)// 保存上一曲索引
+                    if (randomNextIndexs.size > 0) {// 有下一曲索引就读取下一曲索引
+                        playIndex = randomNextIndexs.pop()
+                    } else {// 没有时生成下一曲
+                        var i: Int
+                        do {
+                            i = random.nextInt(size)
+                        } while (i == playIndex)
+                        playIndex = i
+                    }
                 }
             }
         }
@@ -253,11 +270,16 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     }
                 }
                 MODE_RANDOM -> {
-                    var i: Int
-                    do {
-                        i = random.nextInt(size)
-                    } while (i == playIndex)
-                    playIndex = i
+                    randomNextIndexs.push(playIndex)
+                    if (randomLastIndexs.size > 0) {
+                        playIndex = randomLastIndexs.pop()
+                    } else {
+                        var i: Int
+                        do {
+                            i = random.nextInt(size)
+                        } while (i == playIndex)
+                        playIndex = i
+                    }
                 }
             }
         }
@@ -322,6 +344,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     private var playMode: Int = MODE_ORDER// 播放模式，默认顺序播放
     /** 随机播放取随机数 */
     private val random = Random()
+    /** 随机播放历史顺序 */
+    private val randomNextIndexs by lazy { LinkedList<Int>() }
+    private val randomLastIndexs by lazy { LinkedList<Int>() }
 
     private var autoStart = true
 
@@ -653,6 +678,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                         }
                     })
         } else if (song is LocalSong && song.picByteArray() != null) {
+            builder.setContentText(song.album)
             GlideApp.with(this)
                     .asBitmap()
                     .load(song.picByteArray())
