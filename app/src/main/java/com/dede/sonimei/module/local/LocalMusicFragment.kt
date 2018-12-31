@@ -8,7 +8,10 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
@@ -33,17 +36,7 @@ class LocalMusicFragment : BaseFragment() {
 
     override fun getLayoutId() = R.layout.fragment_local_music
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-//        val metadataRetriever = MediaMetadataRetriever()
-//        var metadata = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-//        metadata = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-//        metadata = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-//        metadata = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-//        metadata = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-    }
-
-    private val listAdapter by lazy { LocalMusicListAdapter() }
+    private var localSongList: List<LocalSong> = emptyList()
 
     @SuppressLint("CheckResult")
     override fun initView(savedInstanceState: Bundle?) {
@@ -55,13 +48,15 @@ class LocalMusicFragment : BaseFragment() {
         swipe_refresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent)
         swipe_refresh.setOnRefreshListener { loadPlayList() }
 
+        val listAdapter = LocalMusicListAdapter()
         val emptyView = LayoutInflater.from(context).inflate(R.layout.layout_local_music_empty, recycler_view_local, false)
         listAdapter.emptyView = emptyView
         recycler_view_local.adapter = listAdapter
-        listAdapter.setOnItemClickListener { adapter, view, position ->
+        listAdapter.setOnItemClickListener { _, _, position ->
             val song = listAdapter.data[position]
             asActivity<MainActivity>().playSongs(listAdapter.data, song)
         }
+        listAdapter.setNewData(localSongList)
         scroll_bar.setIndicator(CustomIndicator(context), true)
 
         RxPermissions(activity!!)
@@ -131,8 +126,9 @@ class LocalMusicFragment : BaseFragment() {
                     null, null, null, null))
             list.sortWith(Comparator { o1, o2 -> o1?.pinyin?.compareTo(o2?.pinyin ?: "#") ?: 0 })
             uiThread {
-                swipe_refresh.isRefreshing = false
-                listAdapter.setNewData(list)
+                this@LocalMusicFragment.localSongList = list
+                swipe_refresh?.isRefreshing = false
+                (recycler_view_local?.adapter as? LocalMusicListAdapter)?.setNewData(list)
             }
         }
     }

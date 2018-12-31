@@ -453,7 +453,13 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
         })
 
-        sessionCompat = MediaSessionCompat(this, "com.dede.sonimei_mediasession")
+        sessionCompat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            MediaSessionCompat(this, "com.dede.sonimei_mediasession")
+        } else {// api 19以下必须调用4个参数的方法
+            val intent = Intent(this, MusicService::class.java)
+            val pendingIntent = PendingIntent.getService(this, 0, intent, 0)
+            MediaSessionCompat(this, "com.dede.sonimei_mediasession", intent.component, pendingIntent)
+        }
         sessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS)
         sessionCompat.setCallback(object : MediaSessionCompat.Callback() {
             override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {

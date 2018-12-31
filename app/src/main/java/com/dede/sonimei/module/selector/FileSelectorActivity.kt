@@ -65,6 +65,7 @@ class FileSelectorActivity : BaseActivity() {
                 CFileFilter()
             }
         }
+        thisPath = rootDir
 
         RxPermissions(this)
                 .request(android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -75,7 +76,6 @@ class FileSelectorActivity : BaseActivity() {
                         return@subscribe
                     }
                     val pathStr = intent.getStringExtra(EXTRA_INIT_PATH)
-                    thisPath = rootDir
                     if (pathStr.notNull()) {
                         val path = File(pathStr)
                         if (!path.exists()) {
