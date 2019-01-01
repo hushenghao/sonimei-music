@@ -1,0 +1,33 @@
+import groovy.json.JsonSlurper
+
+/**
+ * 自动生成change_log.md
+ */
+task outputChangeLog {
+    println("generated change_log.md")
+    def logFile = file("./src/main/res/raw/change_log.json")
+    def list = (List) new JsonSlurper().parse(logFile)
+    if (list == null) return
+    def builder = new StringBuilder("[//]: # (Automatically generated content, no modification required!)\n")
+            .append("# Change Log\n")
+    for (i in list) {
+        builder.append("##### ")
+                .append(i.version_name)
+        if (i.version_code > 0) {
+            builder.append("(")
+                    .append(i.version_code)
+                    .append(")")
+            def a = 1
+            for (s in i.change_log) {
+                builder.append("\n\t")
+                        .append(a++)
+                        .append(".")
+                        .append(s)
+            }
+        }
+        builder.append("\n------\n")
+    }
+    def out = new FileOutputStream(new File(rootDir, "change_log.md"))
+    out.write(builder.toString().getBytes("utf-8"))
+    out.close()
+}

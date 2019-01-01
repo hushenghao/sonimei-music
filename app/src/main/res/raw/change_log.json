@@ -1,0 +1,40 @@
+[
+  {
+    "version_name": "0.7.2",
+    "version_code": 16,
+    "change_log": [
+      "添加自定义路径选择器",
+      "添加耳机线控支持",
+      "添加开源许可列表",
+      "添加在线播放缓冲loading",
+      "添加播放本地音乐功能",
+      "添加网易云web搜索支持",
+      "添加更新日志弹窗",
+      "bugs fix"
+    ]
+  },
+  {
+    "version_name": "0.7.1",
+    "version_code": 15,
+    "change_log": [
+      "修改应用名为轻心搜",
+      "代码优化，bugs fix"
+    ]
+  },
+  {
+    "version_name": "0.7.0",
+    "version_code": 14,
+    "change_log": [
+      "添加播放通知栏",
+      "播放页面改版",
+      "支持修改播放速度",
+      "添加应用在线更新",
+      "bugs fix"
+    ]
+  },
+  {
+    "version_name": "更老版本请查看git log",
+    "version_code": -1,
+    "change_log": []
+  }
+]

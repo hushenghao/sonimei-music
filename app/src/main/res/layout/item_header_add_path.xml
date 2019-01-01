@@ -2,7 +2,9 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="40dp"
+    android:background="?android:attr/selectableItemBackground"
     android:gravity="center"
     android:text="@string/add_ignore_path"
     android:textColor="@color/text1"
-    android:textSize="16sp" />
+    android:textSize="16sp"
+    android:textStyle="bold" />

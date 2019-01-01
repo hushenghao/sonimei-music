@@ -22,7 +22,6 @@ class OpenSourceActivity : BaseActivity() {
     override fun getLayoutId() = R.layout.activity_recycler_view
 
     override fun initView(savedInstanceState: Bundle?) {
-        super.initView(savedInstanceState)
         val inputStream = resources.openRawResource(R.raw.open_source)
         val jsonReader = JsonReader(InputStreamReader(inputStream, "utf-8"))
         val list = GsonBuilder()

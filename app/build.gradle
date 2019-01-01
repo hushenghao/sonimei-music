@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply from: file("./change_log.gradle")
 
 /**
  * 一些key和签名配置，如果报错在项目根目录新建key.properties文件，内容如下
@@ -33,9 +34,9 @@ android {
     }
 
     // 使用@Parcelize在class继承的时候会有无法复写writeToParcel方法的问题
-//    androidExtensions {
-//        experimental = true
-//    }
+    androidExtensions {
+        experimental = true
+    }
 
     signingConfigs {
         release {

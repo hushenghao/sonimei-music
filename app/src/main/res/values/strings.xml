@@ -12,7 +12,7 @@
         &lt;a href=&quot;https://github.com/hushenghao/sonimei-music&quot;&gt;https://github.com/hushenghao/sonimei-music&lt;/a&gt;
     </string>
     <string name="about_group">
-        🐧🐧群&lt;br/&gt;
+        QQ群&lt;br/&gt;
         &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=58sVWJP&quot;&gt;296513604&lt;/a&gt;&lt;br/&gt;
         &lt;a href=&quot;https://jq.qq.com/?_wv=1027&amp;k=5liAgW0&quot;&gt;451745602&lt;/a&gt;
     </string>
@@ -80,7 +80,7 @@
     <string name="menu_webview">网页版</string>
     <string name="menu_about">关于</string>
     <!--setting-->
-    <string name="setting_group_search">搜索</string>
+    <string name="setting_group_search">聚合搜索</string>
     <string name="setting_search_source">默认搜索来源</string>
     <string name="setting_group_down">下载选项</string>
     <string name="setting_down_wifionly">仅在Wi-Fi下下载</string>
@@ -153,11 +153,13 @@
     <string name="label_local_music">本地音乐</string>
     <string name="toast_local_music">本地音频无需下载</string>
     <string name="local_music_empty">没有找到本地音乐</string>
-    <string name="label_ignore_manager">扫描设置</string>
+    <string name="label_ignore_manager">已忽略路径</string>
     <string name="ignore_music_file">过滤小于60s的音频文件</string>
-    <string name="file_path_filter">文件路径过滤</string>
+    <string name="ignore_file_path">过滤指定文件路径</string>
     <string name="file_long_filter">文件时长过滤</string>
-    <string name="menu_filter_file">本地扫描设置</string>
+    <string name="file_path_filter">文件路径过滤</string>
     <string name="add_ignore_path">添加路径</string>
     <string name="load_play_path_error">加载播放链接出错</string>
+    <string name="label_change_log">更新日志</string>
+    <string name="setting_local">本地音乐</string>
 </resources>

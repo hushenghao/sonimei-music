@@ -2,8 +2,10 @@ package com.dede.sonimei.module.local
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,13 +13,14 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
 import com.dede.sonimei.base.BaseFragment
 import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.module.home.MainActivity
+import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_60S
+import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_PATHS
 import com.dede.sonimei.util.HanziToPinyin
 import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.to
@@ -27,12 +30,26 @@ import com.turingtechnologies.materialscrollbar.ICustomAdapter
 import kotlinx.android.synthetic.main.fragment_local_music.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.defaultSharedPreferences
-import org.jetbrains.anko.support.v4.startActivityForResult
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import java.io.File
 
 class LocalMusicFragment : BaseFragment() {
+
+    companion object {
+        const val REFRESH_LIST_ACTION = "refresh_list_action"
+
+        fun sendBroadcast(context: Context?) {
+            val intent = Intent(REFRESH_LIST_ACTION)
+            context?.sendBroadcast(intent)
+        }
+    }
+
+    private val refreshReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            loadPlayList()
+        }
+    }
 
     override fun getLayoutId() = R.layout.fragment_local_music
 
@@ -40,10 +57,10 @@ class LocalMusicFragment : BaseFragment() {
 
     @SuppressLint("CheckResult")
     override fun initView(savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-        activity!!.to<AppCompatActivity>().setSupportActionBar(tool_bar)
         // 重新回到栈顶时paddingTop会被置为0，原因未知
         tool_bar.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
+        setHasOptionsMenu(true)
+        activity!!.to<AppCompatActivity>().setSupportActionBar(tool_bar)
 
         swipe_refresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent)
         swipe_refresh.setOnRefreshListener { loadPlayList() }
@@ -66,8 +83,12 @@ class LocalMusicFragment : BaseFragment() {
                         toast(R.string.permission_sd_error)
                         return@subscribe
                     }
+                    if (localSongList.isNotEmpty()) return@subscribe
+
                     loadPlayList()
                 }) { it.printStackTrace() }
+        val intentFilter = IntentFilter(REFRESH_LIST_ACTION)
+        context?.registerReceiver(refreshReceiver, intentFilter)
     }
 
     private fun loadPlayList() {
@@ -75,8 +96,8 @@ class LocalMusicFragment : BaseFragment() {
         doAsync {
             val list = ArrayList<LocalSong>()
             val sp = defaultSharedPreferences
-            val b = sp.getBoolean(SP_KEY_IGNORE_60S, true)//忽略时间小于60s的歌曲
-            val ignoreList = (sp.getStringSet(SP_KEY_IGNORE_PATHS, null) ?: emptySet()).toList()
+            val b = sp.getBoolean(KEY_IGNORE_60S, true)//忽略时间小于60s的歌曲
+            val ignoreList = (sp.getStringSet(KEY_IGNORE_PATHS, null) ?: emptySet()).toList()
 
             fun inPath(file: File): Boolean {
                 val parentPath = file.parentFile.absolutePath
@@ -120,10 +141,19 @@ class LocalMusicFragment : BaseFragment() {
                 }
                 cursor.close()
             }
+
+            val strings = arrayOf(
+                    MediaStore.Audio.Media.DURATION,
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.ARTIST
+            )
             load(context!!.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    null, null, null, null))
+                    strings, null, null, null))
             load(context!!.contentResolver.query(MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
-                    null, null, null, null))
+                    strings, null, null, null))
             list.sortWith(Comparator { o1, o2 -> o1?.pinyin?.compareTo(o2?.pinyin ?: "#") ?: 0 })
             uiThread {
                 this@LocalMusicFragment.localSongList = list
@@ -133,27 +163,13 @@ class LocalMusicFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroyView() {
+        context?.unregisterReceiver(refreshReceiver)
+        super.onDestroyView()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_local_music, menu)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ignoreSetting && resultCode == Activity.RESULT_OK) {
-            loadPlayList()
-        }
-    }
-
-    private val ignoreSetting = 101
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.menu_filter -> {
-                startActivityForResult<IgnoreManagerActivity>(ignoreSetting)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private inner class LocalMusicListAdapter : BaseQuickAdapter<LocalSong, BaseViewHolder>(R.layout.item_local_music), ICustomAdapter {

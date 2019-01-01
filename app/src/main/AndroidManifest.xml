@@ -22,7 +22,9 @@
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:taskAffinity="android.task.music"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="false"
         tools:ignore="UnusedAttribute">
         <meta-data
             android:name="android.max_aspect"
@@ -37,7 +39,31 @@
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.APP_MUSIC" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            <intent-filter android:priority="-1">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
             </intent-filter>
         </activity>
 
@@ -51,7 +77,12 @@
 
         <activity
             android:name=".module.opensource.OpenSourceActivity"
-            android:label="@string/label_open_source" />
+            android:label="@string/label_open_source">
+            <intent-filter>
+                <action android:name="com.dede.sonimei.OPEN_SOURCE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".module.selector.FileSelectorActivity"
@@ -59,7 +90,22 @@
 
         <activity
             android:name=".module.local.IgnoreManagerActivity"
-            android:label="@string/label_ignore_manager" />
+            android:label="@string/label_ignore_manager">
+            <intent-filter>
+                <action android:name="com.dede.sonimei.FILTER_PATH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!--应用设置中用隐式意图打开-->
+        <activity
+            android:name=".module.changelog.ChangeLogActivity"
+            android:label="@string/label_change_log"
+            android:theme="@style/Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.dede.sonimei.CHANGE_LOG" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".module.play.MusicService"

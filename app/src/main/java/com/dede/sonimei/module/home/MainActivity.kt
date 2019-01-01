@@ -2,13 +2,20 @@ package com.dede.sonimei.module.home
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.content.*
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
+import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.support.design.widget.BottomSheetBehavior
-import android.view.*
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import com.dede.sonimei.APE_LINK
@@ -18,6 +25,10 @@ import com.dede.sonimei.base.BaseActivity
 import com.dede.sonimei.component.CaretDrawable
 import com.dede.sonimei.component.PlayBottomSheetBehavior
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.local.LocalSong
+import com.dede.sonimei.module.changelog.ChangeLogActivity
+import com.dede.sonimei.module.play.MusicBinder
+import com.dede.sonimei.module.play.MusicService
 import com.dede.sonimei.module.play.PlayFragment
 import com.dede.sonimei.module.setting.SettingActivity
 import com.dede.sonimei.util.extends.gone
@@ -28,6 +39,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+
 
 /**
  * 应用主页面
@@ -64,6 +76,8 @@ class MainActivity : BaseActivity() {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
+
+        parseIntent(intent)
 
         val homeFragmentContent = findViewById<View>(R.id.home_fragment)
         val homeFragment = supportFragmentManager.findFragmentById(R.id.home_fragment) as HomeFragment
@@ -156,6 +170,96 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private var connection: ServiceConnection? = null
+
+    private fun parseIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val scheme = uri.scheme ?: return
+        var asyncQueryHandler: AsyncQueryHandler? = null
+        @SuppressLint("HandlerLeak")
+        asyncQueryHandler = object : AsyncQueryHandler(contentResolver) {
+            override fun onQueryComplete(token: Int, cookie: Any?, cursor: Cursor?) {
+                asyncQueryHandler?.cancelOperation(0)
+                if (cursor == null) return
+                if (!cursor.moveToNext()) {
+                    cursor.close()
+                    return
+                }
+                val titleIdx = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+                val artistIdx = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+                val albumIdx = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
+                val idIdx = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+                val detaIdx = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+                val displaynameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+
+                val localSong = LocalSong()
+                if (idIdx >= 0) {
+                    localSong.songId = cursor.getLong(idIdx)
+                }
+
+                if (titleIdx >= 0) {
+                    val title = cursor.getString(titleIdx)
+                    if (artistIdx >= 0) {
+                        val artist = cursor.getString(artistIdx)
+                        localSong.author = artist
+                    }
+                    localSong.title = title
+                } else if (displaynameIdx >= 0) {
+                    val name = cursor.getString(displaynameIdx)
+                    localSong.title = name
+                }
+                if (albumIdx >= 0) {
+                    localSong.album = cursor.getString(albumIdx)
+                }
+                if (detaIdx >= 0) {
+                    localSong.path = cursor.getString(detaIdx)
+                } else {
+                    localSong.path = uri.path
+                }
+                cursor.close()
+
+                val service = Intent(this@MainActivity, MusicService::class.java)
+                connection = object : ServiceConnection {
+                    override fun onServiceDisconnected(name: ComponentName?) {
+                    }
+
+                    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                        val musicBinder = service as? MusicBinder ?: return
+                        musicBinder.play(localSong)
+                        connection = null
+                        this@MainActivity.unbindService(this)
+                    }
+                }
+                this@MainActivity.bindService(service, connection!!, Context.BIND_AUTO_CREATE)
+            }
+        }
+
+        val strings = arrayOf(MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DATA)
+
+        if (scheme == ContentResolver.SCHEME_CONTENT) {
+            if (uri.authority == MediaStore.AUTHORITY) {
+                // try to get title and artist from the media content provider
+                asyncQueryHandler.startQuery(0, null, uri,
+                        strings, null, null, null)
+            } else {
+                // Try to get the display name from another content provider.
+                // Don't specifically ask for the display name though, since the
+                // provider might not actually support that column.
+                asyncQueryHandler.startQuery(0, null, uri,
+                        null, null, null, null)
+            }
+        } else if (scheme == "file") {
+            // check if this file is in the media database (clicking on a download
+            // in the download manager might follow this path
+            val path = uri.path ?: return
+            asyncQueryHandler.startQuery(0, null, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    strings, MediaStore.Audio.Media.DATA + "=?", arrayOf(path), null)
+        }
+
+    }
+
     fun showBottomController() {
         val height = resources.getDimensionPixelOffset(R.dimen.dimen_bottom_play_controller_height)
         iv_arrow_indicators.show()
@@ -207,8 +311,14 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
+    override fun onStart() {
+        super.onStart()
+        ChangeLogActivity.show(this)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        parseIntent(intent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -254,5 +364,10 @@ class MainActivity : BaseActivity() {
         }
 
         super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        if (connection != null) unbindService(connection)
+        super.onDestroy()
     }
 }

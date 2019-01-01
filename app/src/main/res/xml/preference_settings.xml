@@ -3,6 +3,20 @@
     android:persistent="true"
     android:title="@string/setting_label">
 
+    <PreferenceCategory android:title="@string/setting_local">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="ignore_60s"
+            android:summary="@string/ignore_music_file"
+            android:title="@string/file_long_filter" />
+
+        <Preference
+            android:summary="@string/ignore_file_path"
+            android:title="@string/file_path_filter">
+            <intent android:action="com.dede.sonimei.FILTER_PATH" />
+        </Preference>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/setting_group_search">
         <Preference
             android:key="default_search_source"
@@ -23,13 +37,17 @@
 
     <PreferenceCategory android:title="@string/setting_group_other">
 
+        <Preference android:title="@string/label_change_log">
+            <intent android:action="com.dede.sonimei.CHANGE_LOG" />
+        </Preference>
+
         <Preference
             android:key="bug_report"
             android:title="@string/setting_other_debug_sum" />
 
-        <Preference
-            android:key="open_source"
-            android:title="@string/label_open_source" />
+        <Preference android:title="@string/label_open_source">
+            <intent android:action="com.dede.sonimei.OPEN_SOURCE" />
+        </Preference>
 
         <Preference
             android:key="qq_group"

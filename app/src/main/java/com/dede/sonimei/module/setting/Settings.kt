@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.Preference
@@ -13,7 +12,7 @@ import android.support.v7.app.AlertDialog
 import com.dede.sonimei.*
 import com.dede.sonimei.data.Source
 import com.dede.sonimei.module.home.AboutDialog
-import com.dede.sonimei.module.opensource.OpenSourceActivity
+import com.dede.sonimei.module.local.LocalMusicFragment
 import com.dede.sonimei.module.selector.*
 import com.dede.sonimei.util.extends.isNull
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -27,7 +26,7 @@ import java.io.FileFilter
  */
 class Settings : PreferenceFragment(),
         AnkoLogger,
-        SharedPreferences.OnSharedPreferenceChangeListener,
+        Preference.OnPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 
     companion object {
@@ -36,7 +35,8 @@ class Settings : PreferenceFragment(),
         const val KEY_DEFAULT_SEARCH_SOURCE = "default_search_source"
         const val KEY_BUG_REPORT = "bug_report"
         const val KEY_QQ_GROUP = "qq_group"
-        const val KEY_OPEN_SOURCE = "open_source"
+        const val KEY_IGNORE_60S = "ignore_60s"
+        const val KEY_IGNORE_PATHS = "ignore_paths"
     }
 
     private val selectPathCode = 1
@@ -68,10 +68,6 @@ class Settings : PreferenceFragment(),
             }
             KEY_QQ_GROUP -> {
                 AboutDialog(activity).show()
-                true
-            }
-            KEY_OPEN_SOURCE -> {
-                startActivity<OpenSourceActivity>()
                 true
             }
             else -> false
@@ -120,15 +116,14 @@ class Settings : PreferenceFragment(),
         startActivity(Intent.createChooser(intent, getString(R.string.email_chooser)))
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (key) {
-            KEY_WIFI_DOWNLOAD -> {
-            }
-            KEY_CUSTOM_PATH -> {
-                findPreference(KEY_CUSTOM_PATH).summary = defaultSharedPreferences
-                        .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
+    override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+        when (preference?.key) {
+            KEY_IGNORE_60S -> {
+                LocalMusicFragment.sendBroadcast(activity)
+                return true
             }
         }
+        return false
     }
 
     private lateinit var defaultSearchSource: Preference
@@ -146,22 +141,14 @@ class Settings : PreferenceFragment(),
         customPath.onPreferenceClickListener = this
         customPath.summary = defaultSharedPreferences
                 .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
+        customPath.onPreferenceChangeListener = this
         findPreference(KEY_BUG_REPORT).onPreferenceClickListener = this
         findPreference(KEY_QQ_GROUP).onPreferenceClickListener = this
-        findPreference(KEY_OPEN_SOURCE).onPreferenceClickListener = this
-    }
-
-    override fun onResume() {
-        super.onResume()
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        findPreference(KEY_IGNORE_60S).onPreferenceChangeListener = this
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK || data == null) return
         when (requestCode) {
             selectSourceCode -> {
@@ -183,12 +170,10 @@ class Settings : PreferenceFragment(),
                 defaultSharedPreferences.edit()
                         .putString(KEY_CUSTOM_PATH, path)
                         .apply()
-                // 这时候activity不可见，所以onSharedPreferenceChanged不会回调
                 findPreference(KEY_CUSTOM_PATH).summary = defaultSharedPreferences
                         .getString(KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
             }
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
 }

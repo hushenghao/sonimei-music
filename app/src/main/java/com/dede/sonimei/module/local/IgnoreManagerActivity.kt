@@ -12,6 +12,7 @@ import com.dede.sonimei.module.selector.EXTRA_SELECT_TYPE
 import com.dede.sonimei.module.selector.FILE_SELECT_PATH
 import com.dede.sonimei.module.selector.FileSelectorActivity
 import com.dede.sonimei.module.selector.RESULT_FILE_PATH
+import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_PATHS
 import kotlinx.android.synthetic.main.activity_ignore_manager.*
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startActivityForResult
@@ -20,9 +21,6 @@ import java.io.File
 /**
  * 本地音频忽略管理
  */
-const val SP_KEY_IGNORE_PATHS = "ignore_paths"
-const val SP_KEY_IGNORE_60S = "ignore_60s"
-
 class IgnoreManagerActivity : BaseActivity() {
 
     private val sp by lazy { defaultSharedPreferences }
@@ -32,12 +30,6 @@ class IgnoreManagerActivity : BaseActivity() {
     private val selectedPath = 100
 
     override fun initView(savedInstanceState: Bundle?) {
-        val b = sp.getBoolean(SP_KEY_IGNORE_60S, true)
-        switch_60s.isChecked = b
-        switch_60s.setOnCheckedChangeListener { _, isChecked ->
-            sp.edit().putBoolean(SP_KEY_IGNORE_60S, isChecked)
-                    .apply()
-        }
 
         val view = LayoutInflater.from(this)
                 .inflate(R.layout.item_header_add_path, recycler_view, false)
@@ -46,19 +38,18 @@ class IgnoreManagerActivity : BaseActivity() {
         }
 
         val pathAdapter = PathAdapter()
-        pathAdapter.addHeaderView(view)
-        val set = sp.getStringSet(SP_KEY_IGNORE_PATHS, null) ?: emptySet()
+        pathAdapter.addFooterView(view)
+        val set = sp.getStringSet(KEY_IGNORE_PATHS, null) ?: emptySet()
         pathAdapter.setNewData(set.map { File(it) }.toMutableList())
         recycler_view.adapter = pathAdapter
         pathAdapter.setOnItemChildClickListener { adapter, _, position ->
             adapter.remove(position)
-            sp.edit().putStringSet(SP_KEY_IGNORE_PATHS, pathAdapter.data.map { it.absolutePath }.toSet())
+            sp.edit().putStringSet(KEY_IGNORE_PATHS, pathAdapter.data.map { it.absolutePath }.toSet())
                     .apply()
         }
 
         fab_done.setOnClickListener {
-            val intent = Intent()
-            setResult(Activity.RESULT_OK, intent)
+            LocalMusicFragment.sendBroadcast(this)
             finish()
         }
     }
@@ -71,7 +62,7 @@ class IgnoreManagerActivity : BaseActivity() {
         val path = data.getStringExtra(RESULT_FILE_PATH)
         val pathAdapter = recycler_view.adapter as? PathAdapter ?: return
         pathAdapter.addData(File(path))
-        sp.edit().putStringSet(SP_KEY_IGNORE_PATHS, pathAdapter.data.map { it.absolutePath }.toSet())
+        sp.edit().putStringSet(KEY_IGNORE_PATHS, pathAdapter.data.map { it.absolutePath }.toSet())
                 .apply()
     }
 

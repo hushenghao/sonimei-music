@@ -109,7 +109,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         sb_volume.max = maxVolume
         sb_volume.progress = volume
         sb_volume.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                         seekBar!!.progress,
                         AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)

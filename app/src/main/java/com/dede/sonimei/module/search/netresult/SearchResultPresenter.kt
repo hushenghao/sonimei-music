@@ -50,6 +50,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
         this.page = 1
         this.source = pair.first
         this.type = pair.second
+        offset = 0
         view.showLoading()
         loadList(false, this.search)
     }

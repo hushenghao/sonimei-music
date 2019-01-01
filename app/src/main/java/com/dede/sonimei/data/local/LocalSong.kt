@@ -6,11 +6,11 @@ import android.os.Parcelable
 import com.dede.sonimei.data.BaseSong
 
 data class LocalSong(
-        val songId: Long,
-        override val title: String?,
-        val author: String?,
-        val album: String?,
-        val duration: Long,
+        var songId: Long,
+        override var title: String?,
+        var author: String?,
+        var album: String?,
+        var duration: Long,
         override var path: String?) : BaseSong(title, path), Parcelable {
 
     var pinyin: String = "#"
@@ -25,6 +25,8 @@ data class LocalSong(
             parcel.readLong(),
             parcel.readString()
     )
+
+    constructor() : this(0, "", "", "", 0, "")
 
     override fun getName(): String {
         return "$title - $author"

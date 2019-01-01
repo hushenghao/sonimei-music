@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tv_log"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:drawableStart="@drawable/shape_change_log"
+    android:drawableLeft="@drawable/shape_change_log"
+    android:drawablePadding="5dp"
+    android:gravity="center_vertical"
+    android:includeFontPadding="false"
+    android:paddingLeft="30dp"
+    android:textColor="@color/text2"
+    android:textSize="12sp"
+    tools:text="更新日志..." />

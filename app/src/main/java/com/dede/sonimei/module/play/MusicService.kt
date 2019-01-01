@@ -44,6 +44,7 @@ private const val ACTION_NOTIFICATION_PLAY = "play"
 private const val ACTION_NOTIFICATION_PAUSE = "pause"
 private const val ACTION_NOTIFICATION_NEXT = "next"
 private const val ACTION_NOTIFICATION_LAST = "last"
+private const val ACTION_NOTIFICATION_DELETE = "delete"
 
 private const val PLAY_NOTIFICATION_ID = 1001
 private const val PLAY_NOTIFICATION_CHANNEL = "sonimei_music_channel"
@@ -75,6 +76,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                 if (playList.isEmpty()) {
                     playIndex = 0
                     musicPlayer.stop()
+                    notificationManager.cancel(PLAY_NOTIFICATION_ID)
                 } else {
                     playIndex = index
                     val end = playList.size - 1
@@ -97,7 +99,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
     override fun add(song: BaseSong?, index: Int) {
         if (song == null) return
-        if (index > 0) {
+        if (index >= 0) {
             if (index <= playIndex) {
                 playIndex++
             }
@@ -121,6 +123,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         randomNextIndexs.clear()
         randomLastIndexs.clear()
         musicPlayer.stop()
+        notificationManager.cancel(PLAY_NOTIFICATION_ID)
     }
 
     private var pathSubscribe: Disposable? = null
@@ -222,7 +225,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
     override fun pause() {
         musicPlayer.pause()
-        stopForeground(false)
+        stopForeground(true)
         notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
     }
 
@@ -455,6 +458,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         notifyFilter.addAction(ACTION_NOTIFICATION_NEXT)
         notifyFilter.addAction(ACTION_NOTIFICATION_PAUSE)
         notifyFilter.addAction(ACTION_NOTIFICATION_PLAY)
+        notifyFilter.addAction(ACTION_NOTIFICATION_DELETE)
         registerReceiver(notificationActionReceiver, notifyFilter)
 
         setLoadPlayListListener(loadPlayListListener)// 预加载播放列表
@@ -617,6 +621,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                 ACTION_NOTIFICATION_NEXT -> {
                     next()
                 }
+                ACTION_NOTIFICATION_DELETE -> {
+                    stopSelf()
+                }
             }
         }
     }
@@ -721,6 +728,10 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         intent.action = ACTION_NOTIFICATION_NEXT
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         builder.addAction(R.drawable.ic_play_next, getString(R.string.notify_next), pendingIntent)
+
+        intent.action = ACTION_NOTIFICATION_DELETE
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        builder.setDeleteIntent(pendingIntent)
     }
 
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/change_log_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:childDivider="@android:color/transparent"
+    android:childIndicator="@null"
+    android:choiceMode="multipleChoice"
+    android:dividerHeight=".5dp"
+    tools:context=".module.changelog.ChangeLogActivity"
+    tools:listitem="@layout/item_change_log">
+
+</ExpandableListView>
