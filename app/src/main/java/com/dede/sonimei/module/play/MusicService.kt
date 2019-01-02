@@ -145,6 +145,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         } else {
             this.playIndex = indexOf
         }
+        startForeground(PLAY_NOTIFICATION_ID, createNotification())
         pathSubscribe = song.loadPlayLink()
                 .applySchedulers()
                 .doOnNext { song.path = it }
@@ -217,7 +218,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                 musicPlayer.playbackParams = musicPlayer.playbackParams.setSpeed(playSpeed)
             }
             musicPlayer.start()
-            notificationManager.notify(PLAY_NOTIFICATION_ID, createNotification())
+            startForeground(PLAY_NOTIFICATION_ID, createNotification())
         } else {
             plays(playList, playIndex)
         }

@@ -141,8 +141,8 @@ class SearchResultResultFragment : BaseFragment(), ISearchResultView {
                         2 -> {
                             DownloadHelper.download(activity, song)
                         }
-                        3 -> copy(song.link)
-                        4 -> copy(song.path)
+                        3 -> copy(song.path)
+                        4 -> copy(song.link)
                     }
                 }
                 .create()

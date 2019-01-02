@@ -7,7 +7,6 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
@@ -180,10 +179,6 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
             }
             request.allowScanningByMediaScanner()
             request.setVisibleInDownloadsUi(true)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                request.setRequiresDeviceIdle(false)
-                request.setRequiresCharging(false)
-            }
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
             val file = File(path)
