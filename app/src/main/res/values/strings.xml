@@ -95,7 +95,7 @@
     <string name="download_link_empty">下载链接为空</string>
     <string name="download_onlywifi">已开启仅Wi-Fi下载…</string>
     <string name="download_start">即将开始下载 %1$s</string>
-    <string name="download_path_error">自定义下载位置不可用，使用默认位置</string>
+    <string name="download_path_error">自定义下载位置不可用，使用默认音乐位置</string>
 
     <string name="sure">确定</string>
     <string name="play_path_empty">播放链接为空</string>

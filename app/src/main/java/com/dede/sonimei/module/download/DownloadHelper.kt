@@ -18,6 +18,8 @@ import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
+import com.liulishuo.okdownload.DownloadTask
+import com.liulishuo.okdownload.core.Util
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.*
 import java.io.File
@@ -29,6 +31,7 @@ import java.io.File
 class DownloadHelper private constructor(val context: Context) : AnkoLogger {
 
     companion object {
+        private const val TAG = "DownloadHelper"
         @SuppressLint("StaticFieldLeak")
         private var instance: DownloadHelper? = null
 
@@ -142,11 +145,48 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
     fun download(song: SearchSong) {
         song.loadPlayLink()
                 .subscribe({
-                    _download(song)
+                    //                    _download(song)
+                    okDownload(song)
                 }) {
                     toast(R.string.load_play_path_error)
                     it.printStackTrace()
                 }
+    }
+
+    private fun okDownload(song: SearchSong) {
+        if (song.path.isNull()) {
+            toast(R.string.download_link_empty)
+            return
+        }
+        val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
+        var file = File(path)
+        val r = if (!file.exists()) {
+            file.mkdirs()
+        } else {
+            file.isDirectory && file.canWrite()
+        }
+        if (!r) {
+            toast(R.string.download_path_error)
+            file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+        }
+
+        Util.enableConsoleLog()
+        val builder = DownloadTask.Builder(song.path!!, file)
+                .setFilename(song.getName() + ".mp3")
+                // the minimal interval millisecond for callback progress
+                .setMinIntervalMillisCallbackProcess(80)
+                // do re-download even if the task has already been completed in the past.
+                .setPreAllocateLength(false)
+                .setAutoCallbackToUIThread(true)
+        val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
+        if (wifiDownload && !isWifiConnected(context)) {
+            toast(R.string.download_onlywifi)
+        }
+        builder.setWifiRequired(wifiDownload)
+        builder.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36")
+        val task = builder.build()
+        task.enqueue(NotificationSampleListener(context).apply { initNotification() })
+        toast(String.format(context.getString(R.string.download_start), song.getName()))
     }
 
     /**

@@ -43,12 +43,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 app:msb_autoHide="true"
-                app:msb_barColor="@color/colorAccent"
-                app:msb_handleColor="@color/colorPrimary"
-                app:msb_handleOffColor="@color/colorPrimary"
-                app:msb_lightOnTouch="true"
+                app:msb_barColor="#66000000"
+                app:msb_handleColor="@color/colorAccent"
+                app:msb_lightOnTouch="false"
                 app:msb_recyclerView="@id/recycler_view_local"
-                app:msb_scrollMode="lastElement" />
+                app:msb_textColor="@color/white" />
 
         </RelativeLayout>
     </android.support.v4.widget.SwipeRefreshLayout>

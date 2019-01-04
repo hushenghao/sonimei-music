@@ -141,7 +141,16 @@ class SearchResultFragment : BaseFragment(), ISearchResultView {
                         2 -> {
                             DownloadHelper.download(activity, song)
                         }
-                        3 -> copy(song.path)
+                        3 -> {
+                            song.loadPlayLink()
+                                    .applySchedulers()
+                                    .subscribe({
+                                        copy(song.path)
+                                    }) {
+                                        toast(R.string.download_link_empty)
+                                        it.printStackTrace()
+                                    }
+                        }
                         4 -> copy(song.link)
                     }
                 }
