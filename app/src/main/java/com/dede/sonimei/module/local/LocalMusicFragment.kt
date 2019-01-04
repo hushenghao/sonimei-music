@@ -7,12 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.database.Cursor
+import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.ViewOutlineProvider
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
@@ -74,7 +79,14 @@ class LocalMusicFragment : BaseFragment() {
             asActivity<MainActivity>().playSongs(listAdapter.data, song)
         }
         listAdapter.setNewData(localSongList)
-        scroll_bar.setIndicator(CustomIndicator(context), true)
+        val customIndicator = CustomIndicator(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            customIndicator.elevation = 8f
+            customIndicator.outlineProvider = ViewOutlineProvider.BACKGROUND
+        }
+        customIndicator.setTypeface(Typeface.SANS_SERIF)
+        customIndicator.setTextSize(35)
+        scroll_bar.setIndicator(customIndicator, true)
 
         RxPermissions(activity!!)
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE)
