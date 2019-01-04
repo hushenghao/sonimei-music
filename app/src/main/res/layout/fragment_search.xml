@@ -71,7 +71,7 @@
     <!--搜索结果列表-->
     <fragment
         android:id="@+id/search_result_fragment"
-        android:name="com.dede.sonimei.module.search.netresult.SearchResultResultFragment"
+        android:name="com.dede.sonimei.module.search.netresult.SearchResultFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />

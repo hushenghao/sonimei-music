@@ -22,7 +22,6 @@ import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_60S
 import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_PATHS
 import com.dede.sonimei.util.HanziToPinyin
-import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.to
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.turingtechnologies.materialscrollbar.CustomIndicator
@@ -53,12 +52,10 @@ class LocalMusicFragment : BaseFragment() {
 
     override fun getLayoutId() = R.layout.fragment_local_music
 
-    private var localSongList: List<LocalSong> = emptyList()
-
     @SuppressLint("CheckResult")
     override fun initView(savedInstanceState: Bundle?) {
         // 重新回到栈顶时paddingTop会被置为0，原因未知
-        tool_bar.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
+//        tool_bar.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
         setHasOptionsMenu(true)
         activity!!.to<AppCompatActivity>().setSupportActionBar(tool_bar)
 
@@ -73,7 +70,6 @@ class LocalMusicFragment : BaseFragment() {
             val song = listAdapter.data[position]
             asActivity<MainActivity>().playSongs(listAdapter.data, song)
         }
-        listAdapter.setNewData(localSongList)
         scroll_bar.setIndicator(CustomIndicator(context), true)
 
         RxPermissions(activity!!)
@@ -83,7 +79,6 @@ class LocalMusicFragment : BaseFragment() {
                         toast(R.string.permission_sd_error)
                         return@subscribe
                     }
-                    if (localSongList.isNotEmpty()) return@subscribe
 
                     loadPlayList()
                 }) { it.printStackTrace() }
@@ -156,14 +151,20 @@ class LocalMusicFragment : BaseFragment() {
                     strings, null, null, null))
             list.sortWith(Comparator { o1, o2 -> o1?.pinyin?.compareTo(o2?.pinyin ?: "#") ?: 0 })
             uiThread {
-                this@LocalMusicFragment.localSongList = list
                 swipe_refresh?.isRefreshing = false
                 (recycler_view_local?.adapter as? LocalMusicListAdapter)?.setNewData(list)
             }
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) return
+        activity!!.to<AppCompatActivity>().setSupportActionBar(tool_bar)
+    }
+
     override fun onDestroyView() {
+
         context?.unregisterReceiver(refreshReceiver)
         super.onDestroyView()
     }

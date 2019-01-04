@@ -29,7 +29,7 @@ import org.jetbrains.anko.support.v4.toast
 /**
  * Created by hsh on 2018/5/15.
  */
-class SearchResultResultFragment : BaseFragment(), ISearchResultView {
+class SearchResultFragment : BaseFragment(), ISearchResultView {
 
     override fun showLoading() {
         swipe_refresh.isRefreshing = true

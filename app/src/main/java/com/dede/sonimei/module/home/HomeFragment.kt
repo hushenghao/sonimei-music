@@ -1,6 +1,8 @@
 package com.dede.sonimei.module.home
 
 import android.os.Bundle
+import android.support.annotation.IdRes
+import android.support.v4.app.Fragment
 import android.view.MenuItem
 import android.view.View
 import com.dede.sonimei.R
@@ -12,8 +14,6 @@ import com.dede.sonimei.module.search.SearchFragment
  * 首页Fragment，只是一个空壳
  */
 class HomeFragment : BaseFragment() {
-
-//    override fun getLayoutId() = R.layout.fragment_home_layout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,17 +32,25 @@ class HomeFragment : BaseFragment() {
         if (super.onOptionsItemSelected(item)) return true
         return when (item?.itemId) {
             R.id.menu_to_search -> {
-                val searchFragment = SearchFragment()
-                childFragmentManager.beginTransaction()
-                        .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out,
-                                R.anim.anim_fade_in, R.anim.anim_fade_out)
-                        .replace(R.id.home_fragment, searchFragment, "search_fragment")
-                        .addToBackStack(null)
-                        .commit()
+                addFragment(R.id.home_fragment, SearchFragment(), "search_fragment")
                 true
             }
             else -> false
         }
+    }
+
+    private fun addFragment(@IdRes id: Int, fragment: Fragment, tag: String?) {
+        val trans = childFragmentManager
+                .beginTransaction()
+        trans.setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out,
+                R.anim.anim_fade_in, R.anim.anim_fade_out)
+                .add(id, fragment, tag)
+                .addToBackStack(null)
+        val nowShowFrag = childFragmentManager.findFragmentById(id)
+        if (nowShowFrag != null) {
+            trans.hide(nowShowFrag)
+        }
+        trans.commit()
     }
 
 }

@@ -16,7 +16,8 @@ import com.dede.sonimei.component.CircularRevealDrawable
 import com.dede.sonimei.module.db.DatabaseOpenHelper.Companion.COLUMNS_TEXT
 import com.dede.sonimei.module.home.SearchHisAdapter
 import com.dede.sonimei.module.home.SourceTypeDialog
-import com.dede.sonimei.module.search.netresult.SearchResultResultFragment
+import com.dede.sonimei.module.search.netresult.SearchResultFragment
+import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.color
 import com.dede.sonimei.util.extends.notNull
 import com.dede.sonimei.util.extends.to
@@ -43,14 +44,15 @@ class SearchFragment : BaseFragment(), SearchView.OnQueryTextListener {
     override fun getLayoutId() = R.layout.fragment_search
 
     private lateinit var drawable: CircularRevealDrawable
-    private lateinit var searchResultFragment: SearchResultResultFragment
+    private lateinit var searchResultFragment: SearchResultFragment
 
     override fun initView(savedInstanceState: Bundle?) {
+        app_bar.setPadding(0, ScreenHelper.getFrameTopMargin(activity), 0, 0)
         activity!!.to<AppCompatActivity>().setSupportActionBar(tool_bar)
         setHasOptionsMenu(true)
 
         searchResultFragment = childFragmentManager
-                .findFragmentById(R.id.search_result_fragment) as SearchResultResultFragment
+                .findFragmentById(R.id.search_result_fragment) as SearchResultFragment
         val source = searchResultFragment.getTypeSource().first
 
         drawable = CircularRevealDrawable(color(R.color.colorPrimary))

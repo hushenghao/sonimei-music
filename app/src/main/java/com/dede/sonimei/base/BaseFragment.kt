@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.trello.rxlifecycle2.components.support.RxFragment
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.info
-import org.jetbrains.anko.warn
 
 /**
  * Created by hsh on 2018/5/14.
@@ -28,7 +28,7 @@ abstract class BaseFragment : RxFragment(), AnkoLogger {
         return if (layoutId > 0) {
             inflater.inflate(layoutId, container, false)
         } else {
-            warn("没有设置布局，返回默认FrameLayout")
+            debug("没有设置布局，返回默认FrameLayout")
             FrameLayout(context)
         }
     }
