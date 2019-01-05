@@ -3,35 +3,28 @@ package com.dede.sonimei.module.download
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DownloadManager
+import android.content.ComponentName
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Uri
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.support.annotation.StringRes
-import android.webkit.MimeTypeMap
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import com.dede.sonimei.R
+import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
-import com.dede.sonimei.defaultDownloadPath
-import com.dede.sonimei.module.setting.Settings
-import com.dede.sonimei.util.extends.isNull
-import com.dede.sonimei.util.extends.notNull
-import com.liulishuo.okdownload.DownloadTask
-import com.liulishuo.okdownload.core.Util
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.jetbrains.anko.*
-import java.io.File
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.toast
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
  * Created by hsh on 2018/5/18.
  */
-class DownloadHelper private constructor(val context: Context) : AnkoLogger {
+class DownloadHelper private constructor(val context: Context) : ServiceConnection, AnkoLogger {
 
     companion object {
-        private const val TAG = "DownloadHelper"
+
         @SuppressLint("StaticFieldLeak")
         private var instance: DownloadHelper? = null
 
@@ -62,193 +55,59 @@ class DownloadHelper private constructor(val context: Context) : AnkoLogger {
         }
     }
 
-    private val handler: Handler = Handler(Looper.getMainLooper())
-    private val downloadManager: DownloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    private val tempQueue = ArrayList<BaseSong>()// 绑定成功前的队列
+    private val allQueue = Collections.synchronizedList<BaseSong>(ArrayList())
+    private var binder: DownloadService.DownloadBinder? = null
 
-    private fun filterDownload(downloadUrl: String?, download: () -> Unit) {
-        doAsync {
-            val query = DownloadManager.Query()
-            // 查询已成功的任务
-            query.setFilterByStatus(DownloadManager.STATUS_SUCCESSFUL)
-            val successCursor = downloadManager.query(query)
-            var cancel = false// 是否取消任务
-            while (successCursor.moveToNext()) {
-                val url = successCursor.getString(successCursor.getColumnIndex(DownloadManager.COLUMN_URI))
-                if (url == downloadUrl) {
-                    val uriStr = successCursor.getString(successCursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
-                    val path = Uri.parse(uriStr).path// 文件路径
-                    val file = File(path)
-                    if (file.exists()) {
-                        toast(R.string.download_file_downed)
-                        cancel = true
-                        break
-                    }
-                }
-            }
-            successCursor.close()
-            if (cancel) return@doAsync
+    override fun onServiceDisconnected(name: ComponentName?) {
+        binder = null
+    }
 
-            // 查询下载中的任务
-            query.setFilterByStatus(DownloadManager.STATUS_RUNNING)
-            val runningCursor = downloadManager.query(query)
-            while (runningCursor.moveToNext()) {
-                val url = runningCursor.getString(runningCursor.getColumnIndex(DownloadManager.COLUMN_URI))
-                if (url == downloadUrl) {
-                    toast(R.string.download_isdownloading)
-                    cancel = true
-                    break
-                }
-            }
-            runningCursor.close()
-            if (cancel) return@doAsync
-
-            // 查询在等待中的任务
-            query.setFilterByStatus(DownloadManager.STATUS_PENDING)
-            val pendingCursor = downloadManager.query(query)
-            while (pendingCursor.moveToNext()) {
-                val url = pendingCursor.getString(pendingCursor.getColumnIndex(DownloadManager.COLUMN_URI))
-                if (url == downloadUrl) {
-                    toast(R.string.download_haslinked)
-                    cancel = true
-                    break
-                }
-            }
-            pendingCursor.close()
-            if (cancel) return@doAsync
-
-            handler.post {
-                download.invoke()
-            }
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        binder = service as? DownloadService.DownloadBinder
+        if (binder == null) {
+            return
+        }
+        var song: BaseSong
+        while (tempQueue.isNotEmpty()) {
+            song = tempQueue.removeAt(0)
+            binder!!.download(song)
         }
     }
 
-    private fun toast(msg: String) {
-        uiThread(Runnable {
-            context.toast(msg)
-        })
+    /**
+     * 下载完成
+     */
+    fun remove(song: BaseSong?) {
+        allQueue.remove(song)
+        if (allQueue.isEmpty() && binder != null) {
+            binder = null
+            context.unbindService(this)// 全部下载完成，解绑服务
+        }
     }
 
-    private fun toast(@StringRes res: Int) {
-        uiThread(Runnable {
-            context.toast(context.getString(res))
-        })
-    }
-
-    private fun uiThread(runnable: Runnable) {
-        handler.post(runnable)
+    fun hasTask(): Boolean {
+        return allQueue.isNotEmpty()
     }
 
     /**
-     * 获取链接下载，忽略运行时权限
+     * 获取链接下载
      */
     @SuppressLint("CheckResult")
-    fun download(song: SearchSong) {
+    fun download(song: BaseSong) {
         song.loadPlayLink()
                 .subscribe({
-                    //                    _download(song)
-                    okDownload(song)
+                    allQueue.add(song)
+                    if (binder == null) {
+                        tempQueue.add(song)
+                        context.bindService(Intent(context, DownloadService::class.java), this, Context.BIND_AUTO_CREATE)
+                    } else {
+                        binder!!.download(song)
+                    }
                 }) {
-                    toast(R.string.load_play_path_error)
+                    context.toast(context.getString(R.string.load_play_path_error))
                     it.printStackTrace()
                 }
     }
 
-    private fun okDownload(song: SearchSong) {
-        if (song.path.isNull()) {
-            toast(R.string.download_link_empty)
-            return
-        }
-        val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
-        var file = File(path)
-        val r = if (!file.exists()) {
-            file.mkdirs()
-        } else {
-            file.isDirectory && file.canWrite()
-        }
-        if (!r) {
-            toast(R.string.download_path_error)
-            file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        }
-
-        Util.enableConsoleLog()
-        val builder = DownloadTask.Builder(song.path!!, file)
-                .setFilename(song.getName() + ".mp3")
-                // the minimal interval millisecond for callback progress
-                .setMinIntervalMillisCallbackProcess(80)
-                // do re-download even if the task has already been completed in the past.
-                .setPreAllocateLength(false)
-                .setAutoCallbackToUIThread(true)
-        val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
-        if (wifiDownload && !isWifiConnected(context)) {
-            toast(R.string.download_onlywifi)
-        }
-        builder.setWifiRequired(wifiDownload)
-        builder.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36")
-        val task = builder.build()
-        task.enqueue(NotificationSampleListener(context).apply { initNotification() })
-        toast(String.format(context.getString(R.string.download_start), song.getName()))
-    }
-
-    /**
-     * 直接下载，忽略运行时权限
-     */
-    private fun _download(song: SearchSong) {
-        if (song.path.isNull()) {
-            toast(R.string.download_link_empty)
-            return
-        }
-        filterDownload(song.path) {
-            val request = DownloadManager.Request(Uri.parse(song.path))
-            request.setTitle(song.getName())
-            request.setDescription(context.resources.getString(R.string.app_name))
-            val mimeTypeMap = MimeTypeMap.getSingleton()
-            val mimeString = mimeTypeMap.getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(song.path))
-            if (mimeString.notNull()) {
-                request.setMimeType(mimeString)
-            } else {
-                request.setMimeType("audio/mpeg")
-            }
-            val wifiDownload = context.defaultSharedPreferences.getBoolean(Settings.KEY_WIFI_DOWNLOAD, false)
-            if (wifiDownload) {
-                if (!isWifiConnected(context)) {
-                    toast(R.string.download_onlywifi)
-                }
-                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-            } else {
-                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
-            }
-            request.allowScanningByMediaScanner()
-            request.setVisibleInDownloadsUi(true)
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            val path = context.defaultSharedPreferences.getString(Settings.KEY_CUSTOM_PATH, defaultDownloadPath.absolutePath)
-            val file = File(path)
-            val r = if (!file.exists()) {
-                file.mkdirs()
-            } else {
-                file.isDirectory && file.canWrite()
-            }
-            if (!r) {
-                toast(R.string.download_path_error)
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, song.getName() + ".mp3")
-            } else {
-                request.setDestinationUri(Uri.fromFile(File(file, song.getName() + ".mp3")))
-            }
-            val id = downloadManager.enqueue(request)
-            toast(String.format(context.getString(R.string.download_start), song.getName()))
-            info("id:$id")
-        }
-    }
-
-    fun isWifiConnected(context: Context?): Boolean {
-        if (context != null) {
-            // 获取手机所有连接管理对象(包括对wi-fi,net等连接的管理)
-            val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            // 获取NetworkInfo对象
-            val networkInfo = manager.activeNetworkInfo
-            //判断NetworkInfo对象是否为空 并且类型是否为WIFI
-            if (networkInfo != null && networkInfo.type == ConnectivityManager.TYPE_WIFI)
-                return networkInfo.isAvailable
-        }
-        return false
-    }
 }

@@ -110,7 +110,11 @@
 
         <service
             android:name=".module.play.MusicService"
-            android:label="@string/app_name" />
+            android:label="@string/music_service_name" />
+        <service
+            android:name=".module.download.DownloadService"
+            android:label="@string/file_download_service_name" />
+        <service android:name=".MyApp$StartService" />
     </application>
 
 </manifest>

@@ -89,17 +89,14 @@
     <string name="setting_other_debug_sum">意见反馈</string>
 
     <string name="permission_sd_error">读写SD卡权限被拒绝</string>
-    <string name="download_file_downed">文件已经下载过了…</string>
-    <string name="download_isdownloading">已经正在下载了…</string>
-    <string name="download_haslinked">已经在下载队列了…</string>
     <string name="download_link_empty">下载链接为空</string>
     <string name="download_onlywifi">已开启仅Wi-Fi下载…</string>
     <string name="download_start">即将开始下载 %1$s</string>
+    <string name="download_finish">下载完成 %1$s</string>
     <string name="download_path_error">自定义下载位置不可用，使用默认音乐位置</string>
 
     <string name="sure">确定</string>
     <string name="play_path_empty">播放链接为空</string>
-    <string name="reclick_exit">再按一次退出</string>
     <string name="clear_his">清空搜索历史</string>
 
     <string name="dialog_option">选项</string>
@@ -162,4 +159,7 @@
     <string name="load_play_path_error">加载播放链接出错</string>
     <string name="label_change_log">更新日志</string>
     <string name="setting_local">本地音乐</string>
+    <string name="file_download_notify_name">文件下载通知</string>
+    <string name="file_download_service_name">文件下载服务</string>
+    <string name="foreground_download">后台下载服务</string>
 </resources>

@@ -2,14 +2,22 @@ package com.dede.sonimei
 
 import android.app.Activity
 import android.app.Application
+import android.app.IntentService
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.HttpUtil
+import com.liulishuo.okdownload.DownloadTask
+import com.liulishuo.okdownload.OkDownload
+import com.liulishuo.okdownload.core.Util
+import com.liulishuo.okdownload.core.dispatcher.CallbackDispatcher
+import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher
 import com.squareup.leakcanary.LeakCanary
 import com.tencent.bugly.Bugly
 import com.tencent.bugly.BuglyStrategy
@@ -37,6 +45,22 @@ class MyApp : Application() {
         initBugly()
 
         HttpUtil.init(this)
+
+        val intent = Intent(this, StartService::class.java)
+        startService(intent)
+    }
+
+    class StartService : IntentService("start") {
+
+        override fun onHandleIntent(intent: Intent?) {
+            if (BuildConfig.DEBUG) Util.enableConsoleLog()
+
+            val okDownload = OkDownload.Builder(this)
+                    .downloadDispatcher(DownloadDispatcher())
+                    .build()
+            OkDownload.setSingletonInstance(okDownload)
+            DownloadDispatcher.setMaxParallelRunningCount(1)
+        }
     }
 
     private fun initBugly() {

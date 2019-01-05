@@ -31,6 +31,7 @@ android {
 
         // 在BuildConfig类中生成BUGLY_APPID常量
         buildConfigField "String", "BUGLY_APPID", "\"${keyProperties['buglyAppId']}\""
+        resConfigs 'zh'
     }
 
     // 使用@Parcelize在class继承的时候会有无法复写writeToParcel方法的问题
@@ -42,14 +43,19 @@ android {
         release {
             keyAlias keyProperties['keyAlias']
             keyPassword keyProperties['keyPassword']
-            storeFile file(keyProperties['storeFile'])
+            storeFile new File(keyProperties['storeFile'] ?: "")
             storePassword keyProperties['storePassword']
         }
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.release// 也用正式签名
+            def storeFile = signingConfigs.release.storeFile
+            signingConfig storeFile.isFile() ? signingConfigs.release : signingConfigs.debug
+            aaptOptions.cruncherEnabled = false// 禁用PNG压缩
+            ext.alwaysUpdateBuildId = false// 禁用更新构建ID
+            splits.abi.enable = false
+            splits.density.enable = false
         }
         release {
             signingConfig signingConfigs.release
@@ -62,15 +68,14 @@ android {
     }
 
     productFlavors {
-        dev {}
+        dev {
+            resConfigs('zh', 'xhdpi')
+        }
         preview {}
         coolapk {}
-        wandoujia {}
         xiaomi {
             applicationId "com.dede.sonimei_mi"
         }
-        huawei {}
-		baidu {}
     }
 
     productFlavors.all { flavor ->
@@ -109,6 +114,7 @@ dependencies {
 
     // okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.okio:okio:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
     // rxlifecycle
