@@ -83,9 +83,6 @@ android {
     }
 
     applicationVariants.all { variant ->
-        if (variant.buildType.name != "debug") {
-            variant.getPackageApplication().outputDirectory = variant.getPackageApplication().outputDirectory.parentFile
-        }
         variant.outputs.all {
             def buildType = variant.buildType.name
             def version = "${variant.versionName}(${variant.versionCode})"

@@ -113,8 +113,9 @@ class PlayFragment : BaseFragment(),
         sb_volume.progress = volume
         sb_volume.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                        seekBar!!.progress,
+                        progress,
                         AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)
             }
         })
