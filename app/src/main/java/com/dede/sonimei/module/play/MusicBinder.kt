@@ -9,7 +9,7 @@ import com.dede.sonimei.player.MusicPlayer
 /**
  * Created by hsh on 2018/8/6.
  */
-class MusicBinder(private val service: MusicService) : Binder(), IPlayControllerListenerI, ILoadPlayList {
+class MusicBinder(val service: MusicService) : Binder(), IPlayControllerListenerI, ILoadPlayList {
 
     override fun setLoadPlayListListener(loadPlayListListener: ILoadPlayList.OnLoadPlayListListener?) {
         service.setLoadPlayListListener(loadPlayListListener)

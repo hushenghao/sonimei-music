@@ -1,5 +1,16 @@
 [
   {
+    "version_name": "0.7.3",
+    "version_code": 17,
+    "change_log": [
+      "添加自定义下载器",
+      "添加滑动切换歌曲",
+      "修复网易云web链接复制",
+      "暂时移除无损下载h5入口",
+      "bugs fix"
+    ]
+  },
+  {
     "version_name": "0.7.2",
     "version_code": 16,
     "change_log": [

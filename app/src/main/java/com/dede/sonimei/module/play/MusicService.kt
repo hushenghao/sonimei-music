@@ -149,6 +149,21 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         pathSubscribe = song.loadPlayLink()
                 .applySchedulers()
                 .doOnNext { song.path = it }
+                .doOnSubscribe {
+                    for (listener in musicPlayer.getPlayStateChangeListeners()) {
+                        listener.onBuffer(true)
+                    }
+                }
+                .doOnError {
+                    for (listener in musicPlayer.getPlayStateChangeListeners()) {
+                        listener.onBuffer(false)
+                    }
+                }
+                .doOnComplete {
+                    for (listener in musicPlayer.getPlayStateChangeListeners()) {
+                        listener.onBuffer(false)
+                    }
+                }
                 .subscribe({
                     if (it.isNull()) {
                         toast(R.string.play_path_empty)
@@ -191,7 +206,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
      * 播放
      */
     private fun play(path: String) {
-        info("index:" + playIndex + "  path:" + path)
+        info("index:$playIndex  path:$path")
         sp.edit().putInt(SP_KEY_PLAY_INDEX, playIndex).apply()
         try {
             this.musicPlayer.reset()
@@ -233,60 +248,14 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     override fun next() {
         val size = playList.size
         if (size == 0) return
-        if (size == 1) {
-            playIndex = 0
-            if (musicPlayer.isPlaying) return
-        } else {
-            when (playMode) {
-                MODE_ORDER, MODE_SINGLE -> {
-                    if (++playIndex >= size) {
-                        playIndex = 0
-                    }
-                }
-                MODE_RANDOM -> {
-                    randomLastIndexs.push(playIndex)// 保存上一曲索引
-                    if (randomNextIndexs.size > 0) {// 有下一曲索引就读取下一曲索引
-                        playIndex = randomNextIndexs.pop()
-                    } else {// 没有时生成下一曲
-                        var i: Int
-                        do {
-                            i = random.nextInt(size)
-                        } while (i == playIndex)
-                        playIndex = i
-                    }
-                }
-            }
-        }
+        playIndex = nextIndex()
         play(playList[playIndex])
     }
 
     override fun last() {
         val size = playList.size
         if (size == 0) return
-        if (size == 1) {
-            playIndex = 0
-            if (musicPlayer.isPlaying) return
-        } else {
-            when (playMode) {
-                MODE_ORDER, MODE_SINGLE -> {
-                    if (--playIndex < 0) {
-                        playIndex = size - 1
-                    }
-                }
-                MODE_RANDOM -> {
-                    randomNextIndexs.push(playIndex)
-                    if (randomLastIndexs.size > 0) {
-                        playIndex = randomLastIndexs.pop()
-                    } else {
-                        var i: Int
-                        do {
-                            i = random.nextInt(size)
-                        } while (i == playIndex)
-                        playIndex = i
-                    }
-                }
-            }
-        }
+        playIndex = lastIndex()
         play(playList[playIndex])
     }
 
@@ -335,6 +304,60 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
 
     override fun removeOnPlayStateChangeListener(listener: MusicPlayer.OnPlayStateChangeListener?) {
         musicPlayer.removeOnPlayStateChangeListener(listener)
+    }
+
+    fun nextIndex(): Int {
+        var index = playIndex
+        val size = playList.size
+        if (size == 1) {
+            index = 0
+        } else {
+            when (playMode) {
+                MODE_ORDER, MODE_SINGLE -> {
+                    if (++index >= size) {
+                        index = 0
+                    }
+                }
+                MODE_RANDOM -> {
+                    randomLastIndexs.push(playIndex)// 保存当前索引为上一曲索引
+                    while (index == playIndex && randomNextIndexs.size > 0) {
+                        index = randomNextIndexs.pop()
+                    }
+                    while (index == playIndex) {
+                        index = random.nextInt(size)
+                    }
+                    randomNextIndexs.push(index)// 保存下一首索引
+                }
+            }
+        }
+        return index
+    }
+
+    fun lastIndex(): Int {
+        var index = playIndex
+        val size = playList.size
+        if (size == 1) {
+            index = 0
+        } else {
+            when (playMode) {
+                MODE_ORDER, MODE_SINGLE -> {
+                    if (--index < 0) {
+                        index = size - 1
+                    }
+                }
+                MODE_RANDOM -> {
+                    randomNextIndexs.push(playIndex)// 保存当前索引为下一曲索引
+                    while (index == playIndex && randomLastIndexs.size > 0) {
+                        index = randomLastIndexs.pop()
+                    }
+                    while (index == playIndex) {
+                        index = random.nextInt(size)
+                    }
+                    randomLastIndexs.push(index)// 保存上一首索引
+                }
+            }
+        }
+        return index
     }
 
     /** ================== */
@@ -462,7 +485,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         notifyFilter.addAction(ACTION_NOTIFICATION_DELETE)
         registerReceiver(notificationActionReceiver, notifyFilter)
 
-        setLoadPlayListListener(loadPlayListListener)// 预加载播放列表
+        setLoadPlayListListener(null)// 预加载播放列表
 
         val clickEventHelper = ClickEventHelper(object : ClickEventHelper.Callback {
             override fun onClick() {
@@ -758,14 +781,18 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
     }
 
     private var loadPlayListListener: ILoadPlayList.OnLoadPlayListListener? = null
+    private var isLoading = false
 
     override fun setLoadPlayListListener(loadPlayListListener: ILoadPlayList.OnLoadPlayListListener?) {
         this.loadPlayListListener = loadPlayListListener
+        if (isLoading) return
         if (playList.isNotEmpty()) {
             loadPlayListFinish()
             return
         }
+        isLoading = true
         doAsync({
+            isLoading = false
             it.printStackTrace()
         }) {
             val list = File(filesDir, SP_KEY_PLAY_LIST).load<List<BaseSong>>()
@@ -773,11 +800,9 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                 uiThread {
                     playList.clear()
                     playList.addAll(list)
-                    val size = playList.size
-                    if (this@MusicService.playIndex >= size) {
-                        this@MusicService.playIndex = size - 1
-                    }
+
                     loadPlayListFinish()
+                    isLoading = false
                 }
             }
         }

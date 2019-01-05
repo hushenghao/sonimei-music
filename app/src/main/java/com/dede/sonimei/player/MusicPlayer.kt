@@ -54,6 +54,9 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
         onPlayStateChangeListeners.remove(listener)
     }
 
+    fun getPlayStateChangeListeners(): List<OnPlayStateChangeListener> {
+        return onPlayStateChangeListeners
+    }
 
     @PlayState
     var state: Int = STATE_IDLE

@@ -173,7 +173,59 @@
     </LinearLayout>
 
     <!--bottom sheet mini control-->
-    <include
-        layout="@layout/layout_bottom_sheet_play_control"
-        tools:visibility="gone" />
+    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ll_bottom_play"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_bottom_play_controller_height"
+        android:background="@color/white"
+        tools:visibility="visible">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_mini_control"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/iv_play"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_play_mini_control_mask"
+            android:rotation="180"
+            app:layout_constraintLeft_toLeftOf="@id/vp_mini_control" />
+
+        <View
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_play_mini_control_mask"
+            app:layout_constraintRight_toRightOf="@id/vp_mini_control" />
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="13dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_pause_status"
+            android:tint="@color/icon_tint"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/iv_play_list"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_play_list"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="13dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_play_list"
+            android:tint="@color/icon_tint"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 </FrameLayout>

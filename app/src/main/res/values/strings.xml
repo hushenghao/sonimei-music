@@ -160,6 +160,7 @@
     <string name="label_change_log">更新日志</string>
     <string name="setting_local">本地音乐</string>
     <string name="file_download_notify_name">文件下载通知</string>
+    <string name="file_download_finish_notify_name">文件下载完成通知</string>
     <string name="file_download_service_name">文件下载服务</string>
     <string name="foreground_download">后台下载服务</string>
 </resources>

@@ -36,7 +36,7 @@ import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.to
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
+import kotlinx.android.synthetic.main.fragment_play.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
@@ -154,10 +154,6 @@ class MainActivity : BaseActivity() {
                 }
                 caretDrawable.caretProgress = vy * .0023f
             }
-        }
-
-        ll_bottom_play.setOnClickListener {
-            toggleBottomSheet()
         }
 
         val open = savedInstanceState?.getBoolean("is_open", false) ?: false

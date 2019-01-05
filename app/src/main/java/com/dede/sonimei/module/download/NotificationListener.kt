@@ -21,10 +21,12 @@ import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend
 import kotlin.properties.Delegates
 
 
+internal const val NOTIFY_DOWNLOAD_FINISH_CHANNEL_ID = "download_finish_channel_id"
+
 /**
  * 下载文件通知栏监听
  */
-class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
+internal class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
 
     private var totalLength: Int = 0
 
@@ -38,7 +40,7 @@ class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
             val channel = NotificationChannel(
                     DownloadService.NOTIFY_DOWNLOAD_CHANNEL_ID,
                     context.getString(R.string.file_download_notify_name),
-                    NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationManager.IMPORTANCE_LOW)
             channel.setShowBadge(true)
             manager.createNotificationChannel(channel)
         }
@@ -50,7 +52,7 @@ class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setChannelId(DownloadService.NOTIFY_DOWNLOAD_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.stat_sys_download)
     }
@@ -116,13 +118,22 @@ class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
                          taskSpeed: SpeedCalculator) {
         Log.d("NotificationListener", "taskEnd $cause $realCause")
 
-        builder = NotificationCompat.Builder(context, DownloadService.NOTIFY_DOWNLOAD_CHANNEL_ID)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                    NOTIFY_DOWNLOAD_FINISH_CHANNEL_ID,
+                    context.getString(R.string.file_download_finish_notify_name),
+                    NotificationManager.IMPORTANCE_DEFAULT)
+            channel.setShowBadge(true)
+            manager.createNotificationChannel(channel)
+        }
+        builder = NotificationCompat.Builder(context, NOTIFY_DOWNLOAD_FINISH_CHANNEL_ID)
         builder.setTicker("下载完成")
         val song = getSong(task)
         builder.setDefaults(Notification.DEFAULT_SOUND)
                 .setContentText(song.getName())
                 .setOngoing(false)
                 .setAutoCancel(true)
+                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
         val intent = Intent(DownloadService.ACTION_FINISH_DOWNLOAD)
@@ -142,7 +153,6 @@ class NotificationListener(context: Context) : DownloadListener4WithSpeed() {
         Log.i("NotificationListener", task.info?.toString())
         DownloadHelper.getInstance(context)
                 .remove(song)// 移除任务
-        manager.notify(task.id, builder.build())
         handler.postDelayed({
             // 在高频率notify下，有些设备会忽略部分通知刷新，这里延时一段时间
             manager.notify(task.id, builder.build())

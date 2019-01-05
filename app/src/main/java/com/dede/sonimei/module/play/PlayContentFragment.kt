@@ -25,6 +25,7 @@ import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.sheepList
 import com.dede.sonimei.util.extends.gone
+import com.dede.sonimei.util.extends.notNull
 import com.dede.sonimei.util.extends.show
 import kotlinx.android.synthetic.main.fragment_play_content.*
 import kotlinx.android.synthetic.main.layout_play_pic_view.*
@@ -192,7 +193,9 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
     fun findLine(time: Long): String? {
         if (stop) return null
         val lrcLine = lrcView.findLine(time)
-        tv_music_content_lrc.text = lrcLine
+        if (lrcLine.notNull()) {
+            tv_music_content_lrc.text = lrcLine
+        }
         return lrcLine
     }
 

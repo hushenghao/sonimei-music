@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.dialog_play_list.*
 /**
  * Created by hsh on 2018/8/8.
  */
-class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int = 0) : BottomSheetDialog(context, R.style.BottomSheetDialog) {
+class PlayListDialog(context: Context, val list: List<BaseSong>, var index: Int = 0) : BottomSheetDialog(context, R.style.BottomSheetDialog) {
 
     private lateinit var adapter: Adapter
 
@@ -45,6 +45,9 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, val index: Int 
         adapter.setOnItemChildClickListener { _, view, position ->
             when (view.id) {
                 R.id.iv_delete -> {
+                    if (position < index) {
+                        index--
+                    }
                     callback?.onItemRemove(position, list[position])
                     adapter.remove(position)
                     tv_list_count.text = context.getString(R.string.play_list_count, adapter.itemCount)

@@ -76,6 +76,7 @@
 -keep class android.support.**{*;}
 
 # okdownload
+-dontwarn com.liulishuo.okdownload.**
 -keepnames class com.liulishuo.okdownload.core.connection.DownloadOkHttp3Connection
 -keep class com.liulishuo.okdownload.core.breakpoint.BreakpointStoreOnSQLite {
         public com.liulishuo.okdownload.core.breakpoint.DownloadStore createRemitSelf();

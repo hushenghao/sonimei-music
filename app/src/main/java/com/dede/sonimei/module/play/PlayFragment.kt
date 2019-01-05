@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.support.annotation.RequiresApi
+import android.support.v4.view.ViewPager
 import android.view.View
 import android.widget.SeekBar
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -30,12 +31,11 @@ import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.ScreenHelper
-import com.dede.sonimei.util.extends.gone
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
 import kotlinx.android.synthetic.main.fragment_play.*
-import kotlinx.android.synthetic.main.layout_bottom_sheet_play_control.*
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.toast
 
@@ -43,8 +43,12 @@ import org.jetbrains.anko.support.v4.toast
 /**
  * Created by hsh on 2018/5/23.
  */
-class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeListener,
-        ServiceConnection, PlayListDialog.Callback, ILoadPlayList.OnLoadPlayListListener {
+class PlayFragment : BaseFragment(),
+        Runnable,
+        MusicPlayer.OnPlayStateChangeListener,
+        ServiceConnection,
+        PlayListDialog.Callback,
+        ILoadPlayList.OnLoadPlayListListener {
 
     private val updateDelay = 200L// 进度更新间隔
 
@@ -77,7 +81,6 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
     // 回调中 修改背景图片，高斯模糊处理
     private val target = object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            iv_album_img.setImageBitmap(resource)
             val bitmapDrawable = BitmapDrawable(context!!.resources, ImageUtil.getPlayBitmap(context!!, resource))
             activity?.findViewById<View>(R.id.bottom_sheet)?.background = bitmapDrawable
         }
@@ -130,8 +133,14 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
             iv_play_mode.setImageResource(getPlayModeDrawRes(mode))
         }
 
-        iv_play_next.setOnClickListener { musicBinder?.next() }
-        iv_play_last.setOnClickListener { musicBinder?.last() }
+        iv_play_next.setOnClickListener {
+            musicBinder?.next()
+            miniControlAdapter.nextData()
+        }
+        iv_play_last.setOnClickListener {
+            musicBinder?.last()
+            miniControlAdapter.lastData()
+        }
 
         val playListClick = View.OnClickListener {
             val listDialog = PlayListDialog(context!!, musicBinder!!.getPlayList(), musicBinder!!.getPlayIndex())
@@ -186,6 +195,32 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         }
         onBuffer(false)
         disablePlayController()
+
+        vp_mini_control.addOnPageChangeListener(pagerChangeListener)
+    }
+
+    private val miniControlAdapter by lazy { MiniControlAdapter(context!!, musicBinder!!) }
+    /** ViewPager滑动监听处理无限轮播逻辑 */
+    private val pagerChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+
+        override fun onPageScrollStateChanged(state: Int) {
+            if (state != ViewPager.SCROLL_STATE_IDLE) return
+
+            val p = vp_mini_control.currentItem
+            info("onPageSelected: $p")
+            if (p == 1) return
+            when (p) {
+                0 -> {
+                    musicBinder?.last()
+                    miniControlAdapter.lastData()
+                }
+                2 -> {
+                    musicBinder?.next()
+                    miniControlAdapter.nextData()
+                }
+            }
+            vp_mini_control.setCurrentItem(1, false)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -246,14 +281,6 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         musicBinder!!.setLoadPlayListListener(this)
         musicBinder!!.addOnPlayStateChangeListener(this@PlayFragment)
 
-        if (musicBinder!!.isPlaying) {
-            onDataSourceChange()
-            onPlayStart(musicBinder!!.getPlayer())
-        } else {
-            if (musicBinder!!.getPlayList().isNotEmpty()) {
-                onLoadFinish()// 列表不为空说明绑定服务成功之前已经加载完成
-            }
-        }
         val mode = musicBinder!!.getPlayMode()
         iv_play_mode.setImageResource(getPlayModeDrawRes(mode))
     }
@@ -265,6 +292,9 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         onDataSourceChange()
         iv_play.isClickable = true
         iv_play_bottom.isClickable = true
+        if (musicBinder!!.isPlaying) {
+            onPlayStart(musicBinder!!.getPlayer())
+        }
     }
 
     /**
@@ -297,10 +327,7 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         val duration = musicBinder!!.duration
         if (!bottomSheetOpen) {
             val lrcLine = playContentFragment.findLine(currentPosition.toLong())
-            if (lrcLine != null) {
-                tv_lrc.show()
-                tv_lrc.text = lrcLine// update mini control lrc text
-            }
+            miniControlAdapter.updateLrc(lrc = lrcLine)
         } else {
             playContentFragment.updateTime(currentPosition.toLong())
         }
@@ -394,15 +421,16 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         activity?.findViewById<View>(R.id.bottom_sheet)?.background =
                 BitmapDrawable(resources, ImageUtil.getPlayBitmap(context!!, resource))
 
-        val song = musicBinder?.getPlayInfo()
+        val song = musicBinder!!.getPlayInfo()
+        if (vp_mini_control.adapter == null) {
+            vp_mini_control.adapter = miniControlAdapter
+        }
+        miniControlAdapter.refresh()
+        vp_mini_control.setCurrentItem(1, false)
         if (song != null) {
-            tv_name.text = song.getName()
-            tv_name.isSelected = true
-            tv_lrc.gone()
             tv_title.text = song.title
             tv_title.isSelected = true
             playContentFragment.setSongInfo(song)
-            iv_album_img.setImageResource(R.drawable.ic_music_small)
             val i = dip(45f)
             if (song is SearchSong) {
                 GlideApp.with(this)
@@ -444,6 +472,10 @@ class PlayFragment : BaseFragment(), Runnable, MusicPlayer.OnPlayStateChangeList
         sb_progress.secondaryProgress = percent * 10// 更新缓冲进度条
     }
 
+    override fun onDestroyView() {
+        vp_mini_control.removeOnPageChangeListener(pagerChangeListener)
+        super.onDestroyView()
+    }
 
     override fun onDestroy() {
         musicBinder?.removeOnPlayStateChangeListener(this)

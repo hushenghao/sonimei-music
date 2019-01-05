@@ -1,5 +1,10 @@
 [//]: # (Automatically generated content, no modification required!)
 # Change Log
+##### 0.7.3(17)
+	1.添加自定义下载器
+	2.修复网易云web链接复制
+	3.bugs fix
+------
 ##### 0.7.2(16)
 	1.添加自定义路径选择器
 	2.添加耳机线控支持

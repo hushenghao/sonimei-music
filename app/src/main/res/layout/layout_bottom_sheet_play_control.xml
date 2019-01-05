@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_bottom_play"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dimen_bottom_play_controller_height"
-    android:background="@drawable/drawable_bottom_mini_controller_bg"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    tools:showIn="@layout/fragment_play">
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/iv_album_img"
@@ -29,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:ellipsize="marquee"
+            android:ellipsize="end"
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:textColor="@color/text1"
@@ -45,26 +42,7 @@
             android:maxLines="1"
             android:textColor="@color/text2"
             android:textSize="12sp"
-            android:visibility="gone"
             tools:text="陈奕迅 - 不想放手" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/iv_play"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginRight="13dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_pause_status"
-        android:tint="@color/icon_tint" />
-
-    <ImageView
-        android:id="@+id/iv_play_list"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginRight="13dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_play_list"
-        android:tint="@color/icon_tint" />
 
 </LinearLayout>
