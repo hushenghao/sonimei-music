@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Binder
@@ -18,17 +19,20 @@ import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
+import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
 import com.liulishuo.okdownload.DownloadTask
 import com.liulishuo.okdownload.OkDownload
 import com.liulishuo.okdownload.UnifiedListenerManager
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.info
-import org.jetbrains.anko.toast
+import com.mpatric.mp3agic.ID3v2
+import com.mpatric.mp3agic.ID3v24Tag
+import com.mpatric.mp3agic.Mp3File
+import org.jetbrains.anko.*
+import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -106,19 +110,63 @@ class DownloadService : Service(), AnkoLogger {
                     OkDownload.with().downloadDispatcher().cancel(taskId)
                 }
                 ACTION_FINISH_DOWNLOAD -> {
-                    val song = intent.getParcelableExtra<BaseSong?>("song")
+                    val song = intent.getParcelableExtra<BaseSong>("song")
                     val filePath = intent.getStringExtra("file_path")
                     Log.i("DownloadReceiver", "finish: $filePath")
-                    if (filePath.notNull()) {
-                        val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                        scanIntent.data = Uri.fromFile(File(filePath))
-                        sendBroadcast(scanIntent)// 通知媒体库更新
-                        toast(String.format(getString(R.string.download_finish), song?.getName()
-                                ?: ""))
-                    }
-                    if (DownloadHelper.getInstance(this@DownloadService).hasTask().not()) {
-                        stopForeground(true)
-                    }
+                    saveAlbumImage(song, filePath)
+                }
+            }
+        }
+    }
+
+    private fun saveAlbumImage(song: BaseSong, filePath: String?) {
+        if (filePath.isNull()) return
+
+        fun notifyMediaDb(filePath: String) {
+            val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+            scanIntent.data = Uri.fromFile(File(filePath))
+            sendBroadcast(scanIntent)// 通知媒体库更新
+        }
+
+        if (song !is SearchSong) return
+
+        doAsync({ it.printStackTrace() }) {
+            val mp3file = Mp3File(filePath)
+            val id3v2: ID3v2
+            if (mp3file.hasId3v2Tag()) {// 有ID3v2 tag
+                id3v2 = mp3file.id3v2Tag
+                if (id3v2.lyrics.isNull() && song.lrc.notNull()) {
+                    id3v2.lyrics = song.lrc
+                }
+            } else {
+                id3v2 = ID3v24Tag()
+                mp3file.id3v2Tag = id3v2
+                if (song.author.notNull()) id3v2.artist = song.author
+                if (song.title.notNull()) id3v2.title = song.title
+                if (song.lrc.notNull()) id3v2.lyrics = song.lrc
+            }
+
+            val albumImage = id3v2.albumImage
+            if (albumImage == null || albumImage.isEmpty()) {
+                val bitmap = GlideApp.with(this@DownloadService)
+                        .asBitmap().load(song.pic).submit().get()
+                val stream = ByteArrayOutputStream(bitmap.byteCount)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                id3v2.setAlbumImage(stream.toByteArray(), "APIC")
+
+                val newFile = File("$filePath.temp")
+                mp3file.save(newFile.absolutePath)
+
+                val file = File(filePath)
+                file.delete()
+                newFile.renameTo(file)
+            }
+
+            uiThread {
+                toast(String.format(getString(R.string.download_finish), song.getName()))
+                notifyMediaDb(filePath!!)
+                if (DownloadHelper.getInstance(this@DownloadService).hasTask().not()) {
+                    stopForeground(true)
                 }
             }
         }
@@ -154,7 +202,7 @@ class DownloadService : Service(), AnkoLogger {
             channel.setShowBadge(false)
             manager.createNotificationChannel(channel)
         }
-        val builder                                                                                                                                                                                      = NotificationCompat.Builder(this, DownloadService.NOTIFY_DOWNLOAD_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, DownloadService.NOTIFY_DOWNLOAD_CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_LIGHTS)
                 .setOngoing(true)
                 .setAutoCancel(false)

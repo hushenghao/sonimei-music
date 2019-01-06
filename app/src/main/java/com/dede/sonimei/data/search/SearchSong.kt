@@ -2,12 +2,11 @@ package com.dede.sonimei.data.search
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.dede.sonimei.NETEASE_WEB
 import com.dede.sonimei.data.BaseSong
-import com.dede.sonimei.sourceKey
 import com.dede.sonimei.util.extends.notNull
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import io.reactivex.Observable
 
 /**
  * Created by hsh on 2018/5/15.
@@ -38,6 +37,12 @@ open class SearchSong(@Expose open val type: String?,
 
     open fun canPlay(): Boolean {
         return path.notNull()
+    }
+
+    override fun loadLrc(): Observable<String> {
+        return Observable.create<String> {
+            it.onNext(lrc ?: "")
+        }
     }
 
     companion object {

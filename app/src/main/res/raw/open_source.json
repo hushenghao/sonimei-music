@@ -88,5 +88,11 @@
     "desc": "A Reliable, Flexible, Fast and Powerful download engine.",
     "author": "lingochamp",
     "link": "https://github.com/lingochamp/okdownload"
+  },
+  {
+    "title": "mp3agic",
+    "desc": "A java library for reading mp3 files and reading / manipulating the ID3 tags (ID3v1 and ID3v2.2 through ID3v2.4).",
+    "author": "mpatric",
+    "link": "https://github.com/mpatric/mp3agic"
   }
 ]

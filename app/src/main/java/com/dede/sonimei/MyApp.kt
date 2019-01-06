@@ -7,16 +7,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.HttpUtil
-import com.liulishuo.okdownload.DownloadTask
 import com.liulishuo.okdownload.OkDownload
 import com.liulishuo.okdownload.core.Util
-import com.liulishuo.okdownload.core.dispatcher.CallbackDispatcher
 import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher
 import com.squareup.leakcanary.LeakCanary
 import com.tencent.bugly.Bugly
@@ -58,7 +55,11 @@ class MyApp : Application() {
             val okDownload = OkDownload.Builder(this)
                     .downloadDispatcher(DownloadDispatcher())
                     .build()
-            OkDownload.setSingletonInstance(okDownload)
+            try {
+                OkDownload.setSingletonInstance(okDownload)
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
             DownloadDispatcher.setMaxParallelRunningCount(1)
         }
     }

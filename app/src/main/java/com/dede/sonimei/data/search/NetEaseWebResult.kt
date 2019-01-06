@@ -22,7 +22,7 @@ data class NetEaseWebResult(@SerializedName("id") val songId: String?,
     class Al(@SerializedName("picUrl") val pic: String?)
 
     fun map(): NetEaseSong {
-        val ar = ar?.map { it.name }?.reduce { acc, n -> "$acc/$n" }
+        val ar = ar?.map { it.name }?.reduce { acc, n -> "$acc,$n" }// 不要使用/\等路径关键字
         return NetEaseSong(songId, name, ar, al?.pic)
     }
 }

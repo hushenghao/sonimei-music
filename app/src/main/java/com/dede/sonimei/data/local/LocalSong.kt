@@ -4,6 +4,9 @@ import android.media.MediaMetadataRetriever
 import android.os.Parcel
 import android.os.Parcelable
 import com.dede.sonimei.data.BaseSong
+import com.dede.sonimei.util.extends.applySchedulers
+import com.mpatric.mp3agic.Mp3File
+import io.reactivex.Observable
 
 data class LocalSong(
         var songId: Long,
@@ -37,11 +40,26 @@ data class LocalSong(
         if (bytes != null) {
             return bytes
         }
-        val metadataRetriever = MediaMetadataRetriever()
-        metadataRetriever.setDataSource(path)
-        bytes = metadataRetriever.embeddedPicture
-        picByteArray = ByteArrayWeakReference(bytes)
+        try {
+            val metadataRetriever = MediaMetadataRetriever()
+            metadataRetriever.setDataSource(path)
+            bytes = metadataRetriever.embeddedPicture
+            picByteArray = ByteArrayWeakReference(bytes)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return bytes
+    }
+
+    override fun loadLrc(): Observable<String> {
+        return Observable.create<String> {
+            val mp3File = Mp3File(path)
+            if (mp3File.hasId3v2Tag()) {
+                it.onNext(mp3File.id3v2Tag.lyrics ?: "")
+            } else {
+                it.onNext("")
+            }
+        }.applySchedulers()
     }
 
     companion object {

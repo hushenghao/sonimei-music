@@ -23,7 +23,13 @@ open class BaseSong(open val title: String?,
     open fun loadPlayLink(): Observable<String> {
         return Observable.create<String> {
             it.onNext(path ?: "")
-        }.applySchedulers()
+        }
+    }
+
+    open fun loadLrc(): Observable<String> {
+        return Observable.create<String> {
+            it.onNext("")
+        }
     }
 
     companion object {

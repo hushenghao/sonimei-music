@@ -1,6 +1,7 @@
 package com.dede.sonimei.module.play
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
@@ -29,6 +30,7 @@ import com.dede.sonimei.util.extends.notNull
 import com.dede.sonimei.util.extends.show
 import kotlinx.android.synthetic.main.fragment_play_content.*
 import kotlinx.android.synthetic.main.layout_play_pic_view.*
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.toast
 
@@ -115,6 +117,7 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
 
     private var sheepIndex: Int = defaultSheepIndex
 
+    @SuppressLint("CheckResult")
     fun setSongInfo(song: BaseSong) {
         val tvSpeed = picView.findViewById<TextView>(R.id.tv_play_speed)
 
@@ -138,8 +141,11 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
         picView.findViewById<TextView>(R.id.tv_music_content_lrc).text = song.getName()
         val download = picView.findViewById<ImageView>(R.id.iv_download)
         download.show()
+        song.loadLrc()
+                .subscribe({
+                    lrcView.loadLrc(it)
+                }) { it.printStackTrace() }
         if (song is SearchSong) {
-            lrcView.loadLrc(song.lrc)
             GlideApp.with(picView)
                     .load(song.pic)
                     .error(R.drawable.ic_music)
@@ -149,7 +155,6 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
             download.setImageResource(R.drawable.ic_music_download)
             download.setOnClickListener { DownloadHelper.download(activity, song) }
         } else if (song is LocalSong) {
-            lrcView.loadLrc("")
             GlideApp.with(picView)
                     .load(song.picByteArray())
                     .error(R.drawable.ic_music)

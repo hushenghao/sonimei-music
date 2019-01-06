@@ -11,8 +11,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -127,7 +125,7 @@ class LocalMusicFragment : BaseFragment() {
                     val path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
 
                     val file = File(path)
-                    if (inPath(file)) {
+                    if (!file.isFile || !file.exists() || inPath(file)) {
                         continue
                     }
 
