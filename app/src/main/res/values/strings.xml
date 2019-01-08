@@ -163,4 +163,6 @@
     <string name="file_download_finish_notify_name">文件下载完成通知</string>
     <string name="file_download_service_name">文件下载服务</string>
     <string name="foreground_download">后台下载服务</string>
+    <string name="search_empty">没有搜索到结果！</string>
+    <string name="load_more_empty">没有更多结果了！</string>
 </resources>

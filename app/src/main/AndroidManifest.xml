@@ -114,7 +114,6 @@
         <service
             android:name=".module.download.DownloadService"
             android:label="@string/file_download_service_name" />
-        <service android:name=".MyApp$StartService" />
     </application>
 
 </manifest>

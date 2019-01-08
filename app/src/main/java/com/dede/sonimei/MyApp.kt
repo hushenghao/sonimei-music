@@ -2,9 +2,7 @@ package com.dede.sonimei
 
 import android.app.Activity
 import android.app.Application
-import android.app.IntentService
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.view.View
@@ -43,25 +41,21 @@ class MyApp : Application() {
 
         HttpUtil.init(this)
 
-        val intent = Intent(this, StartService::class.java)
-        startService(intent)
+        initOkDownLoad()
     }
 
-    class StartService : IntentService("start") {
+    private fun initOkDownLoad() {
+        if (BuildConfig.DEBUG) Util.enableConsoleLog()
 
-        override fun onHandleIntent(intent: Intent?) {
-            if (BuildConfig.DEBUG) Util.enableConsoleLog()
-
-            val okDownload = OkDownload.Builder(this)
-                    .downloadDispatcher(DownloadDispatcher())
-                    .build()
-            try {
-                OkDownload.setSingletonInstance(okDownload)
-            } catch (e: IllegalArgumentException) {
-                e.printStackTrace()
-            }
-            DownloadDispatcher.setMaxParallelRunningCount(1)
+        val okDownload = OkDownload.Builder(this)
+                .downloadDispatcher(DownloadDispatcher())
+                .build()
+        try {
+            OkDownload.setSingletonInstance(okDownload)
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
         }
+        DownloadDispatcher.setMaxParallelRunningCount(1)
     }
 
     private fun initBugly() {

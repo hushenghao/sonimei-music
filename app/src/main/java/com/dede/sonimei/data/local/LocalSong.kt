@@ -1,6 +1,7 @@
 package com.dede.sonimei.data.local
 
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import com.dede.sonimei.data.BaseSong
@@ -52,14 +53,20 @@ data class LocalSong(
     }
 
     override fun loadLrc(): Observable<String> {
-        return Observable.create<String> {
-            val mp3File = Mp3File(path)
-            if (mp3File.hasId3v2Tag()) {
-                it.onNext(mp3File.id3v2Tag.lyrics ?: "")
-            } else {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Observable.create<String> {
+                val mp3File = Mp3File(path)
+                if (mp3File.hasId3v2Tag()) {
+                    it.onNext(mp3File.id3v2Tag.lyrics ?: "")
+                } else {
+                    it.onNext("")
+                }
+            }.applySchedulers()
+        } else {
+            Observable.create<String> {
                 it.onNext("")
             }
-        }.applySchedulers()
+        }
     }
 
     companion object {

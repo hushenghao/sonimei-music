@@ -108,7 +108,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
                             false
                         }
                     }
-                    .map { it.optJSONObject("result").optString("songs") }
+                    .map { it.optJSONObject("result").optString("songs","[]") }
                     .map { it.fromJson<ArrayList<NetEaseWebResult>>().map { it.map() } }
                     .subscribe({
                         offset += it.size

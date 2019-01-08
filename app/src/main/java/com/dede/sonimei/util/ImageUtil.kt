@@ -10,6 +10,10 @@ import android.renderscript.ScriptIntrinsicBlur
 import android.support.annotation.IntRange
 import android.util.Log
 import com.dede.sonimei.BuildConfig
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 
 
 /**
@@ -106,5 +110,29 @@ object ImageUtil {
         }
 
         return Bitmap.createBitmap(source, x, y, twidth, theight)
+    }
+
+    @Throws(IOException::class)
+    fun toByteArray(file: File): ByteArray {
+        var bytes = ByteArray(2048)
+        val fis = FileInputStream(file)
+        val out = ByteArrayOutputStream()
+        var l = fis.read(bytes)
+        while (l != -1) {
+            out.write(bytes, 0, l)
+            l = fis.read(bytes)
+        }
+        fis.close()
+        bytes = out.toByteArray()
+        out.close()
+        return bytes
+    }
+
+    fun toByteArray(bitmap: Bitmap): ByteArray {
+        val out = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        val bytes = out.toByteArray()
+        out.close()
+        return bytes
     }
 }

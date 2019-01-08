@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Binder
@@ -17,12 +16,14 @@ import android.os.Environment
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.GlideApp
+import com.dede.sonimei.util.ImageUtil
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
 import com.liulishuo.okdownload.DownloadTask
@@ -32,7 +33,6 @@ import com.mpatric.mp3agic.ID3v2
 import com.mpatric.mp3agic.ID3v24Tag
 import com.mpatric.mp3agic.Mp3File
 import org.jetbrains.anko.*
-import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.properties.Delegates
 
@@ -113,24 +113,43 @@ class DownloadService : Service(), AnkoLogger {
                     val song = intent.getParcelableExtra<BaseSong>("song")
                     val filePath = intent.getStringExtra("file_path")
                     Log.i("DownloadReceiver", "finish: $filePath")
-                    saveAlbumImage(song, filePath)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        saveAlbumImageNotify(song, filePath)
+                    } else {
+                        notifyFinish(song, filePath)
+                    }
                 }
             }
         }
     }
 
-    private fun saveAlbumImage(song: BaseSong, filePath: String?) {
-        if (filePath.isNull()) return
-
-        fun notifyMediaDb(filePath: String) {
-            val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-            scanIntent.data = Uri.fromFile(File(filePath))
-            sendBroadcast(scanIntent)// 通知媒体库更新
+    private fun notifyFinish(song: BaseSong, filePath: String?) {
+        if (filePath.notNull()) {
+            val file = File(filePath)
+            if (file.exists()) {
+                toast(String.format(getString(R.string.download_finish), song.getName()))
+                val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                scanIntent.data = Uri.fromFile(file)
+                sendBroadcast(scanIntent)// 通知媒体库更新
+            }
         }
+        if (DownloadHelper.getInstance(this@DownloadService).hasTask().not()) {
+            stopForeground(true)
+        }
+    }
 
+    private fun saveAlbumImageNotify(song: BaseSong, filePath: String?) {
+        if (filePath.isNull()) return
         if (song !is SearchSong) return
 
-        doAsync({ it.printStackTrace() }) {
+        var canNotify = true
+        doAsync({
+            it.printStackTrace()
+            runOnUiThread {
+                if (!canNotify) return@runOnUiThread
+                notifyFinish(song, filePath)
+            }
+        }) {
             val mp3file = Mp3File(filePath)
             val id3v2: ID3v2
             if (mp3file.hasId3v2Tag()) {// 有ID3v2 tag
@@ -148,26 +167,27 @@ class DownloadService : Service(), AnkoLogger {
 
             val albumImage = id3v2.albumImage
             if (albumImage == null || albumImage.isEmpty()) {
-                val bitmap = GlideApp.with(this@DownloadService)
-                        .asBitmap().load(song.pic).submit().get()
-                val stream = ByteArrayOutputStream(bitmap.byteCount)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                id3v2.setAlbumImage(stream.toByteArray(), "APIC")
-
-                val newFile = File("$filePath.temp")
-                mp3file.save(newFile.absolutePath)
-
-                val file = File(filePath)
-                file.delete()
-                newFile.renameTo(file)
+                val file = GlideApp.with(this@DownloadService)
+                        .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .load(song.pic)
+                        .submit()
+                        .get()
+                val bytes = ImageUtil.toByteArray(file)
+                if (bytes.isNotEmpty()) {
+                    id3v2.setAlbumImage(bytes, "image/jpeg")// mimeType JPEG格式
+                }
             }
 
+            val newFile = File("$filePath.sonimei")
+            mp3file.save(newFile.absolutePath)// 保存的时候出错时，直接通知刷新
+            canNotify = false
+            val file = File(filePath)
+            file.delete()
+            newFile.renameTo(file)
+
             uiThread {
-                toast(String.format(getString(R.string.download_finish), song.getName()))
-                notifyMediaDb(filePath!!)
-                if (DownloadHelper.getInstance(this@DownloadService).hasTask().not()) {
-                    stopForeground(true)
-                }
+                notifyFinish(song, filePath)
             }
         }
     }

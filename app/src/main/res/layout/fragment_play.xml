@@ -190,17 +190,17 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <ImageView
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_play_mini_control_mask"
             android:rotation="180"
+            android:src="@drawable/shape_play_mini_control_mask"
             app:layout_constraintLeft_toLeftOf="@id/vp_mini_control" />
 
-        <View
+        <ImageView
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            android:background="@drawable/shape_play_mini_control_mask"
+            android:src="@drawable/shape_play_mini_control_mask"
             app:layout_constraintRight_toRightOf="@id/vp_mini_control" />
 
         <ImageView

@@ -46,8 +46,14 @@ class SearchResultFragment : BaseFragment(), ISearchResultView {
                 adapter.loadMoreComplete()
             } else {
                 adapter.loadMoreEnd()
+                if (list.isEmpty()) {
+                    toast(R.string.load_more_empty)
+                }
             }
         } else {
+            if (list.isEmpty()) {
+                toast(R.string.search_empty)
+            }
             adapter.setNewData(list)
             if (list.size < presenter.pagerSize) {
                 adapter.loadMoreEnd()
