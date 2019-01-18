@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.R
+import com.dede.sonimei.component.FixBottomSheetDialog
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.util.extends.color
 import kotlinx.android.synthetic.main.dialog_play_list.*
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.dialog_play_list.*
 /**
  * Created by hsh on 2018/8/8.
  */
-class PlayListDialog(context: Context, val list: List<BaseSong>, var index: Int = 0) : BottomSheetDialog(context, R.style.BottomSheetDialog) {
+class PlayListDialog(context: Context, val list: List<BaseSong>, var index: Int = 0) : FixBottomSheetDialog(context, R.style.BottomSheetDialog) {
 
     private lateinit var adapter: Adapter
 

@@ -3,7 +3,6 @@ package com.dede.sonimei.module.home
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.dede.sonimei.*
+import com.dede.sonimei.component.FixBottomSheetDialog
 import com.dede.sonimei.data.Source
 import com.dede.sonimei.util.extends.color
 import com.dede.sonimei.util.extends.hide
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.dialog_source_type.*
  * Created by hsh on 2018/5/23.
  */
 class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
-        BottomSheetDialog(context, R.style.BottomSheetDialog),
+        FixBottomSheetDialog(context, R.style.BottomSheetDialog),
         CompoundButton.OnCheckedChangeListener,
         DialogInterface.OnDismissListener {
 
