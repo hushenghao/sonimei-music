@@ -17,7 +17,7 @@ data class LocalSong(
         var duration: Long,
         override var path: String?) : BaseSong(title, path), Parcelable {
 
-    var pinyin: String = "#"
+    var key: String = "#"
 
     private var picByteArray: ByteArrayWeakReference = ByteArrayWeakReference(null)
 
@@ -28,7 +28,9 @@ data class LocalSong(
             parcel.readString(),
             parcel.readLong(),
             parcel.readString()
-    )
+    ) {
+        key = parcel.readString() ?: "#"
+    }
 
     constructor() : this(0, "", "", "", 0, "")
 
@@ -89,6 +91,7 @@ data class LocalSong(
         parcel.writeString(album)
         parcel.writeLong(duration)
         parcel.writeString(path)
+        parcel.writeString(key)// 放最后一个
     }
 
     override fun describeContents(): Int {

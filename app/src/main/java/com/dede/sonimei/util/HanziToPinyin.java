@@ -404,8 +404,8 @@ public class HanziToPinyin {
                 }
             }
 
-            //获取语言环境，判断是否是中国。处理国产机无法转换问题
-            if (Locale.CHINA.equals(Locale.getDefault())) {
+            // 获取语言环境，判断是否是中国
+            if ("zh".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
                 sInstance = new HanziToPinyin(true);
                 return sInstance;
             }

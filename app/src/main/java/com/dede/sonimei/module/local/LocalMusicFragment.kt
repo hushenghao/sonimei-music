@@ -25,6 +25,7 @@ import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_60S
 import com.dede.sonimei.module.setting.Settings.Companion.KEY_IGNORE_PATHS
 import com.dede.sonimei.util.HanziToPinyin
+import com.dede.sonimei.util.extends.notNull
 import com.dede.sonimei.util.extends.to
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.turingtechnologies.materialscrollbar.CustomIndicator
@@ -138,10 +139,14 @@ class LocalMusicFragment : BaseFragment() {
                     val pinYinList = pinyin.get(title)
                     if (pinYinList != null && pinYinList.size >= 1) {
                         val token = pinYinList[0]
-                        if (token.type != HanziToPinyin.Token.UNKNOWN)
-                            localSong.pinyin = token.target.substring(0, 1).toUpperCase()
-                        else
-                            localSong.pinyin = "#"
+                        if (token != null && token.type != HanziToPinyin.Token.UNKNOWN) {
+                            val target = token.target
+                            if (target.notNull()) {
+                                localSong.key = target.substring(0, 1).toUpperCase()
+                            }
+                        }
+                    } else {
+                        localSong.key = title.substring(0, 1).toUpperCase()
                     }
                 }
                 cursor.close()
@@ -159,7 +164,7 @@ class LocalMusicFragment : BaseFragment() {
                     strings, null, null, null))
             load(context!!.contentResolver.query(MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
                     strings, null, null, null))
-            list.sortWith(Comparator { o1, o2 -> o1?.pinyin?.compareTo(o2?.pinyin ?: "#") ?: 0 })
+            list.sortWith(Comparator { o1, o2 -> o1?.key?.compareTo(o2?.key ?: "#") ?: 0 })
             uiThread {
                 swipe_refresh?.isRefreshing = false
                 (recycler_view_local?.adapter as? LocalMusicListAdapter)?.setNewData(list)
@@ -185,7 +190,7 @@ class LocalMusicFragment : BaseFragment() {
     private inner class LocalMusicListAdapter : BaseQuickAdapter<LocalSong, BaseViewHolder>(R.layout.item_local_music), ICustomAdapter {
 
         override fun getCustomStringForElement(element: Int): String {
-            return getItem(element)?.pinyin ?: "#"
+            return getItem(element)?.key ?: "#"
         }
 
         override fun convert(helper: BaseViewHolder?, item: LocalSong?) {
