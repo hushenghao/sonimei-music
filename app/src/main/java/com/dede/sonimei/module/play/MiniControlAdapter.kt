@@ -15,17 +15,17 @@ import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.show
-import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.collections.forEach
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.info
 
 /**
  * 播放页底部ViewPager的Adapter
  */
-class MiniControlAdapter(val context: Context, private val musicBinder: MusicBinder) : PagerAdapter(), AnkoLogger {
+class MiniControlAdapter(val context: Context, private val musicBinder: MusicBinder) : PagerAdapter(), Logger {
 
     private inner class PagerHolder(view: View) {
         val img = view.findViewById<ImageView>(R.id.iv_album_img)!!

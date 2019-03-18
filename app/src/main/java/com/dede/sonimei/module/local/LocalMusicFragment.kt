@@ -142,11 +142,11 @@ class LocalMusicFragment : BaseFragment() {
                         if (token != null && token.type != HanziToPinyin.Token.UNKNOWN) {
                             val target = token.target
                             if (target.notNull()) {
-                                localSong.key = target.substring(0, 1).toUpperCase()
+                                localSong.key = target.toUpperCase()
                             }
                         }
                     } else {
-                        localSong.key = title.substring(0, 1).toUpperCase()
+                        localSong.key = title.toUpperCase()
                     }
                 }
                 cursor.close()
@@ -190,7 +190,7 @@ class LocalMusicFragment : BaseFragment() {
     private inner class LocalMusicListAdapter : BaseQuickAdapter<LocalSong, BaseViewHolder>(R.layout.item_local_music), ICustomAdapter {
 
         override fun getCustomStringForElement(element: Int): String {
-            return getItem(element)?.key ?: "#"
+            return getItem(element)?.key?.substring(0, 1) ?: "#"
         }
 
         override fun convert(helper: BaseViewHolder?, item: LocalSong?) {

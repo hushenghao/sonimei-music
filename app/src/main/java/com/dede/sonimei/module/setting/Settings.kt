@@ -14,9 +14,13 @@ import com.dede.sonimei.data.Source
 import com.dede.sonimei.module.home.AboutDialog
 import com.dede.sonimei.module.local.LocalMusicFragment
 import com.dede.sonimei.module.selector.*
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.info
 import com.dede.sonimei.util.extends.isNull
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.jetbrains.anko.*
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.startActivityForResult
+import org.jetbrains.anko.toast
 import java.io.File
 import java.io.FileFilter
 
@@ -25,7 +29,7 @@ import java.io.FileFilter
  * Created by hsh on 2018/5/17.
  */
 class Settings : PreferenceFragment(),
-        AnkoLogger,
+        Logger,
         Preference.OnPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
 

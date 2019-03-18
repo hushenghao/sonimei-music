@@ -24,6 +24,8 @@ import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
 import com.liulishuo.okdownload.DownloadTask
@@ -37,7 +39,7 @@ import java.io.File
 import kotlin.properties.Delegates
 
 
-class DownloadService : Service(), AnkoLogger {
+class DownloadService : Service(), Logger {
 
     companion object {
         const val ACTION_CANCEL_DOWNLOAD = "com.dede.sonimei.DOWNLOAD_CANCEL"

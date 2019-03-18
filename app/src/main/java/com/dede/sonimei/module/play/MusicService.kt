@@ -34,7 +34,10 @@ import com.dede.sonimei.player.SimplePlayStateChangeListener
 import com.dede.sonimei.util.ClickEventHelper
 import com.dede.sonimei.util.extends.*
 import io.reactivex.disposables.Disposable
-import org.jetbrains.anko.*
+import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -57,7 +60,7 @@ private const val SP_KEY_PLAY_MODE = "play_mode"
  * Created by hsh on 2018/8/2.
  */
 class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
-        AudioManager.OnAudioFocusChangeListener, AnkoLogger {
+        AudioManager.OnAudioFocusChangeListener, Logger {
 
     /** implement [IPlayControllerListenerI] */
 

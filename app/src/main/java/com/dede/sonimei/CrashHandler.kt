@@ -11,10 +11,10 @@ import android.os.Build
 import android.os.Looper
 import android.widget.Toast
 import com.dede.sonimei.module.home.MainActivity
-import org.jetbrains.anko.AnkoLogger
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.error
+import com.dede.sonimei.util.extends.info
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.error
-import org.jetbrains.anko.info
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,7 +26,7 @@ import kotlin.collections.LinkedHashMap
  * @date 2017/8/21 10:47.
  * @doc
  */
-class CrashHandler : Thread.UncaughtExceptionHandler, AnkoLogger {
+class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
 
     //用来存储设备信息和异常信息
     private val deviceInfo by lazy { LinkedHashMap<String, String>() }

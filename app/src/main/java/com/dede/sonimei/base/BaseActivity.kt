@@ -4,15 +4,15 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.support.annotation.LayoutRes
 import com.dede.sonimei.BuildConfig
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.info
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 
 
 /**
  * Created by hsh on 2018/5/14.
  */
-abstract class BaseActivity : RxAppCompatActivity(), AnkoLogger {
+abstract class BaseActivity : RxAppCompatActivity(), Logger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {

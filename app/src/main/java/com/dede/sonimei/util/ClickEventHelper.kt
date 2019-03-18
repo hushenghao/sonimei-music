@@ -2,14 +2,14 @@ package com.dede.sonimei.util
 
 import android.os.Handler
 import android.os.Looper
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.warn
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.warn
 
 
 /**
  * Created by hsh on 2018/12/29 4:40 PM
  */
-class ClickEventHelper(private val callback: Callback?, private val clickDelay: Long = 300) : AnkoLogger {
+class ClickEventHelper(private val callback: Callback?, private val clickDelay: Long = 300) : Logger {
 
     init {
         if (clickDelay <= 0) {

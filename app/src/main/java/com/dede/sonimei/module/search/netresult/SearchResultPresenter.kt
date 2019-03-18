@@ -7,17 +7,15 @@ import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.NetEaseWebResult
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
-import com.dede.sonimei.util.extends.applyFragmentLifecycle
+import com.dede.sonimei.util.extends.*
 import com.dede.sonimei.util.extends.kson.fromExposeJson
 import com.dede.sonimei.util.extends.kson.fromJson
-import com.dede.sonimei.util.extends.notNull
-import org.jetbrains.anko.AnkoLogger
 import org.json.JSONObject
 
 /**
  * Created by hsh on 2018/5/15.
  */
-class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
+class SearchResultPresenter(private val view: ISearchResultView) : Logger {
 
     private var page = 1
     var pagerSize = 10
@@ -103,12 +101,13 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
                         if (it.optInt("code") == 200) {
                             true
                         } else {
+                            warn("NetEase Web code :" + it.opt("code"))
                             view.hideLoading()
                             view.loadError(isLoadMore)
                             false
                         }
                     }
-                    .map { it.optJSONObject("result").optString("songs","[]") }
+                    .map { it.optJSONObject("result").optString("songs", "[]") }
                     .map { it.fromJson<ArrayList<NetEaseWebResult>>().map { it.map() } }
                     .subscribe({
                         offset += it.size
@@ -117,6 +116,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
                     }) {
                         view.loadError(isLoadMore)
                         it.printStackTrace()
+                        error(null, it)
                     }
             return
         }
@@ -132,6 +132,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
                 .applyFragmentLifecycle(view.provider())
                 .filter {
                     if (!it.trueStatus()) {
+                        warn(it.error)
                         if (isLoadMore) this.page--
                         view.hideLoading()
                         view.loadError(isLoadMore, it.error)
@@ -147,6 +148,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : AnkoLogger {
                     this.page--
                     view.loadError(isLoadMore)
                     it.printStackTrace()
+                    error(null, it)
                 }
     }
 }

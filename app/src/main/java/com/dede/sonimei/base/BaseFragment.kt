@@ -7,15 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.extends.debug
+import com.dede.sonimei.util.extends.info
 import com.trello.rxlifecycle2.components.support.RxFragment
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.info
 
 /**
  * Created by hsh on 2018/5/14.
  */
-abstract class BaseFragment : RxFragment(), AnkoLogger {
+abstract class BaseFragment : RxFragment(), Logger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

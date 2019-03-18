@@ -11,8 +11,8 @@ import android.os.IBinder
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
+import com.dede.sonimei.util.extends.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import java.util.*
 import kotlin.collections.ArrayList
@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
 /**
  * Created by hsh on 2018/5/18.
  */
-class DownloadHelper private constructor(val context: Context) : ServiceConnection, AnkoLogger {
+class DownloadHelper private constructor(val context: Context) : ServiceConnection, Logger {
 
     companion object {
 
