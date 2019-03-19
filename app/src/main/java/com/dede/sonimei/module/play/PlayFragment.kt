@@ -11,8 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.support.annotation.RequiresApi
-import android.support.v4.view.ViewPager
+import androidx.annotation.RequiresApi
+import androidx.viewpager.widget.ViewPager
 import android.view.View
 import android.widget.SeekBar
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -34,6 +34,7 @@ import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
+import com.dede.sonimei.util.info
 import kotlinx.android.synthetic.main.fragment_play.*
 import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.dip
@@ -202,10 +203,10 @@ class PlayFragment : BaseFragment(),
 
     private val miniControlAdapter by lazy { MiniControlAdapter(context!!, musicBinder!!) }
     /** ViewPager滑动监听处理无限轮播逻辑 */
-    private val pagerChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+    private val pagerChangeListener = object : androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
 
         override fun onPageScrollStateChanged(state: Int) {
-            if (state != ViewPager.SCROLL_STATE_IDLE) return
+            if (state != androidx.viewpager.widget.ViewPager.SCROLL_STATE_IDLE) return
 
             val p = vp_mini_control.currentItem
             info("onPageSelected: $p")

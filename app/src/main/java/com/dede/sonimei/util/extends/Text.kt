@@ -1,9 +1,9 @@
 package com.dede.sonimei.util.extends
 
 import android.content.Context
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.v4.content.ContextCompat
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import android.text.Html
 import android.text.Spanned
 import android.text.format.DateUtils

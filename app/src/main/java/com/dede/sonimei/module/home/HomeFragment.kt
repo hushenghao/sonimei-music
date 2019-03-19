@@ -1,8 +1,8 @@
 package com.dede.sonimei.module.home
 
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.v4.app.Fragment
+import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import android.view.MenuItem
 import android.view.View
 import com.dede.sonimei.R
@@ -39,7 +39,7 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun addFragment(@IdRes id: Int, fragment: Fragment, tag: String?) {
+    private fun addFragment(@IdRes id: Int, fragment: androidx.fragment.app.Fragment, tag: String?) {
         val trans = childFragmentManager
                 .beginTransaction()
         trans.setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out,

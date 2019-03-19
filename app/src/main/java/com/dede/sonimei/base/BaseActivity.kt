@@ -2,10 +2,10 @@ package com.dede.sonimei.base
 
 import android.os.Bundle
 import android.os.StrictMode
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 import com.dede.sonimei.BuildConfig
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.info
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 
 

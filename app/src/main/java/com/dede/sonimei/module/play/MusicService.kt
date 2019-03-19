@@ -15,10 +15,9 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
-import android.support.annotation.RequiresApi
-import android.support.v4.app.NotificationCompat
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.support.v7.graphics.Palette
 import android.view.KeyEvent
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
@@ -32,7 +31,9 @@ import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.player.SimplePlayStateChangeListener
 import com.dede.sonimei.util.ClickEventHelper
+import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.info
 import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
@@ -671,7 +672,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
         }
         val song = playList[playIndex]
 
-        val mediaStyle = android.support.v4.media.app.NotificationCompat.MediaStyle()
+        val mediaStyle = androidx.media.app.NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(1, 2)
                 .setMediaSession(sessionCompat.sessionToken)
         builder.setContentTitle(song.getName())
@@ -702,7 +703,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                             // 获取图片主色调
-                            Palette.from(resource).generate {
+                            androidx.palette.graphics.Palette.from(resource).generate {
                                 notificationManager.notify(PLAY_NOTIFICATION_ID,
                                         builder.setLargeIcon(resource)
                                                 .setColor(it?.mutedSwatch?.rgb ?: Color.WHITE)
@@ -720,7 +721,7 @@ class MusicService : Service(), IPlayControllerListenerI, ILoadPlayList,
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                             // 获取图片主色调
-                            Palette.from(resource).generate {
+                            androidx.palette.graphics.Palette.from(resource).generate {
                                 notificationManager.notify(PLAY_NOTIFICATION_ID,
                                         builder.setLargeIcon(resource)
                                                 .setColor(it?.mutedSwatch?.rgb ?: Color.WHITE)

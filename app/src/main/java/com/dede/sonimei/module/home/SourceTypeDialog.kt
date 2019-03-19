@@ -3,8 +3,8 @@ package com.dede.sonimei.module.home
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.CoordinatorLayout
-import android.support.v7.widget.RecyclerView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
@@ -46,7 +46,7 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
         dismiss()
     }
 
-    private val recyclerView: RecyclerView
+    private val recyclerView: androidx.recyclerview.widget.RecyclerView
     private val adapter: Adapter
     private val list = sourceList
     private var selectData = data.first to data.second
@@ -105,7 +105,7 @@ class SourceTypeDialog(context: Context, val data: Pair<Int, String>) :
 
         var params = ll_content.layoutParams
         if (params == null) {
-            params = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+            params = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
         }
         params.height = (context.resources.displayMetrics.heightPixels * .6).toInt()
     }

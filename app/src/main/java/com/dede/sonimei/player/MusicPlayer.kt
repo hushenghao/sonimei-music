@@ -1,7 +1,7 @@
 package com.dede.sonimei.player
 
 import android.media.MediaPlayer
-import android.support.annotation.IntRange
+import androidx.annotation.IntRange
 import android.util.Log
 import com.dede.sonimei.module.play.*
 

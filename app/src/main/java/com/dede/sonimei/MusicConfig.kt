@@ -1,7 +1,7 @@
 package com.dede.sonimei
 
 import android.os.Environment
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 import android.util.SparseArray
 import com.dede.sonimei.data.Source
 import java.io.File

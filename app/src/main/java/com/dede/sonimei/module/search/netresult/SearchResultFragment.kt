@@ -5,8 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.text.Html
 import android.widget.ImageView
 import android.widget.TextView
@@ -98,7 +98,7 @@ class SearchResultFragment : BaseFragment(), ISearchResultView {
         }
         adapter.setOnLoadMoreListener({ presenter.loadMore() }, rv_search_list)
         rv_search_list.adapter = adapter
-        rv_search_list.layoutManager = object : LinearLayoutManager(context) {
+        rv_search_list.layoutManager = object : androidx.recyclerview.widget.LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean {
                 return if (adapter.data.size > 0) super.canScrollVertically() else false
             }

@@ -4,8 +4,8 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
-import android.support.annotation.IntRange
+import androidx.annotation.ColorInt
+import androidx.annotation.IntRange
 import android.util.Log
 import android.view.animation.LinearInterpolator
 

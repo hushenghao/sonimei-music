@@ -14,7 +14,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.util.Log
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dede.sonimei.R
@@ -24,8 +24,8 @@ import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
 import com.liulishuo.okdownload.DownloadTask

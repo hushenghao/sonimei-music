@@ -1,8 +1,8 @@
 package com.dede.sonimei.component
 
 import android.content.Context
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.CoordinatorLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.VelocityTracker
@@ -33,7 +33,7 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
     private var velocityTracker: VelocityTracker? = null
 
 
-    override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: T, event: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(parent: androidx.coordinatorlayout.widget.CoordinatorLayout, child: T, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
         }
@@ -56,7 +56,7 @@ class PlayBottomSheetBehavior<T : View> : BottomSheetBehavior<T> {
 
     var onYVelocityChangeListener: OnYVelocityChangeListener? = null
 
-    override fun onTouchEvent(parent: CoordinatorLayout, child: T, event: MotionEvent): Boolean {
+    override fun onTouchEvent(parent: androidx.coordinatorlayout.widget.CoordinatorLayout, child: T, event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
         }

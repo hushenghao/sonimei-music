@@ -6,21 +6,21 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.preference.Preference
-import android.preference.PreferenceFragment
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.dede.sonimei.*
 import com.dede.sonimei.data.Source
 import com.dede.sonimei.module.home.AboutDialog
 import com.dede.sonimei.module.local.LocalMusicFragment
 import com.dede.sonimei.module.selector.*
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.extends.isNull
+import com.dede.sonimei.util.info
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.startActivityForResult
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.support.v4.defaultSharedPreferences
+import org.jetbrains.anko.support.v4.startActivityForResult
+import org.jetbrains.anko.support.v4.toast
 import java.io.File
 import java.io.FileFilter
 
@@ -28,7 +28,7 @@ import java.io.FileFilter
 /**
  * Created by hsh on 2018/5/17.
  */
-class Settings : PreferenceFragment(),
+class Settings : PreferenceFragmentCompat(),
         Logger,
         Preference.OnPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
@@ -47,6 +47,7 @@ class Settings : PreferenceFragment(),
     private val selectSourceCode = 2
 
     override fun onPreferenceClick(preference: Preference?): Boolean {
+
         return when (preference?.key) {
             KEY_DEFAULT_SEARCH_SOURCE -> {
                 startActivityForResult<SelectSourceActivity>(selectSourceCode)
@@ -61,7 +62,7 @@ class Settings : PreferenceFragment(),
                 true
             }
             KEY_BUG_REPORT -> {
-                AlertDialog.Builder(activity)
+                AlertDialog.Builder(context!!)
                         .setTitle(R.string.emile_theme)
                         .setMessage(R.string.dialog_bug_report)
                         .setNegativeButton(R.string.dont_send) { _, _ -> sendEmail(false) }
@@ -71,7 +72,7 @@ class Settings : PreferenceFragment(),
                 true
             }
             KEY_QQ_GROUP -> {
-                AboutDialog(activity).show()
+                AboutDialog(context!!).show()
                 true
             }
             else -> false
@@ -84,7 +85,7 @@ class Settings : PreferenceFragment(),
             callEmail()
             return
         }
-        RxPermissions(activity)
+        RxPermissions(this)
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe({
                     if (!it) {
@@ -132,8 +133,7 @@ class Settings : PreferenceFragment(),
 
     private lateinit var defaultSearchSource: Preference
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preference_settings)
 
         defaultSearchSource = findPreference(KEY_DEFAULT_SEARCH_SOURCE)// 默认搜索来源

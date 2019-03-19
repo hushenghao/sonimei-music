@@ -2,16 +2,16 @@ package com.dede.sonimei.module.download
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import androidx.fragment.app.FragmentActivity
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
-import com.dede.sonimei.util.extends.Logger
+import com.dede.sonimei.util.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.toast
 import java.util.*
@@ -38,7 +38,7 @@ class DownloadHelper private constructor(val context: Context) : ServiceConnecti
          * 判断运行时权限后下载，没有权限时申请后再下载
          */
         @SuppressLint("CheckResult")
-        fun download(activity: Activity?, song: SearchSong) {
+        fun download(activity: FragmentActivity?, song: SearchSong) {
             if (activity == null) {
                 instance?.download(song)
                 return

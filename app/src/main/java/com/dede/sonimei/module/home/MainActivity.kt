@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.support.design.widget.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup

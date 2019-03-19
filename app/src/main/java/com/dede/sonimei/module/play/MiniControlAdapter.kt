@@ -1,7 +1,6 @@
 package com.dede.sonimei.module.play
 
 import android.content.Context
-import android.support.v4.view.PagerAdapter
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,8 @@ import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.show
 import org.jetbrains.anko.collections.forEach
@@ -25,7 +24,7 @@ import org.jetbrains.anko.dip
 /**
  * 播放页底部ViewPager的Adapter
  */
-class MiniControlAdapter(val context: Context, private val musicBinder: MusicBinder) : PagerAdapter(), Logger {
+class MiniControlAdapter(val context: Context, private val musicBinder: MusicBinder) : androidx.viewpager.widget.PagerAdapter(), Logger {
 
     private inner class PagerHolder(view: View) {
         val img = view.findViewById<ImageView>(R.id.iv_album_img)!!

@@ -1,7 +1,7 @@
 package com.dede.sonimei.module.play
 
 import android.os.Build
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import com.dede.sonimei.data.BaseSong
 
 /**

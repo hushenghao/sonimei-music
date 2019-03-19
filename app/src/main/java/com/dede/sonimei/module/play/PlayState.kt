@@ -1,6 +1,6 @@
 package com.dede.sonimei.module.play
 
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 
 /**
  * Created by hsh on 2018/9/7 下午2:34

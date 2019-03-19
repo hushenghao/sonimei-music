@@ -1,12 +1,12 @@
 package com.dede.sonimei.component
 
 import android.content.Context
-import android.support.annotation.NonNull
-import android.support.annotation.StyleRes
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.view.ViewCompat
+import androidx.annotation.NonNull
+import androidx.annotation.StyleRes
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -31,9 +31,9 @@ open class FixBottomSheetDialog : BottomSheetDialog, ViewTreeObserver.OnGlobalLa
      */
     private fun updateBehavior() {
         val list: View = findScrollingChild(window!!.decorView) ?: return
-        val bottomSheet = findViewById<FrameLayout>(android.support.design.R.id.design_bottom_sheet)
+        val bottomSheet = findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
                 ?: return
-        val params = (bottomSheet.layoutParams as? CoordinatorLayout.LayoutParams?) ?: return
+        val params = (bottomSheet.layoutParams as? androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams?) ?: return
         try {
             val field = BottomSheetBehavior::class.java.getDeclaredField("nestedScrollingChildRef")
             field.isAccessible = true

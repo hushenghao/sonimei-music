@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
+import androidx.multidex.MultiDex
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.HttpUtil
 import com.liulishuo.okdownload.OkDownload
@@ -25,6 +26,11 @@ import com.tencent.bugly.beta.ui.UILifecycleListener
  * Created by hsh on 2018/5/14.
  */
 class MyApp : Application() {
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
 
     override fun onCreate() {
         super.onCreate()

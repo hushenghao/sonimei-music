@@ -173,14 +173,14 @@
     </LinearLayout>
 
     <!--bottom sheet mini control-->
-    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ll_bottom_play"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_bottom_play_controller_height"
         android:background="@color/white"
         tools:visibility="visible">
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/vp_mini_control"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -227,5 +227,5 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

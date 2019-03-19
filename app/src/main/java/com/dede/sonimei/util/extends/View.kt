@@ -1,9 +1,9 @@
 package com.dede.sonimei.util.extends
 
 import android.content.Context
-import android.support.annotation.ColorRes
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.annotation.ColorRes
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -23,7 +23,7 @@ fun ImageView.load(url: String?) {
 }
 
 fun Context.color(@ColorRes res: Int) = ContextCompat.getColor(this, res)
-fun Fragment.color(@ColorRes res: Int) = ContextCompat.getColor(this.context!!, res)
+fun androidx.fragment.app.Fragment.color(@ColorRes res: Int) = ContextCompat.getColor(this.context!!, res)
 
 fun View?.gone() {
     this?.visibility = View.GONE

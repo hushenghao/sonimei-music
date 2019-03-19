@@ -2,8 +2,8 @@ package com.dede.sonimei.module.play
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import android.view.ViewGroup
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
@@ -31,7 +31,7 @@ class PlayListDialog(context: Context, val list: List<BaseSong>, var index: Int 
 
         var params = ll_content.layoutParams
         if (params == null) {
-            params = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+            params = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
         }
         params.height = (context.resources.displayMetrics.heightPixels * .6).toInt()
 

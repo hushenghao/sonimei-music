@@ -11,7 +11,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -83,7 +83,7 @@ class LocalMusicFragment : BaseFragment() {
         customIndicator.setTextSize(35)
         scroll_bar.setIndicator(customIndicator, true)
 
-        RxPermissions(activity!!)
+        RxPermissions(this)
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe({
                     if (!it) {

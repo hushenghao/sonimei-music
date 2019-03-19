@@ -1,15 +1,14 @@
 package com.dede.sonimei.base
 
 import android.os.Bundle
-import android.support.annotation.LayoutRes
-import android.support.v4.app.FragmentActivity
+import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.debug
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.debug
+import com.dede.sonimei.util.info
 import com.trello.rxlifecycle2.components.support.RxFragment
 
 /**
@@ -45,7 +44,7 @@ abstract class BaseFragment : RxFragment(), Logger {
         initView(savedInstanceState)
     }
 
-    fun <T : FragmentActivity> asActivity(): T {
+    fun <T : androidx.fragment.app.FragmentActivity> asActivity(): T {
         return activity as T
     }
 

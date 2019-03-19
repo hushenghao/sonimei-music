@@ -7,7 +7,7 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
-import android.support.annotation.IntRange
+import androidx.annotation.IntRange
 import android.util.Log
 import com.dede.sonimei.BuildConfig
 import java.io.ByteArrayOutputStream

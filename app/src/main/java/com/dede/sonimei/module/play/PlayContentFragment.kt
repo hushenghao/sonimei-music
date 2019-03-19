@@ -4,8 +4,8 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +53,7 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
 
     private lateinit var playAnimator: ValueAnimator
 
-    private var pagerChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+    private var pagerChangeListener = object : androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
         override fun onPageSelected(position: Int) {
             playAnim(position == 0 && playFragment?.musicBinder?.isPlaying == true)
         }
@@ -211,7 +211,7 @@ class PlayContentFragment : BaseFragment(), ValueAnimator.AnimatorUpdateListener
         super.onDestroyView()
     }
 
-    private inner class Adapter : PagerAdapter() {
+    private inner class Adapter : androidx.viewpager.widget.PagerAdapter() {
 
         override fun isViewFromObject(p0: View, p1: Any): Boolean = p0 == p1
 

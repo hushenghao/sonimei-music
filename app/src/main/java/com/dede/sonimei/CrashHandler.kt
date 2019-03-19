@@ -11,9 +11,9 @@ import android.os.Build
 import android.os.Looper
 import android.widget.Toast
 import com.dede.sonimei.module.home.MainActivity
-import com.dede.sonimei.util.extends.Logger
-import com.dede.sonimei.util.extends.error
-import com.dede.sonimei.util.extends.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.error
+import com.dede.sonimei.util.info
 import org.jetbrains.anko.doAsync
 import java.io.*
 import java.text.SimpleDateFormat

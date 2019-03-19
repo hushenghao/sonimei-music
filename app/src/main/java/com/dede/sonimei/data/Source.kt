@@ -1,6 +1,6 @@
 package com.dede.sonimei.data
 
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import com.dede.sonimei.MusicSource
 import java.io.Serializable
 

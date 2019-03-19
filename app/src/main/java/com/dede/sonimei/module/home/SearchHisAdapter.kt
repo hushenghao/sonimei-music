@@ -2,10 +2,10 @@ package com.dede.sonimei.module.home
 
 import android.content.Context
 import android.database.Cursor
-import android.support.annotation.WorkerThread
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.CursorAdapter
-import android.support.v4.widget.SimpleCursorAdapter
+import androidx.annotation.WorkerThread
+import androidx.core.content.ContextCompat
+import androidx.cursoradapter.widget.CursorAdapter
+import androidx.cursoradapter.widget.SimpleCursorAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -24,9 +24,9 @@ import org.jetbrains.anko.uiThread
  * 搜索历史adapter
  */
 class SearchHisAdapter(context: Context)
-    : SimpleCursorAdapter(context, R.layout.item_search_his, null,
+    : androidx.cursoradapter.widget.SimpleCursorAdapter(context, R.layout.item_search_his, null,
         arrayOf(DatabaseOpenHelper.COLUMNS_TEXT), intArrayOf(R.id.tv_query),
-        CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER) {
+        androidx.cursoradapter.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER) {
 
     companion object {
         const val ITEM_NORMAL = 0// 普通item
