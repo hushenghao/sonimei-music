@@ -15,10 +15,6 @@ import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.error
 import com.dede.sonimei.util.info
 import org.jetbrains.anko.doAsync
-import java.io.*
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.LinkedHashMap
 
 
 /**
@@ -30,15 +26,12 @@ class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
 
     //用来存储设备信息和异常信息
     private val deviceInfo by lazy { LinkedHashMap<String, String>() }
-    private val formatter by lazy { SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.CHINA) }
 
     companion object {
         private var mApplicationContext: Context? = null
         private var defaultHandler: Thread.UncaughtExceptionHandler? = null
         @SuppressLint("StaticFieldLeak")
         private var instance: CrashHandler? = null
-
-        const val LOG_SUFFIX = ".log"
 
         fun instance(): CrashHandler {
             if (instance == null) {
@@ -53,19 +46,6 @@ class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
 
             Thread.setDefaultUncaughtExceptionHandler(instance())
         }
-    }
-
-    fun crashLogDir(): File {
-        return mApplicationContext!!.getExternalFilesDir("log")
-    }
-
-    fun isLog(f: File?): Boolean {
-        if (f == null) return false
-        if (!f.isFile) return false
-        if (f.name.endsWith(LOG_SUFFIX) && f.length() > 0) {
-            return true
-        }
-        return false
     }
 
     override fun uncaughtException(t: Thread, e: Throwable?) {
@@ -110,48 +90,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
                     Toast.LENGTH_SHORT).show()
             Looper.loop()
         }
-        //保存日志文件
-        saveCatchInfo2File(ex)
         return true
-    }
-
-    /**
-     * 保存日志文件，不需要读写SD卡权限
-     */
-    private fun saveCatchInfo2File(ex: Throwable) {
-        if (BuildConfig.DEBUG) return
-
-        val sb = StringBuilder()
-        for ((key, value) in deviceInfo) {
-            sb.append("$key=$value\n")
-        }
-
-        val writer = StringWriter()
-        val printWriter = PrintWriter(writer)
-        ex.printStackTrace(printWriter)
-        var cause = ex.cause
-        while (cause != null) {
-            cause.printStackTrace(printWriter)
-            cause = cause.cause
-        }
-        printWriter.close()
-        val result = writer.toString()
-        sb.append(result)
-        var fos: FileOutputStream? = null
-        try {
-            val timestamp = System.currentTimeMillis()
-            val time = formatter.format(Date())
-            val fileName = "crash-$time-$timestamp$LOG_SUFFIX"
-            fos = FileOutputStream(crashLogDir().absolutePath + File.separator + fileName)
-            fos.write(sb.toString().toByteArray())
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            try {
-                fos?.close()
-            } catch (e: IOException) {
-            }
-        }
     }
 
     private fun collectDeviceInfo(context: Context) {

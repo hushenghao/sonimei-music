@@ -9,11 +9,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.dede.sonimei.*
+import com.dede.sonimei.R
 import com.dede.sonimei.data.Source
+import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.home.AboutDialog
 import com.dede.sonimei.module.local.LocalMusicFragment
 import com.dede.sonimei.module.selector.*
+import com.dede.sonimei.normalSource
+import com.dede.sonimei.sourceName
 import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.info
@@ -41,6 +44,7 @@ class Settings : PreferenceFragmentCompat(),
         const val KEY_QQ_GROUP = "qq_group"
         const val KEY_IGNORE_60S = "ignore_60s"
         const val KEY_IGNORE_PATHS = "ignore_paths"
+        const val KEY_OPEN_LOG = "open_log"
     }
 
     private val selectPathCode = 1
@@ -79,6 +83,12 @@ class Settings : PreferenceFragmentCompat(),
         }
     }
 
+    private fun isLog(file: File?): Boolean {
+        if (file == null || !file.exists()) return false
+
+        return (file.isFile && file.length() > 0)
+    }
+
     @SuppressLint("CheckResult")
     private fun sendEmail(b: Boolean) {
         if (!b) {
@@ -93,10 +103,10 @@ class Settings : PreferenceFragmentCompat(),
                         return@subscribe
                     }
                     var file: File? = null
-                    val dir = CrashHandler.instance().crashLogDir()
+                    val dir = Logger.logDir()
                     if (dir.exists() && dir.isDirectory) {
                         val files = dir.listFiles(FileFilter { f ->
-                            return@FileFilter CrashHandler.instance().isLog(f)
+                            return@FileFilter isLog(f)
                         })
                         if (files?.isNotEmpty() == true) {
                             files.sortByDescending { f -> f.lastModified() }// 按时间倒序
@@ -125,6 +135,10 @@ class Settings : PreferenceFragmentCompat(),
         when (preference?.key) {
             KEY_IGNORE_60S -> {
                 LocalMusicFragment.sendBroadcast(activity)
+                return true
+            }
+            KEY_OPEN_LOG -> {
+                Logger.saveLog(newValue as Boolean)
                 return true
             }
         }

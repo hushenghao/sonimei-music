@@ -52,5 +52,11 @@
         <Preference
             android:key="qq_group"
             android:title="@string/menu_about" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="open_log"
+            android:summary="@string/label_app_log_summary"
+            android:title="@string/label_app_log" />
     </PreferenceCategory>
 </PreferenceScreen>

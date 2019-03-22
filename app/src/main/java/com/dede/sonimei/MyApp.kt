@@ -10,7 +10,9 @@ import android.view.ViewConfiguration
 import android.view.WindowManager
 import androidx.multidex.MultiDex
 import com.dede.sonimei.module.home.MainActivity
+import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.HttpUtil
+import com.dede.sonimei.util.Logger
 import com.liulishuo.okdownload.OkDownload
 import com.liulishuo.okdownload.core.Util
 import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher
@@ -20,6 +22,7 @@ import com.tencent.bugly.BuglyStrategy
 import com.tencent.bugly.beta.Beta
 import com.tencent.bugly.beta.UpgradeInfo
 import com.tencent.bugly.beta.ui.UILifecycleListener
+import org.jetbrains.anko.defaultSharedPreferences
 
 
 /**
@@ -39,6 +42,11 @@ class MyApp : Application() {
 
         if (!LeakCanary.isInAnalyzerProcess(this)) {
             LeakCanary.install(this)
+        }
+
+        Logger.init(this)
+        if (defaultSharedPreferences.getBoolean(Settings.KEY_OPEN_LOG, false)) {
+            Logger.saveLog(true)
         }
 
         if (!BuildConfig.DEBUG) CrashHandler.init(this)
