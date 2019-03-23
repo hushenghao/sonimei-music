@@ -31,9 +31,9 @@ import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.player.MusicPlayer
 import com.dede.sonimei.player.SimplePlayStateChangeListener
 import com.dede.sonimei.util.ClickEventHelper
-import com.dede.sonimei.util.Logger
+import com.dede.sonimei.log.Logger
 import com.dede.sonimei.util.extends.*
-import com.dede.sonimei.util.info
+import com.dede.sonimei.log.info
 import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync

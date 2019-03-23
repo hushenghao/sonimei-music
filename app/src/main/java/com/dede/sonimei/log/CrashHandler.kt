@@ -1,4 +1,4 @@
-package com.dede.sonimei
+package com.dede.sonimei.log
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -10,10 +10,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Looper
 import android.widget.Toast
+import com.dede.sonimei.BuildConfig
+import com.dede.sonimei.R
 import com.dede.sonimei.module.home.MainActivity
-import com.dede.sonimei.util.Logger
-import com.dede.sonimei.util.error
-import com.dede.sonimei.util.info
 import org.jetbrains.anko.doAsync
 
 
@@ -41,7 +40,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
         }
 
         fun init(application: Application) {
-            this.mApplicationContext = application.applicationContext
+            mApplicationContext = application.applicationContext
             defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
 
             Thread.setDefaultUncaughtExceptionHandler(instance())
@@ -95,6 +94,7 @@ class CrashHandler : Thread.UncaughtExceptionHandler, Logger {
 
     private fun collectDeviceInfo(context: Context) {
         try {
+            info("============  Crash Log  ============")
             val pm = context.packageManager
             val pi = pm.getPackageInfo(context.packageName, PackageManager.GET_ACTIVITIES)
             deviceInfo["versionName"] = pi.versionName

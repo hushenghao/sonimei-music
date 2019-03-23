@@ -9,10 +9,11 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import androidx.multidex.MultiDex
+import com.dede.sonimei.log.CrashHandler
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.HttpUtil
-import com.dede.sonimei.util.Logger
+import com.dede.sonimei.log.Logger
 import com.liulishuo.okdownload.OkDownload
 import com.liulishuo.okdownload.core.Util
 import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher
@@ -51,7 +52,7 @@ class MyApp : Application() {
 
         if (!BuildConfig.DEBUG) CrashHandler.init(this)
 
-        initBugly()
+//        initBugly()
 
         HttpUtil.init(this)
 

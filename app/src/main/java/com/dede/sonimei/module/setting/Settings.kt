@@ -17,9 +17,9 @@ import com.dede.sonimei.module.local.LocalMusicFragment
 import com.dede.sonimei.module.selector.*
 import com.dede.sonimei.normalSource
 import com.dede.sonimei.sourceName
-import com.dede.sonimei.util.Logger
+import com.dede.sonimei.log.Logger
 import com.dede.sonimei.util.extends.isNull
-import com.dede.sonimei.util.info
+import com.dede.sonimei.log.info
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.support.v4.defaultSharedPreferences
 import org.jetbrains.anko.support.v4.startActivityForResult
@@ -138,7 +138,16 @@ class Settings : PreferenceFragmentCompat(),
                 return true
             }
             KEY_OPEN_LOG -> {
-                Logger.saveLog(newValue as Boolean)
+                if (newValue == true) {
+                    RxPermissions(this)
+                            .request(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe {
+                                Logger.saveLog(true)
+                            }
+                } else {
+                    Logger.saveLog(false)
+                }
                 return true
             }
         }
@@ -163,6 +172,7 @@ class Settings : PreferenceFragmentCompat(),
         findPreference(KEY_BUG_REPORT).onPreferenceClickListener = this
         findPreference(KEY_QQ_GROUP).onPreferenceClickListener = this
         findPreference(KEY_IGNORE_60S).onPreferenceChangeListener = this
+        findPreference(KEY_OPEN_LOG).onPreferenceChangeListener = this
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -7,12 +7,12 @@ import com.dede.sonimei.data.BaseData
 import com.dede.sonimei.data.search.NetEaseWebResult
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
-import com.dede.sonimei.util.Logger
-import com.dede.sonimei.util.error
+import com.dede.sonimei.log.Logger
+import com.dede.sonimei.log.error
 import com.dede.sonimei.util.extends.*
 import com.dede.sonimei.util.extends.kson.fromExposeJson
 import com.dede.sonimei.util.extends.kson.fromJson
-import com.dede.sonimei.util.warn
+import com.dede.sonimei.log.warn
 import org.json.JSONObject
 
 /**

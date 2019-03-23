@@ -14,8 +14,8 @@ import com.dede.sonimei.data.local.LocalSong
 import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.module.home.MainActivity
 import com.dede.sonimei.net.GlideApp
-import com.dede.sonimei.util.Logger
-import com.dede.sonimei.util.info
+import com.dede.sonimei.log.Logger
+import com.dede.sonimei.log.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.show
 import org.jetbrains.anko.collections.forEach

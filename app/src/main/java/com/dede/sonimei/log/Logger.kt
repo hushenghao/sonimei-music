@@ -1,22 +1,20 @@
 //@file:Suppress("unused", "NOTHING_TO_INLINE")
 //@file:JvmName("Logger")
 
-package com.dede.sonimei.util
+package com.dede.sonimei.log
 
-import android.annotation.SuppressLint
+import android.Manifest
+import android.app.Activity
 import android.app.Application
 import android.content.ComponentCallbacks2
+import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
-import android.os.Message
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
-import java.io.BufferedOutputStream
+import androidx.core.content.ContextCompat
+import kotlinx.android.parcel.Parcelize
 import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 /**
@@ -34,34 +32,61 @@ import java.util.*
  */
 interface Logger {
 
+    /**
+     * The logger tag used in extension functions for the [logger].
+     * Note that the tag length should not be more than 23 symbols.
+     */
+    val loggerTag: String
+        get() = getTag(javaClass)
+
     companion object {
 
-        internal const val LOG_SUFFIX = ".log"
-        internal const val MSG_WRITE_LOG = 10
-        internal const val MSG_FLUSH_LOG = 20
-
-        internal var saveLog = false
-        private var handler: Handler? = null
-
-        internal lateinit var application: Application
+        private var saveLog = false
+        private lateinit var application: Application
+        private var thread: LogThread? = null
 
         fun init(application: Application) {
-            this.application = application
+            Companion.application = application
             application.registerComponentCallbacks(object : ComponentCallbacks2 {
                 override fun onLowMemory() {
-                    Logger.flush()
+                    flush()
                 }
 
                 override fun onConfigurationChanged(newConfig: Configuration?) {
                 }
 
-                @SuppressLint("SwitchIntDef")
                 override fun onTrimMemory(level: Int) {
-                    when (level) {
-                        ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
-                            Logger.flush()
-                        }
+                    if (level == ComponentCallbacks2.TRIM_MEMORY_COMPLETE) {
+                        flush()
                     }
+                }
+            })
+            application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+                private val activityList = ArrayList<Activity?>()
+                override fun onActivityPaused(activity: Activity?) {
+                }
+
+                override fun onActivityResumed(activity: Activity?) {
+                }
+
+                override fun onActivityStarted(activity: Activity?) {
+                }
+
+                override fun onActivityDestroyed(activity: Activity?) {
+                    activityList.remove(activity)
+                    if (activityList.isEmpty()) {
+                        saveLog(false)
+                    }
+                }
+
+                override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+                }
+
+                override fun onActivityStopped(activity: Activity?) {
+                }
+
+                override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+                    activityList.add(activity)
                 }
             })
         }
@@ -72,40 +97,41 @@ interface Logger {
         fun saveLog(b: Boolean) {
             saveLog = b
             if (saveLog) {
-                val thread = LogHandlerThread()
-                thread.start()
-                handler = LogHandler(thread.looper)
+                thread = LogThread()
+                thread?.start()
+                Log.i("LOGGER", "start")
             } else {
-                flush()
+                Log.i("LOGGER", "quit")
+                thread?.quit()
             }
         }
 
         fun flush() {
-            if (saveLog) {
-                handler?.sendEmptyMessage(MSG_FLUSH_LOG)
-            }
+            if (!saveLog) return
+            thread?.flush()
         }
 
         fun log(level: Int, tag: String?, message: String?) {
-            val msg = Message.obtain()
-            msg.what = MSG_WRITE_LOG
-            msg.obj = LogInfo(System.currentTimeMillis(), level, tag, message)
-            handler?.handleMessage(msg)
+            if (!saveLog) {
+                return
+            }
+            val logInfo = LogInfo(System.currentTimeMillis(), level, tag, message)
+            thread?.log(logInfo)
         }
 
         fun logDir(): File {
             return application.getExternalFilesDir("log")!!
         }
 
+        internal fun hasPermission(): Boolean {
+            return PackageManager.PERMISSION_GRANTED ==
+                    ContextCompat.checkSelfPermission(application, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
     }
-
-    /**
-     * The logger tag used in extension functions for the [logger].
-     * Note that the tag length should not be more than 23 symbols.
-     */
-    val loggerTag: String
-        get() = getTag(javaClass)
 }
+
+@Parcelize
+internal data class LogInfo(val mills: Long, val level: Int, val tag: String?, val message: String?) : Parcelable
 
 fun logger(clazz: Class<*>): Logger = object : Logger {
     override val loggerTag = getTag(clazz)
@@ -222,78 +248,8 @@ private inline fun log(
         }
     }
 
-    if (!Logger.saveLog) {
-        return
-    }
-
     Logger.log(level, tag, message?.toString() ?: "null")
 }
-
-internal class LogHandler(looper: Looper) : Handler(looper) {
-
-    private var bos: BufferedOutputStream? = null
-
-    private fun getBos(): BufferedOutputStream {
-        if (bos == null) {
-            val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-            val logFile = File(Logger.logDir(), "${format.format(Date())}${Logger.LOG_SUFFIX}")
-            if (logFile.exists()) {
-                logFile.delete()
-            }
-            bos = BufferedOutputStream(FileOutputStream(logFile), 1024 * 2)
-        }
-        return bos!!
-    }
-
-    override fun handleMessage(msg: Message?) {
-        when (msg?.what) {
-            Logger.MSG_WRITE_LOG -> {
-                val info = msg.obj as LogInfo
-                val logLine = String.format("%s %s/ %s: %s${System.lineSeparator()}",
-                        getTimeStr(info.mills), getLevelStr(info.level), info.tag, info.message)
-                getBos().write(logLine.toByteArray(Charsets.UTF_8))
-            }
-            Logger.MSG_FLUSH_LOG -> {
-                getBos().flush()
-            }
-        }
-    }
-
-    private fun getTimeStr(mills: Long): String {
-        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA)
-        return format.format(mills)
-    }
-
-    private fun getLevelStr(level: Int): String {
-        return when (level) {
-            Log.ASSERT -> "A"
-            Log.DEBUG -> "D"
-            Log.INFO -> "I"
-            Log.WARN -> "W"
-            Log.ERROR -> "E"
-            Log.VERBOSE -> "V"
-            else -> "_"
-        }
-    }
-}
-
-internal class LogHandlerThread : HandlerThread("LOG_HANDLER_THREAD") {
-
-    override fun quit(): Boolean {
-        val b = super.quit()
-        Logger.flush()
-        return b
-    }
-
-    override fun quitSafely(): Boolean {
-        val b = super.quitSafely()
-        Logger.flush()
-        return b
-    }
-
-}
-
-internal data class LogInfo(val mills: Long, val level: Int, val tag: String?, val message: Any?)
 
 private fun getTag(clazz: Class<*>): String {
     val tag = clazz.simpleName

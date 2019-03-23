@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.dede.sonimei.util.Logger
-import com.dede.sonimei.util.debug
-import com.dede.sonimei.util.info
+import com.dede.sonimei.log.Logger
+import com.dede.sonimei.log.debug
+import com.dede.sonimei.log.info
 import com.trello.rxlifecycle2.components.support.RxFragment
 
 /**
