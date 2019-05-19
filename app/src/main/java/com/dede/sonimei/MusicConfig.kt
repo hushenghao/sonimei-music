@@ -13,7 +13,7 @@ import java.io.File
 /** 一些链接 */
 const val APE_LINK = "http://music.sonimei.cn/ape/"
 //const val GITHUB_LINK = "https://github.com/hushenghao/music/"
-const val WEB_LINK = "http://music.sonimei.cn/"
+const val WEB_LINK = "http://www.jbsou.cn/"
 
 /** 音乐来源 */
 const val NETEASE: Int = 1// 网易云

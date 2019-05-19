@@ -1,5 +1,6 @@
 package com.dede.sonimei.base
 
+import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
 import androidx.annotation.LayoutRes
@@ -7,12 +8,17 @@ import com.dede.sonimei.BuildConfig
 import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.info
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.umeng.analytics.MobclickAgent
 
 
 /**
  * Created by hsh on 2018/5/14.
  */
-abstract class BaseActivity : RxAppCompatActivity(), Logger {
+abstract class BaseActivity : RxAppCompatActivity(), Logger, IBaseView {
+
+    override fun context(): Context? {
+        return this
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (BuildConfig.DEBUG) {
@@ -68,9 +74,19 @@ abstract class BaseActivity : RxAppCompatActivity(), Logger {
         info("onStart")
     }
 
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onResume(this)
+    }
+
     override fun onRestart() {
         super.onRestart()
         info("onRestart")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPause(this)
     }
 
     override fun onStop() {

@@ -178,7 +178,11 @@ class MusicPlayer : MediaPlayer(), MediaPlayer.OnPreparedListener,
                 state == STATE_INITIALIZED || state == STATE_PREPARING) {
             false
         } else {
-            super.isPlaying()
+            try {
+                super.isPlaying()
+            } catch (e: IllegalStateException) {
+                false
+            }
         }
     }
 

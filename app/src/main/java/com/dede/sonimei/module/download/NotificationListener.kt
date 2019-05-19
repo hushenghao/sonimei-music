@@ -150,7 +150,7 @@ internal class NotificationListener(context: Context) : DownloadListener4WithSpe
             EndCause.PRE_ALLOCATE_FAILED -> builder.setContentTitle("预分配空间失败")
         }
         context.sendBroadcast(intent)
-        Log.i("NotificationListener", task.info?.toString())
+        Log.i("NotificationListener", task.info?.toString() ?: "")
         DownloadHelper.getInstance(context)
                 .remove(song)// 移除任务
         handler.postDelayed({

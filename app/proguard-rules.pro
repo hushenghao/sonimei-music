@@ -82,3 +82,13 @@
         public com.liulishuo.okdownload.core.breakpoint.DownloadStore createRemitSelf();
         public com.liulishuo.okdownload.core.breakpoint.BreakpointStoreOnSQLite(android.content.Context);
 }
+
+# umeng
+-keep class com.umeng.** {*;}
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

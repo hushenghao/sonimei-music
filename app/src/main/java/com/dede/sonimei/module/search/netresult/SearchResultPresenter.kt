@@ -9,10 +9,12 @@ import com.dede.sonimei.data.search.SearchSong
 import com.dede.sonimei.net.HttpUtil
 import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.error
-import com.dede.sonimei.util.extends.*
+import com.dede.sonimei.util.extends.applyFragmentLifecycle
 import com.dede.sonimei.util.extends.kson.fromExposeJson
 import com.dede.sonimei.util.extends.kson.fromJson
+import com.dede.sonimei.util.extends.notNull
 import com.dede.sonimei.util.warn
+import com.umeng.analytics.MobclickAgent
 import org.json.JSONObject
 
 /**
@@ -88,6 +90,8 @@ class SearchResultPresenter(private val view: ISearchResultView) : Logger {
 
     private var offset = 0 //网易云web版搜索有用到
 
+    // todo 不同的搜索来源使用不同的策略类实现
+
     @SuppressLint("CheckResult")
     private fun loadList(isLoadMore: Boolean, search: String) {
         if (source == NETEASE_WEB) {
@@ -120,6 +124,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : Logger {
                         view.loadError(isLoadMore)
                         it.printStackTrace()
                         error(null, it)
+                        MobclickAgent.reportError(view.context(), it)
                     }
             return
         }
@@ -152,6 +157,7 @@ class SearchResultPresenter(private val view: ISearchResultView) : Logger {
                     view.loadError(isLoadMore)
                     it.printStackTrace()
                     error(null, it)
+                    MobclickAgent.reportError(view.context(), it)
                 }
     }
 }

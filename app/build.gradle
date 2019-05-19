@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: file("./change_log.gradle")
+apply plugin: 'bugly'
 
 /**
  * 一些key和签名配置，如果报错在项目根目录新建key.properties文件，内容如下
@@ -19,18 +20,27 @@ def keyPropertiesFile = rootProject.file("key.properties")
 def keyProperties = new Properties()
 keyProperties.load(new FileInputStream(keyPropertiesFile))
 
+def buglyAppId = keyProperties['buglyAppId']
+def buglyAppKey = keyProperties['buglyAppKey']
+
+bugly {
+    appId = buglyAppId
+    appKey = buglyAppKey
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.dede.sonimei"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "0.7.3"
+        versionCode 18
+        versionName "0.7.4"
         flavorDimensions versionName
 
         // 在BuildConfig类中生成BUGLY_APPID常量
-        buildConfigField "String", "BUGLY_APPID", "\"${keyProperties['buglyAppId']}\""
+        buildConfigField "String", "BUGLY_APPID", "\"${buglyAppId}\""
+        buildConfigField "String", "UMENG_APP_KEY", "\"${keyProperties['umengAppKey']}\""
         resConfigs 'zh'
 
         multiDexEnabled true
@@ -159,6 +169,10 @@ dependencies {
 
     // bugly
     implementation 'com.tencent.bugly:crashreport_upgrade:1.3.8'
+
+    // umeng
+    implementation  'com.umeng.umsdk:analytics:8.0.0'
+    implementation  'com.umeng.umsdk:common:2.0.0'
 
     // scrollbar
     implementation 'com.github.turing-tech:MaterialScrollBar:13.3.2'

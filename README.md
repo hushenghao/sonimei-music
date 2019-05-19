@@ -1,6 +1,6 @@
 # Sonimei
 音乐搜索器 - 多站合一音乐搜索安卓解决方案
-[网页版](https://music.2333.me/)
+[网页版](http://www.jbsou.cn/)
 
 ## 说明
 
@@ -17,7 +17,7 @@
 ## API doc
 ||多站合一音乐搜索接口|
 | --- | --- |
-|url|http://music.sonimei.cn/ |
+|url|http://www.jbsou.cn/ |
 |method|post|
 |请求头|Ajex请求（必传）|
 |X-Requested-With|XMLHttpRequest|
@@ -42,6 +42,8 @@ keyPassword=
 keyAlias=
 storeFile=签名路径
 buglyAppId=buglyId
+buglyAppKey=buglyAppKey
+umengAppKey=umengAppKey
 ------------------
 等号后的内容可以随便填
 ```

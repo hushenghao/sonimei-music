@@ -1,20 +1,26 @@
 package com.dede.sonimei.base
 
+import android.content.Context
 import android.os.Bundle
-import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.LayoutRes
 import com.dede.sonimei.util.Logger
 import com.dede.sonimei.util.debug
 import com.dede.sonimei.util.info
 import com.trello.rxlifecycle2.components.support.RxFragment
+import com.umeng.analytics.MobclickAgent
 
 /**
  * Created by hsh on 2018/5/14.
  */
-abstract class BaseFragment : RxFragment(), Logger {
+abstract class BaseFragment : RxFragment(), Logger, IBaseView {
+
+    override fun context(): Context? {
+        return context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +97,16 @@ abstract class BaseFragment : RxFragment(), Logger {
     override fun onStart() {
         super.onStart()
         info("onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onPageStart(this.loggerTag)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPageEnd(this.loggerTag)
     }
 
     override fun onStop() {

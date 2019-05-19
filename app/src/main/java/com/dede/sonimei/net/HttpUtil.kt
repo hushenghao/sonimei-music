@@ -49,7 +49,7 @@ class HttpUtil private constructor() {
 
             retrofit = Retrofit.Builder()
                     .client(httpClient)
-                    .baseUrl("http://music.sonimei.cn/")
+                    .baseUrl("http://www.jbsou.cn/")
                     .addConverterFactory(StringConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()

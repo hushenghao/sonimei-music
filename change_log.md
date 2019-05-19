@@ -1,5 +1,9 @@
 [//]: # (Automatically generated content, no modification required!)
 # Change Log
+##### 0.7.4(18)
+	1.Api接口替换
+	2.其他细节优化，bugs fix
+------
 ##### 0.7.3(17)
 	1.添加自定义下载器
 	2.添加滑动切换歌曲

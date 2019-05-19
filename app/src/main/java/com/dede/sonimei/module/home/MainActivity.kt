@@ -35,6 +35,7 @@ import com.dede.sonimei.util.extends.gone
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.to
+import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_play.*
 import org.jetbrains.anko.startActivity
@@ -365,5 +366,6 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         if (connection != null) unbindService(connection)
         super.onDestroy()
+//        MobclickAgent.onKillProcess(this)
     }
 }

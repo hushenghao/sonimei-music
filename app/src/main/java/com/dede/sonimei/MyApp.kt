@@ -20,6 +20,7 @@ import com.tencent.bugly.BuglyStrategy
 import com.tencent.bugly.beta.Beta
 import com.tencent.bugly.beta.UpgradeInfo
 import com.tencent.bugly.beta.ui.UILifecycleListener
+import com.umeng.commonsdk.UMConfigure
 
 
 /**
@@ -45,9 +46,16 @@ class MyApp : Application() {
 
         initBugly()
 
+        initUMeng()
+
         HttpUtil.init(this)
 
         initOkDownLoad()
+    }
+
+    private fun initUMeng() {
+        UMConfigure.init(this, BuildConfig.UMENG_APP_KEY, BuildConfig.CHANNEL, UMConfigure.DEVICE_TYPE_PHONE, null)
+        UMConfigure.setLogEnabled(BuildConfig.DEBUG)
     }
 
     private fun initOkDownLoad() {

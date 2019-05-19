@@ -166,6 +166,7 @@ class DownloadService : Service(), Logger {
                 if (song.title.notNull()) id3v2.title = song.title
                 if (song.lrc.notNull()) id3v2.lyrics = song.lrc
             }
+            mp3file.id3v1Tag = null// 清除v1tag
 
             val albumImage = id3v2.albumImage
             if (albumImage == null || albumImage.isEmpty()) {

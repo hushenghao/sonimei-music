@@ -1,5 +1,6 @@
 package com.dede.sonimei.module.search.netresult
 
+import com.dede.sonimei.base.IBaseView
 import com.dede.sonimei.data.search.SearchSong
 import com.trello.rxlifecycle2.LifecycleProvider
 import com.trello.rxlifecycle2.android.FragmentEvent
@@ -7,7 +8,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 /**
  * Created by hsh on 2018/5/15.
  */
-interface ISearchResultView {
+interface ISearchResultView : IBaseView {
 
     fun showLoading()
 

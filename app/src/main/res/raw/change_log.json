@@ -1,5 +1,13 @@
 [
   {
+    "version_name": "0.7.4",
+    "version_code": 18,
+    "change_log": [
+      "Api接口替换",
+      "其他细节优化，bugs fix"
+    ]
+  },
+  {
     "version_name": "0.7.3",
     "version_code": 17,
     "change_log": [
