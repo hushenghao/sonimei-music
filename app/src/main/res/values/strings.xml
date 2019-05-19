@@ -125,7 +125,7 @@
 
     <string name="email">dede.hu@qq.com</string>
     <string name="emile_theme">轻心搜问题反馈</string>
-    <string name="email_text">输入您的建议、意见或者使用中的问题</string>
+    <string name="email_text">输入您的建议、意见或者使用中的问题，如果反馈问题最好注明版本和复现步骤</string>
     <string name="email_chooser">发送反馈邮件</string>
     <string name="dialog_bug_report">是否将最近的应用日志作为附件发送</string>
     <string name="dont_send">不发送</string>
@@ -165,6 +165,4 @@
     <string name="foreground_download">后台下载服务</string>
     <string name="search_empty">没有搜索到结果！</string>
     <string name="load_more_empty">没有更多结果了！</string>
-    <string name="label_app_log">记录日志</string>
-    <string name="label_app_log_summary">记录应用运行关键日志</string>
 </resources>
