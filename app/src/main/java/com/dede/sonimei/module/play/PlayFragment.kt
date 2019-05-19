@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import androidx.annotation.RequiresApi
+import androidx.viewpager.widget.ViewPager
 import android.view.View
 import android.widget.SeekBar
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -33,8 +34,9 @@ import com.dede.sonimei.util.ScreenHelper
 import com.dede.sonimei.util.extends.hide
 import com.dede.sonimei.util.extends.show
 import com.dede.sonimei.util.extends.toTime
-import com.dede.sonimei.log.info
+import com.dede.sonimei.util.info
 import kotlinx.android.synthetic.main.fragment_play.*
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.toast
 

@@ -24,8 +24,8 @@ import com.dede.sonimei.defaultDownloadPath
 import com.dede.sonimei.module.setting.Settings
 import com.dede.sonimei.net.GlideApp
 import com.dede.sonimei.util.ImageUtil
-import com.dede.sonimei.log.Logger
-import com.dede.sonimei.log.info
+import com.dede.sonimei.util.Logger
+import com.dede.sonimei.util.info
 import com.dede.sonimei.util.extends.isNull
 import com.dede.sonimei.util.extends.notNull
 import com.liulishuo.okdownload.DownloadTask

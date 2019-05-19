@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import com.dede.sonimei.R
 import com.dede.sonimei.data.BaseSong
 import com.dede.sonimei.data.search.SearchSong
-import com.dede.sonimei.log.Logger
+import com.dede.sonimei.util.Logger
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.jetbrains.anko.toast
 import java.util.*

@@ -2,8 +2,6 @@ package com.dede.sonimei.util
 
 import android.os.Handler
 import android.os.Looper
-import com.dede.sonimei.log.Logger
-import com.dede.sonimei.log.warn
 
 
 /**
