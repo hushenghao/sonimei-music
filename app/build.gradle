@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: file("./change_log.gradle")
-apply plugin: 'bugly'
+apply from: file("./bugly_symtab.gradle")
 
 /**
  * 一些key和签名配置，如果报错在项目根目录新建key.properties文件，内容如下
@@ -26,7 +26,8 @@ def buglyAppKey = keyProperties['buglyAppKey']
 bugly {
     appId = buglyAppId
     appKey = buglyAppKey
-    debug = true
+    debug = false
+    upload = false
 }
 
 android {

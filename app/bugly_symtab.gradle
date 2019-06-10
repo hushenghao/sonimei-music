@@ -1,0 +1,60 @@
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        if (!project.bugly.debug && variant.buildType.isDebuggable()) {
+            return
+        }
+
+        if (!project.bugly.execute) {
+            return
+        }
+
+        def variantName = variant.name.capitalize()
+
+        CleanMappingNotes removeTask = project.tasks.create("clean${variantName}MappingNotes", CleanMappingNotes.class)
+        removeTask.mappingFile = variant.mappingFile
+        removeTask.setGroup("bugly")
+
+        // 上传mapping文件之前先清除注释
+        tasks["upload${variantName}SymtabFile"].dependsOn removeTask
+    }
+}
+
+// https://github.com/JalenChen/symtabfileuploader
+apply plugin: 'bugly'
+
+class CleanMappingNotes extends DefaultTask {
+
+    @Input
+    File mappingFile
+
+    private final String tempFileName = "mapping_temp.txt"
+    private final String oldFileName = "mapping_old.txt"
+
+    @TaskAction
+    void call() {
+        if (mappingFile == null || !mappingFile.exists() || !mappingFile.isFile()) {
+            project.logger.log(LogLevel.WARN, "mapping.txt 不存在或不是文件")
+        }
+
+        def reader = new BufferedReader(new InputStreamReader(new FileInputStream(mappingFile)))
+        def tempFile = new File(mappingFile.getParent(), tempFileName)
+        def writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(tempFile)))
+        String line
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("#")) {
+                project.logger.log(LogLevel.INFO, "remove mapping.txt line :${line}")
+                continue
+            }
+            writer.write(line)
+            writer.newLine()
+        }
+
+        writer.close()
+        reader.close()
+
+        mappingFile.renameTo(new File(mappingFile.getParent(), oldFileName))
+        tempFile.renameTo(mappingFile)
+    }
+
+}
